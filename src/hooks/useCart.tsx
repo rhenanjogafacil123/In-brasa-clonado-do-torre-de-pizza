@@ -1,0 +1,7 @@
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+import type { Product } from "@/data/menu";
+export type CartItem={product:Product;qty:number};
+type CartContext={items:CartItem[];count:number;subtotal:number;notes:string;setNotes:(v:string)=>void;add:(product:Product)=>void;remove:(id:string)=>void;setQty:(id:string,qty:number)=>void;clear:()=>void;open:boolean;setOpen:(v:boolean)=>void};
+const Ctx=createContext<CartContext|null>(null);
+export function CartProvider({children}:{children:ReactNode}){const[items,setItems]=useState<CartItem[]>([]),[notes,setNotes]=useState(""),[open,setOpen]=useState(false);const value=useMemo<CartContext>(()=>{const setQty=(id:string,qty:number)=>setItems(prev=>qty<=0?prev.filter(i=>i.product.id!==id):prev.map(i=>i.product.id===id?{...i,qty}:i));return{items,notes,setNotes,open,setOpen,count:items.reduce((s,i)=>s+i.qty,0),subtotal:items.reduce((s,i)=>s+i.qty*i.product.price,0),add:product=>setItems(prev=>{const found=prev.find(i=>i.product.id===product.id);return found?prev.map(i=>i.product.id===product.id?{...i,qty:i.qty+1}:i):[...prev,{product,qty:1}]}),remove:id=>setItems(prev=>prev.filter(i=>i.product.id!==id)),setQty,clear:()=>{setItems([]);setNotes("")}}},[items,notes,open]);return <Ctx.Provider value={value}>{children}</Ctx.Provider>}
+export function useCart(){const ctx=useContext(Ctx);if(!ctx)throw new Error("useCart deve ser usado dentro de CartProvider");return ctx;}
