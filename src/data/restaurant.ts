@@ -1,0 +1,18 @@
+export const restaurantConfig = {
+  name: "Forno & Fatia",
+  logo: "🍕",
+  tagline: "Forno a lenha • desde 2012",
+  description: "Pizzas artesanais feitas na hora, com massa de fermentação lenta, ingredientes frescos e aquele sabor de forno a lenha.",
+  whatsapp: "5511999999999",
+  phone: "+55 (11) 99999-9999",
+  instagram: "@fornoefatia",
+  address: "Rua das Pizzas, 120 • Vila Madalena • São Paulo - SP",
+  googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Rua+das+Pizzas+120+Sao+Paulo",
+  openingHours: "Todos os dias • 18h às 00h",
+  rating: 4.8,
+  reviewsCount: 265,
+  delivery: true,
+  pickup: true,
+  dineIn: true,
+  theme: { background: "#171311", surface: "#211a17", accent: "#e7a83b" },
+};
