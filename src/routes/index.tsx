@@ -5,7 +5,7 @@ import { restaurantConfig } from "../data/restaurant";
 import { products, type Product } from "../data/products";
 
 export const Route = createFileRoute("/")({ component: Index });
-type Item = Product & { qty:number; finalPrice:number; size?:string; crust?:string; extras?:string[]; notes?:string };
+type Item = Omit<Product, "extras"> & { qty:number; finalPrice:number; size?:string; crust?:string; extras?:string[]; notes?:string };
 const money=(n:number)=>n.toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
 
 function Index(){
