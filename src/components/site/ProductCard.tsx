@@ -19,6 +19,9 @@ export function ProductCard({ product, featured = false }: { product: Product; f
   const hasFlavors = Boolean(product.flavors?.length);
   const hasCustomGroups = customGroups.length > 0;
   const isCustomizable = hasFlavors || hasCustomGroups;
+  const showCardVariants =
+    Boolean(product.variants?.length) &&
+    (!isCustomizable || product.category === "pizzas" || product.category === "gelados");
   const variantLabel = product.variantLabel ?? "opção";
   const [added, setAdded] = useState(false);
   const [expanded, setExpanded] = useState(false);
@@ -402,11 +405,13 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             </button>
           )}
 
-          {product.variants && product.variants.length > 0 && !isCustomizable && (
+          {showCardVariants && (
             <div className="mt-4">
-              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Escolha uma opção</p>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                {product.category === "pizzas" || product.category === "gelados" ? "Escolha o tamanho" : "Escolha uma opção"}
+              </p>
               <div className="grid grid-cols-3 gap-2">
-                {product.variants.map((variant) => (
+                {product.variants?.map((variant) => (
                   <button
                     key={variant.id}
                     type="button"
@@ -414,7 +419,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                     className={cn(
                       "rounded-2xl border px-2 py-2 text-center text-xs font-semibold transition",
                       variant.id === variantId
-                        ? "border-primary bg-accent text-primary"
+                        ? "border-primary bg-accent text-primary shadow-soft"
                         : "border-border bg-background text-foreground/75 hover:border-primary/30",
                     )}
                   >
@@ -429,7 +434,13 @@ export function ProductCard({ product, featured = false }: { product: Product; f
           <div className="mt-auto flex items-end justify-between gap-3 pt-5">
             <div>
               {product.variants && !isCustomizable && <span className="block text-[11px] text-muted-foreground">Opção selecionada</span>}
-              {isCustomizable && <span className="block text-[11px] text-muted-foreground">A partir de</span>}
+              {isCustomizable && (
+                <span className="block text-[11px] text-muted-foreground">
+                  {selectedVariant && (product.category === "pizzas" || product.category === "gelados")
+                    ? "Tamanho selecionado"
+                    : "A partir de"}
+                </span>
+              )}
               <span className="font-display text-2xl font-semibold text-primary">{brl(basePrice)}</span>
             </div>
             <button
