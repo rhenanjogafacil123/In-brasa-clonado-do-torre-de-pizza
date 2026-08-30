@@ -6,6 +6,7 @@ export type CartItem = {
   qty: number;
   variant?: ProductVariant | undefined;
   flavor?: string | undefined;
+  extraPrice?: number | undefined;
   key: string;
 };
 
@@ -15,7 +16,7 @@ type CartContext = {
   subtotal: number;
   notes: string;
   setNotes: (v: string) => void;
-  add: (product: Product, variant?: ProductVariant, flavor?: string) => void;
+  add: (product: Product, variant?: ProductVariant, flavor?: string, extraPrice?: number) => void;
   remove: (key: string) => void;
   setQty: (key: string, qty: number) => void;
   clear: () => void;
@@ -25,11 +26,11 @@ type CartContext = {
 
 const Ctx = createContext<CartContext | null>(null);
 
-export const cartItemPrice = (item: Pick<CartItem, "product" | "variant">) =>
-  item.variant?.price ?? item.product.price;
+export const cartItemPrice = (item: Pick<CartItem, "product" | "variant" | "extraPrice">) =>
+  (item.variant?.price ?? item.product.price) + (item.extraPrice ?? 0);
 
-export const cartItemKey = (product: Product, variant?: ProductVariant, flavor?: string) =>
-  `${product.id}::${variant?.id ?? "default"}::${flavor ?? "default"}`;
+export const cartItemKey = (product: Product, variant?: ProductVariant, flavor?: string, extraPrice = 0) =>
+  `${product.id}::${variant?.id ?? "default"}::${flavor ?? "default"}::${extraPrice.toFixed(2)}`;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -50,13 +51,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setOpen,
       count: items.reduce((sum, item) => sum + item.qty, 0),
       subtotal: items.reduce((sum, item) => sum + item.qty * cartItemPrice(item), 0),
-      add: (product, variant, flavor) =>
+      add: (product, variant, flavor, extraPrice = 0) =>
         setItems((prev) => {
-          const key = cartItemKey(product, variant, flavor);
+          const key = cartItemKey(product, variant, flavor, extraPrice);
           const found = prev.find((i) => i.key === key);
           return found
             ? prev.map((i) => (i.key === key ? { ...i, qty: i.qty + 1 } : i))
-            : [...prev, { product, variant, flavor, key, qty: 1 }];
+            : [...prev, { product, variant, flavor, extraPrice, key, qty: 1 }];
         }),
       remove: (key) => setItems((prev) => prev.filter((i) => i.key !== key)),
       setQty,
