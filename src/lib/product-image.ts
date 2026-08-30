@@ -57,7 +57,7 @@ const PUBLIC_SITE_ORIGIN = "https://torredepizza.lovable.app";
 
 function optimizedMenuImage(path: string) {
   const source = `${PUBLIC_SITE_ORIGIN}${path}`;
-  return `https://wsrv.nl/?url=${encodeURIComponent(source)}&w=720&output=webp&q=80&default=1`;
+  return `https://wsrv.nl/?url=${encodeURIComponent(source)}&w=720&h=720&fit=contain&cbg=black&output=webp&q=80&default=1`;
 }
 
 export function productImage(product: Pick<Product, "id" | "image">) {
