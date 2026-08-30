@@ -5,12 +5,12 @@ export const business = {
   rating: 4.2,
   reviews: 265,
   city: "Campo Grande, Rio de Janeiro – RJ",
-  address: "R. Domingos Alves Ribeiro, 20 — Campo Grande, Rio de Janeiro – RJ",
+  address: "R. Domingos Alves Ribeiro, 27 — Campo Grande, Rio de Janeiro – RJ",
   hours: "Todos os dias, das 18h às 00h",
   phone: "+55 21 96990-2994",
   phoneHref: "tel:+5521969902994",
   whatsapp: "5521969902994",
-  mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=R.+Domingos+Alves+Ribeiro,+20,+Campo+Grande,+Rio+de+Janeiro,+RJ",
+  mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=R.+Domingos+Alves+Ribeiro,+27,+Campo+Grande,+Rio+de+Janeiro,+RJ",
   services: ["Delivery", "Retirada", "Atendimento no local"],
 } as const;
 
