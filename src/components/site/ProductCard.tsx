@@ -10,12 +10,15 @@ import { cn } from "@/lib/utils";
 export function ProductCard({ product, featured = false }: { product: Product; featured?: boolean }) {
   const { add } = useCart();
   const hasFlavors = Boolean(product.flavors?.length);
+  const hasCustomGroups = Boolean(product.customGroups?.length);
+  const isCustomizable = hasFlavors || hasCustomGroups;
   const variantLabel = product.variantLabel ?? "opção";
   const [added, setAdded] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [customizing, setCustomizing] = useState(false);
   const [flavor, setFlavor] = useState("");
-  const [variantId, setVariantId] = useState(hasFlavors ? "" : product.variants?.[0]?.id ?? "");
+  const [groupSelections, setGroupSelections] = useState<Record<string, string[]>>({});
+  const [variantId, setVariantId] = useState(isCustomizable ? "" : product.variants?.[0]?.id ?? "");
 
   const selectedVariant = useMemo(
     () => product.variants?.find((variant) => variant.id === variantId),
@@ -26,7 +29,10 @@ export function ProductCard({ product, featured = false }: { product: Product; f
   const displayImage = productImage(product);
   const isCustomImage = displayImage.startsWith("/menu/");
   const longDescription = product.description.length > 68;
-  const canAddCustom = (!product.variants?.length || Boolean(selectedVariant)) && Boolean(flavor);
+  const customGroupsValid =
+    product.customGroups?.every((group) => (groupSelections[group.id]?.length ?? 0) >= (group.min ?? 0)) ?? true;
+  const canAddCustom =
+    (!product.variants?.length || Boolean(selectedVariant)) && (!hasFlavors || Boolean(flavor)) && customGroupsValid;
 
   const showAddedFeedback = () => {
     setAdded(true);
@@ -34,7 +40,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
   };
 
   const handleAdd = () => {
-    if (hasFlavors) {
+    if (isCustomizable) {
       setCustomizing(true);
       return;
     }
@@ -43,15 +49,40 @@ export function ProductCard({ product, featured = false }: { product: Product; f
     showAddedFeedback();
   };
 
+  const toggleGroupOption = (groupId: string, option: string, max = 1) => {
+    setGroupSelections((current) => {
+      const selected = current[groupId] ?? [];
+      if (selected.includes(option)) {
+        return { ...current, [groupId]: selected.filter((item) => item !== option) };
+      }
+      if (max === 1) return { ...current, [groupId]: [option] };
+      if (selected.length >= max) return current;
+      return { ...current, [groupId]: [...selected, option] };
+    });
+  };
+
+  const selectedCustomDetails = [
+    flavor || "",
+    ...(product.customGroups ?? []).flatMap((group) => {
+      const selected = groupSelections[group.id] ?? [];
+      return selected.length > 0 ? [`${group.label}: ${selected.join(", ")}`] : [];
+    }),
+  ].filter(Boolean);
+
   const confirmCustomization = () => {
     if (!canAddCustom) return;
 
-    add(productWithImage(product), selectedVariant, flavor);
+    add(productWithImage(product), selectedVariant, selectedCustomDetails.join(" • ") || undefined);
     setCustomizing(false);
     setFlavor("");
+    setGroupSelections({});
     setVariantId("");
     showAddedFeedback();
   };
+
+  const customizerIntro = hasFlavors
+    ? `Escolha o ${variantLabel} e depois 1 sabor.`
+    : `Escolha o ${variantLabel} e personalize do seu jeito.`;
 
   const customizer =
     customizing && typeof document !== "undefined"
@@ -74,7 +105,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary">Personalize seu pedido</p>
                   <h3 className="mt-1 font-display text-2xl font-semibold text-foreground">{product.name}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Escolha o {variantLabel} e depois 1 sabor.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">{customizerIntro}</p>
                 </div>
                 <button
                   type="button"
@@ -113,38 +144,88 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                 </section>
               )}
 
-              <section className="mt-5">
-                <div className="mb-2 flex items-center justify-between">
-                  <p className="text-sm font-semibold text-foreground">2. Escolha o sabor</p>
-                  {!flavor && <span className="text-xs font-medium text-destructive">Obrigatório</span>}
-                </div>
-                <div className="grid grid-cols-2 gap-2">
-                  {product.flavors?.map((item) => (
-                    <button
-                      key={item}
-                      type="button"
-                      onClick={() => setFlavor(item)}
-                      className={cn(
-                        "min-h-11 rounded-2xl border px-3 py-2.5 text-sm font-semibold transition",
-                        flavor === item
-                          ? "border-primary bg-accent text-primary shadow-soft"
-                          : "border-border bg-card text-foreground/80 hover:border-primary/30",
-                      )}
-                    >
-                      {item}
-                    </button>
-                  ))}
-                </div>
-              </section>
+              {hasFlavors && (
+                <section className="mt-5">
+                  <div className="mb-2 flex items-center justify-between">
+                    <p className="text-sm font-semibold text-foreground">2. Escolha o sabor</p>
+                    {!flavor && <span className="text-xs font-medium text-destructive">Obrigatório</span>}
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {product.flavors?.map((item) => (
+                      <button
+                        key={item}
+                        type="button"
+                        onClick={() => setFlavor(item)}
+                        className={cn(
+                          "min-h-11 rounded-2xl border px-3 py-2.5 text-sm font-semibold transition",
+                          flavor === item
+                            ? "border-primary bg-accent text-primary shadow-soft"
+                            : "border-border bg-card text-foreground/80 hover:border-primary/30",
+                        )}
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </section>
+              )}
+
+              {product.customGroups?.map((group, index) => {
+                const selected = groupSelections[group.id] ?? [];
+                const min = group.min ?? 0;
+                const max = group.max ?? 1;
+                const step = (product.variants?.length ? 1 : 0) + (hasFlavors ? 1 : 0) + index + 1;
+                return (
+                  <section key={group.id} className="mt-5">
+                    <div className="mb-2 flex items-center justify-between gap-3">
+                      <div>
+                        <p className="text-sm font-semibold text-foreground">{step}. {group.label}</p>
+                        <p className="text-[11px] text-muted-foreground">
+                          {max === 1 ? "Escolha 1 opção" : `Escolha até ${max} opções`}{min === 0 ? " (opcional)" : ""}
+                        </p>
+                      </div>
+                      {min > 0 && selected.length < min && <span className="text-xs font-medium text-destructive">Obrigatório</span>}
+                    </div>
+                    <div className="grid grid-cols-2 gap-2">
+                      {group.options.map((option) => {
+                        const checked = selected.includes(option);
+                        const limitReached = !checked && max > 1 && selected.length >= max;
+                        return (
+                          <button
+                            key={option}
+                            type="button"
+                            disabled={limitReached}
+                            onClick={() => toggleGroupOption(group.id, option, max)}
+                            className={cn(
+                              "min-h-11 rounded-2xl border px-3 py-2.5 text-sm font-semibold transition",
+                              checked
+                                ? "border-primary bg-accent text-primary shadow-soft"
+                                : "border-border bg-card text-foreground/80 hover:border-primary/30",
+                              limitReached && "cursor-not-allowed opacity-45",
+                            )}
+                          >
+                            {checked && <Check className="mr-1 inline h-3.5 w-3.5" />}
+                            {option}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </section>
+                );
+              })}
 
               <div className="mt-6 rounded-2xl border border-border bg-card p-4">
-                <div className="flex items-center justify-between gap-3">
+                <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">Sua escolha</p>
-                    <p className="truncate text-sm font-semibold text-foreground">
-                      {selectedVariant?.label ?? `Escolha o ${variantLabel}`}
-                      {flavor ? ` • ${flavor}` : " • Escolha o sabor"}
-                    </p>
+                    <p className="text-sm font-semibold text-foreground">{selectedVariant?.label ?? `Escolha o ${variantLabel}`}</p>
+                    {selectedCustomDetails.length > 0 ? (
+                      <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{selectedCustomDetails.join(" • ")}</p>
+                    ) : hasCustomGroups ? (
+                      <p className="mt-1 text-xs text-muted-foreground">Sem complementos selecionados.</p>
+                    ) : (
+                      <p className="mt-1 text-xs text-muted-foreground">Escolha o sabor.</p>
+                    )}
                   </div>
                   <span className="shrink-0 font-display text-xl font-semibold text-primary">{brl(displayedPrice)}</span>
                 </div>
@@ -219,7 +300,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             </button>
           )}
 
-          {product.variants && product.variants.length > 0 && !hasFlavors && (
+          {product.variants && product.variants.length > 0 && !isCustomizable && (
             <div className="mt-4">
               <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground">Escolha uma opção</p>
               <div className="grid grid-cols-3 gap-2">
@@ -243,16 +324,17 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             </div>
           )}
 
-          {hasFlavors && (
+          {isCustomizable && (
             <div className="mt-4 rounded-2xl border border-primary/15 bg-accent/40 px-3 py-2.5 text-xs text-foreground/80">
-              <span className="font-semibold text-primary">Personalizável:</span> escolha {variantLabel} + sabor antes de adicionar.
+              <span className="font-semibold text-primary">Personalizável:</span>{" "}
+              {hasFlavors ? `escolha ${variantLabel} + sabor antes de adicionar.` : `escolha ${variantLabel}, calda e guloseimas.`}
             </div>
           )}
 
           <div className="mt-auto flex items-end justify-between gap-3 pt-5">
             <div>
-              {product.variants && !hasFlavors && <span className="block text-[11px] text-muted-foreground">Opção selecionada</span>}
-              {hasFlavors && <span className="block text-[11px] text-muted-foreground">A partir de</span>}
+              {product.variants && !isCustomizable && <span className="block text-[11px] text-muted-foreground">Opção selecionada</span>}
+              {isCustomizable && <span className="block text-[11px] text-muted-foreground">A partir de</span>}
               <span className="font-display text-2xl font-semibold text-primary">{brl(displayedPrice)}</span>
             </div>
             <button
@@ -269,7 +351,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                 </>
               ) : (
                 <>
-                  <Plus className="h-4 w-4" />{hasFlavors ? "Escolher opções" : "Adicionar"}
+                  <Plus className="h-4 w-4" />{isCustomizable ? "Escolher opções" : "Adicionar"}
                 </>
               )}
             </button>
