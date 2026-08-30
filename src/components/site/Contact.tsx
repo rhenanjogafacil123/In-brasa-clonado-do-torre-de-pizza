@@ -7,10 +7,6 @@ export function Contact() {
     window.open(business.mapsUrl, "_blank", "noopener,noreferrer");
   };
 
-  const callNow = () => {
-    window.location.href = business.phoneHref;
-  };
-
   const openWhatsApp = () => {
     window.open(
       whatsappLink("Olá! Gostaria de fazer um pedido na Torre de Pizza."),
@@ -48,15 +44,6 @@ export function Contact() {
             >
               <Navigation className="h-4 w-4" />
               Como chegar
-            </button>
-
-            <button
-              type="button"
-              onClick={callNow}
-              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-primary-foreground/10 px-6 py-4 text-sm font-semibold text-primary-foreground backdrop-blur"
-            >
-              <Phone className="h-4 w-4" />
-              Ligar agora
             </button>
 
             <button
