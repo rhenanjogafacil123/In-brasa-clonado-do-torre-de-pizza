@@ -1,14 +1,16 @@
 import type { Product } from "@/data/menu";
 
 const productImages: Record<string, string> = {
-  "torre-feliz": "/menu/torre-feliz-q95.webp",
-  "combo-bom-demais": "/menu/combo-bom-demais-q95.webp",
-  "combo-original": "/menu/combo-original-q95.webp",
-  "combo-super-picanha": "/menu/combo-super-picanha.webp",
-  "promocao-casado": "/menu/promo-casado.webp",
-  "promocao-super-casado": "/menu/promo-super-casado.webp",
-  "super-combo-double": "/menu/super-combo-double.webp",
-  "super-combo-cheesburguer": "/menu/super-combo-cheeseburguer.webp",
+  "torre-feliz": "/menu/torre-feliz.png",
+  "combo-bom-demais": "/menu/combo-bom-demais.png",
+  "combo-original": "/menu/combo-original.png",
+  "combo-super-picanha": "/menu/combo-super-picanha.png",
+  "promocao-casado": "/menu/promocao-casado.png",
+  "promocao-super-casado": "/menu/promocao-super-casado.png",
+  "super-combo-double": "/menu/super-combo-double.png",
+  "super-combo-cheesburguer": "/menu/super-combo-cheeseburguer.png",
+  "pizza-calabresa": "/menu/pizza-calabresa.png",
+  "torre-picanha": "/menu/torre-picanha.png",
 };
 
 export function productImage(product: Pick<Product, "id" | "image">) {
