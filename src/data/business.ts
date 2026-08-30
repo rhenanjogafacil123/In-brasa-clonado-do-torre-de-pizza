@@ -10,7 +10,7 @@ export const business = {
   phone: "+55 21 96990-2994",
   phoneHref: "tel:+5521969902994",
   whatsapp: "5521969902994",
-  mapsUrl: "https://www.google.com/maps/search/?api=1&query=R.+Domingos+Alves+Ribeiro,+20+Campo+Grande+Rio+de+Janeiro",
+  mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=R.+Domingos+Alves+Ribeiro,+20,+Campo+Grande,+Rio+de+Janeiro,+RJ",
   services: ["Delivery", "Retirada", "Atendimento no local"],
 } as const;
 
