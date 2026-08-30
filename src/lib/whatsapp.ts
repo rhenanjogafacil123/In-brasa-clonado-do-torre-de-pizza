@@ -12,10 +12,14 @@ export function orderMessage(
   customerName: string,
   address: string,
   paymentMethod: string,
+  cashAmount: number | null,
 ) {
   const lines = items.map(
     (i) => `• ${i.qty}x ${i.product.name} — ${brl(i.qty * i.product.price)}`,
   );
+
+  const isCash = paymentMethod === "Dinheiro";
+  const change = isCash && cashAmount !== null ? Math.max(0, cashAmount - subtotal) : null;
 
   return [
     `🍕 *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
@@ -24,6 +28,9 @@ export function orderMessage(
     `🙋 *Nome:* ${customerName.trim()}`,
     `📍 *Endereço:* ${address.trim()}`,
     `💳 *Pagamento:* ${paymentMethod}`,
+    ...(isCash && cashAmount !== null
+      ? [`💵 *Vai pagar com:* ${brl(cashAmount)}`, `🔄 *Troco:* ${brl(change ?? 0)}`]
+      : ["🔄 *Troco:* Não se aplica"]),
     "",
     "🛒 *ITENS DO PEDIDO*",
     ...lines,
