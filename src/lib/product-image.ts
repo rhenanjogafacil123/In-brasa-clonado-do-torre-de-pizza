@@ -53,8 +53,16 @@ const productImages: Record<string, string> = {
   "acai": "/menu/acai.png",
 };
 
+const PUBLIC_SITE_ORIGIN = "https://torredepizza.lovable.app";
+
+function optimizedMenuImage(path: string) {
+  const source = `${PUBLIC_SITE_ORIGIN}${path}`;
+  return `https://wsrv.nl/?url=${encodeURIComponent(source)}&w=720&output=webp&q=80&default=1`;
+}
+
 export function productImage(product: Pick<Product, "id" | "image">) {
-  return productImages[product.id] ?? product.image;
+  const image = productImages[product.id] ?? product.image;
+  return image.startsWith("/menu/") ? optimizedMenuImage(image) : image;
 }
 
 export function productWithImage(product: Product): Product {
