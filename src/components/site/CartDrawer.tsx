@@ -9,8 +9,13 @@ export function CartDrawer() {
   const [customerName, setCustomerName] = useState("");
   const [address, setAddress] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
+  const [cashAmount, setCashAmount] = useState("");
 
   if (!open) return null;
+
+  const cashValue = cashAmount.trim() ? Number(cashAmount) : Number.NaN;
+  const validCashValue = Number.isFinite(cashValue) ? cashValue : null;
+  const change = paymentMethod === "Dinheiro" && validCashValue !== null ? validCashValue - subtotal : null;
 
   const finish = () => {
     if (!customerName.trim() || !address.trim() || !paymentMethod) {
@@ -18,14 +23,37 @@ export function CartDrawer() {
       return;
     }
 
+    if (paymentMethod === "Dinheiro") {
+      if (validCashValue === null) {
+        window.alert("Informe com quanto você vai pagar em dinheiro.");
+        return;
+      }
+
+      if (validCashValue < subtotal) {
+        window.alert("O valor em dinheiro não pode ser menor que o subtotal do pedido.");
+        return;
+      }
+    }
+
     window.open(
-      whatsappLink(orderMessage(items, subtotal, notes, customerName, address, paymentMethod)),
+      whatsappLink(
+        orderMessage(
+          items,
+          subtotal,
+          notes,
+          customerName,
+          address,
+          paymentMethod,
+          paymentMethod === "Dinheiro" ? validCashValue : null,
+        ),
+      ),
       "_blank",
     );
     clear();
     setCustomerName("");
     setAddress("");
     setPaymentMethod("");
+    setCashAmount("");
     setOpen(false);
   };
 
@@ -141,7 +169,11 @@ export function CartDrawer() {
                     <select
                       id="payment"
                       value={paymentMethod}
-                      onChange={(e) => setPaymentMethod(e.target.value)}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setPaymentMethod(value);
+                        if (value !== "Dinheiro") setCashAmount("");
+                      }}
                       className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-4 focus:ring-primary/10"
                     >
                       <option value="">Selecione...</option>
@@ -151,6 +183,31 @@ export function CartDrawer() {
                       <option value="Cartão de débito">Cartão de débito</option>
                     </select>
                   </div>
+
+                  {paymentMethod === "Dinheiro" && (
+                    <div className="rounded-2xl border border-border bg-accent/40 p-3">
+                      <label htmlFor="cash-amount" className="mb-1.5 block text-sm font-medium text-foreground">
+                        Vai pagar com quanto?
+                      </label>
+                      <input
+                        id="cash-amount"
+                        type="number"
+                        inputMode="decimal"
+                        min={subtotal}
+                        step="0.01"
+                        value={cashAmount}
+                        onChange={(e) => setCashAmount(e.target.value)}
+                        placeholder={`Ex.: ${Math.ceil(subtotal / 10) * 10}`}
+                        className="w-full rounded-2xl border border-border bg-background px-4 py-3 text-sm outline-none focus:ring-4 focus:ring-primary/10"
+                      />
+                      {change !== null && change >= 0 && (
+                        <p className="mt-2 text-sm font-semibold text-primary">Troco: {brl(change)}</p>
+                      )}
+                      {change !== null && change < 0 && (
+                        <p className="mt-2 text-sm font-medium text-destructive">O valor precisa ser pelo menos {brl(subtotal)}.</p>
+                      )}
+                    </div>
+                  )}
                 </div>
               </div>
 
