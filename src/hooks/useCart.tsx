@@ -4,8 +4,8 @@ import type { Product, ProductVariant } from "@/data/menu";
 export type CartItem = {
   product: Product;
   qty: number;
-  variant?: ProductVariant;
-  flavor?: string;
+  variant?: ProductVariant | undefined;
+  flavor?: string | undefined;
   key: string;
 };
 
