@@ -1,5 +1,5 @@
 import { brl, business } from "@/data/business";
-import type { CartItem } from "@/hooks/useCart";
+import { cartItemPrice, type CartItem } from "@/hooks/useCart";
 
 const emoji = {
   pizza: String.fromCodePoint(0x1f355),
@@ -28,9 +28,10 @@ export function orderMessage(
   paymentMethod: string,
   cashAmount: number | null,
 ) {
-  const lines = items.map(
-    (i) => `• ${i.qty}x ${i.product.name} — ${brl(i.qty * i.product.price)}`,
-  );
+  const lines = items.map((item) => {
+    const option = item.variant ? ` (${item.variant.label})` : "";
+    return `• ${item.qty}x ${item.product.name}${option} — ${brl(item.qty * cartItemPrice(item))}`;
+  });
 
   const isCash = paymentMethod === "Dinheiro";
   const change = isCash && cashAmount !== null ? Math.max(0, cashAmount - subtotal) : null;
@@ -43,10 +44,7 @@ export function orderMessage(
     `${emoji.pin} *Endereço:* ${address.trim()}`,
     `${emoji.card} *Pagamento:* ${paymentMethod}`,
     ...(isCash && cashAmount !== null
-      ? [
-          `${emoji.cash} *Vai pagar com:* ${brl(cashAmount)}`,
-          `${emoji.change} *Troco:* ${brl(change ?? 0)}`,
-        ]
+      ? [`${emoji.cash} *Vai pagar com:* ${brl(cashAmount)}`, `${emoji.change} *Troco:* ${brl(change ?? 0)}`]
       : [`${emoji.change} *Troco:* Não se aplica`]),
     "",
     `${emoji.cart} *ITENS DO PEDIDO*`,
