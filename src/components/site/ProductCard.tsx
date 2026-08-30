@@ -3,6 +3,7 @@ import { Check, Plus } from "lucide-react";
 import { brl } from "@/data/business";
 import type { Product } from "@/data/menu";
 import { useCart } from "@/hooks/useCart";
+import { productImage, productWithImage } from "@/lib/product-image";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ product, featured = false }: { product: Product; featured?: boolean }) {
@@ -17,10 +18,11 @@ export function ProductCard({ product, featured = false }: { product: Product; f
   );
 
   const displayedPrice = selectedVariant?.price ?? product.price;
+  const displayImage = productImage(product);
   const longDescription = product.description.length > 68;
 
   const handleAdd = () => {
-    add(product, selectedVariant);
+    add(productWithImage(product), selectedVariant);
     setAdded(true);
     window.setTimeout(() => setAdded(false), 1400);
   };
@@ -34,7 +36,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
     >
       <div className="relative aspect-[5/4] overflow-hidden">
         <img
-          src={product.image}
+          src={displayImage}
           alt={product.name}
           loading="lazy"
           className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
