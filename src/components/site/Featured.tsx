@@ -3,6 +3,7 @@ import { brl } from "@/data/business";
 import { products } from "@/data/menu";
 import { useCart } from "@/hooks/useCart";
 import { productImage, productWithImage } from "@/lib/product-image";
+import { productOptionGroups } from "@/lib/product-options";
 import { cn } from "@/lib/utils";
 
 export function Featured() {
@@ -30,6 +31,10 @@ export function Featured() {
           {featured.map((product) => {
             const displayImage = productImage(product);
             const isCustomImage = displayImage.startsWith("/menu/");
+            const hasChoices =
+              Boolean(product.variants?.length) ||
+              Boolean(product.flavors?.length) ||
+              productOptionGroups(product).length > 0;
 
             return (
               <article key={product.id} className="group w-[74%] shrink-0 snap-start overflow-hidden rounded-3xl bg-card shadow-lift md:w-auto">
@@ -55,9 +60,15 @@ export function Featured() {
                   <h3 className="font-display text-base font-semibold text-foreground">{product.name}</h3>
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <span className="font-display text-xl font-semibold text-primary">{brl(product.price)}</span>
-                    <button type="button" onClick={() => add(productWithImage(product))} className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold">
-                      Adicionar
-                    </button>
+                    {hasChoices ? (
+                      <a href="#cardapio" className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold">
+                        Escolher opções
+                      </a>
+                    ) : (
+                      <button type="button" onClick={() => add(productWithImage(product))} className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold">
+                        Adicionar
+                      </button>
+                    )}
                   </div>
                 </div>
               </article>
