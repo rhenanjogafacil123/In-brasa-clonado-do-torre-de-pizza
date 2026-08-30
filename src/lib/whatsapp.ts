@@ -2,22 +2,21 @@ import { brl, business } from "@/data/business";
 import type { CartItem } from "@/hooks/useCart";
 
 const emoji = {
-  pizza: "\u{1F355}",
-  person: "\u{1F464}",
-  name: "\u{1F64B}",
-  pin: "\u{1F4CD}",
-  card: "\u{1F4B3}",
-  cash: "\u{1F4B5}",
-  change: "\u{1F504}",
-  cart: "\u{1F6D2}",
-  money: "\u{1F4B0}",
-  note: "\u{1F4DD}",
-  check: "\u2705",
+  pizza: String.fromCodePoint(0x1f355),
+  person: String.fromCodePoint(0x1f464),
+  name: String.fromCodePoint(0x1f64b),
+  pin: String.fromCodePoint(0x1f4cd),
+  card: String.fromCodePoint(0x1f4b3),
+  cash: String.fromCodePoint(0x1f4b5),
+  change: String.fromCodePoint(0x1f504),
+  cart: String.fromCodePoint(0x1f6d2),
+  money: String.fromCodePoint(0x1f4b0),
+  note: String.fromCodePoint(0x1f4dd),
+  check: String.fromCodePoint(0x2705),
 } as const;
 
 export function whatsappLink(message: string) {
-  const params = new URLSearchParams({ text: message });
-  return `https://wa.me/${business.whatsapp}?${params.toString()}`;
+  return `https://api.whatsapp.com/send?phone=${business.whatsapp}&text=${encodeURIComponent(message)}`;
 }
 
 export function orderMessage(
@@ -30,7 +29,7 @@ export function orderMessage(
   cashAmount: number | null,
 ) {
   const lines = items.map(
-    (i) => `\u2022 ${i.qty}x ${i.product.name} — ${brl(i.qty * i.product.price)}`,
+    (i) => `• ${i.qty}x ${i.product.name} — ${brl(i.qty * i.product.price)}`,
   );
 
   const isCash = paymentMethod === "Dinheiro";
