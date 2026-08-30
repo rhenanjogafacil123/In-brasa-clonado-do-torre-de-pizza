@@ -11,6 +11,13 @@ export type CategoryId =
   | "adicionais";
 
 export type ProductVariant = { id: string; label: string; price: number };
+export type ProductOptionGroup = {
+  id: string;
+  label: string;
+  options: string[];
+  min?: number;
+  max?: number;
+};
 
 export type Product = {
   id: string;
@@ -22,6 +29,7 @@ export type Product = {
   variants?: ProductVariant[];
   flavors?: string[];
   variantLabel?: string;
+  customGroups?: ProductOptionGroup[];
   badge?: "Destaque" | "Promoção";
   featured?: boolean;
 };
@@ -178,7 +186,7 @@ export const products: Product[] = [
 
   // GELADOS
   { id: "milkshake", name: "Milk-shake", description: "Escolha o tamanho e o sabor.", price: 7, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 7 }, { id: "500ml", label: "500 ml", price: 15 }, { id: "700ml", label: "700 ml", price: 17 }], flavors: ["Ovomaltine", "Morango", "Chocolate", "Creme", "Coco", "Tutti Frutti", "Abacaxi", "Graviola", "Milho Verde", "Passas ao Rum", "Banana"], variantLabel: "tamanho" },
-  { id: "acai", name: "Açaí", description: "Escolha o tamanho.", price: 8, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 8 }, { id: "500ml", label: "500 ml", price: 16 }, { id: "700ml", label: "700 ml", price: 18 }] },
+  { id: "acai", name: "Açaí", description: "Escolha o tamanho, a calda e suas guloseimas.", price: 8, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 8 }, { id: "500ml", label: "500 ml", price: 16 }, { id: "700ml", label: "700 ml", price: 18 }], variantLabel: "tamanho", customGroups: [{ id: "calda", label: "Calda", options: ["Chocolate", "Morango", "Leite condensado"], max: 1 }, { id: "guloseimas", label: "Guloseimas", options: ["Paçoca", "Granulado", "Confete", "Jujuba", "Leite Ninho"], max: 3 }] },
 
   // ADICIONAIS
   { id: "adicional-monte-combo", name: "Monte seu Combo", description: "Adicione 1 Coca-Cola lata + batata-frita ao seu hambúrguer.", price: 10, image: images.fries, category: "adicionais" },
