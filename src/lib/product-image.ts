@@ -14,6 +14,10 @@ const productImages: Record<string, string> = {
   "pizza-presunto": "/menu/pizza-presunto.png",
   "pizza-frango-catupiry-cheddar": "/menu/pizza-frango-catupiry-cheddar.png",
   "pizza-frango-caipira": "/menu/pizza-frango-caipira.png",
+  "pizza-atum": "/menu/pizza-atum.png",
+  "pizza-palmito": "/menu/pizza-palmito.png",
+  "pizza-lombo": "/menu/pizza-lombo.png",
+  "pizza-salame": "/menu/pizza-salame.png",
   "torre-picanha": "/menu/torre-picanha.png",
 };
 
