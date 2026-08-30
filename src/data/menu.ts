@@ -17,6 +17,7 @@ export type ProductOptionGroup = {
   options: string[];
   min?: number;
   max?: number;
+  hint?: string;
 };
 
 export type Product = {
@@ -58,6 +59,7 @@ const pizza = (id: string, name: string, description: string, prices: [number, n
   price: prices[0],
   image: images.pizza,
   category: "pizzas",
+  variantLabel: "tamanho",
   variants: sizes(...prices),
 });
 
@@ -80,7 +82,7 @@ export const pizzaNotices = [
   "Linha Premium — Catupiry, Cheddar ou Cream Cheese: R$ 8,00.",
 ];
 
-export const products: Product[] = [
+const baseProducts: Product[] = [
   // PIZZAS — preços: Broto / Média / Grande
   pizza("pizza-mussarela", "Mussarela", "Molho, mussarela, tomate e orégano.", [22, 32, 47]),
   pizza("pizza-calabresa", "Calabresa", "Molho, mussarela, cebola, calabresa e orégano.", [22, 32, 47]),
@@ -193,3 +195,84 @@ export const products: Product[] = [
   { id: "adicional-catupiry-cheddar", name: "Acréscimo Catupiry ou Cheddar", description: "Acréscimo para pizza.", price: 6, image: images.pizza, category: "adicionais" },
   { id: "adicional-linha-premium", name: "Linha Premium", description: "Catupiry, Cheddar ou Cream Cheese.", price: 8, image: images.pizza, category: "adicionais" },
 ];
+// ---------------------------------------------------------------------------
+// "Retirar ingredientes" (opcional) para pizzas, hambúrgueres e combos.
+// ---------------------------------------------------------------------------
+
+const REMOVAL_CATEGORIES = new Set<Product["category"]>(["pizzas", "hamburgueres", "combos"]);
+
+const PROPER_NOUNS = ["Catupiry", "Cheddar", "Billy", "Kuat", "Antarctica", "Coca"];
+
+const tidy = (raw: string) => {
+  const text = raw.trim().replace(/\.$/, "").trim();
+  if (!text) return "";
+  const firstWord = text.split(" ")[0] ?? "";
+  if (PROPER_NOUNS.includes(firstWord)) return text;
+  return text.charAt(0).toLowerCase() + text.slice(1);
+};
+
+/** Extrai os ingredientes da própria descrição do produto. */
+export function ingredientsFromDescription(description: string): string[] {
+  const parts = description.split(",");
+  const last = parts.pop() ?? "";
+  const tokens = [...parts, ...last.split(/ e (?=[^,]*$)/)];
+  return tokens
+    .map(tidy)
+    .filter((item) => item.length > 0 && !/pão/i.test(item));
+}
+
+const potatoRemovals = ["bacon da batata", "Cheddar da batata"];
+
+const burgerIngredients = (id: string) =>
+  ingredientsFromDescription(baseProducts.find((item) => item.id === id)?.description ?? "");
+
+const comboRemovals: Record<string, string[]> = {
+  // Torre Feliz => Cheeseburguer do cardápio
+  "torre-feliz": burgerIngredients("cheeseburguer"),
+  // nº 12 = Torre Mas Que Bem
+  "combo-bom-demais": [...burgerIngredients("torre-mas-que-bem"), ...potatoRemovals],
+  // nº 13 = X-Torre
+  "combo-original": [...burgerIngredients("x-torre"), ...potatoRemovals],
+  // nº 06 = Torre Picanha
+  "combo-super-picanha": [...burgerIngredients("torre-picanha"), ...potatoRemovals],
+  // nº 2 = Big California
+  "super-combo-double": [...burgerIngredients("big-california"), ...potatoRemovals],
+  // nº 17 = Cheeseburguer
+  "super-combo-cheesburguer": [...burgerIngredients("cheeseburguer"), ...potatoRemovals],
+};
+
+const removalOptions = (product: Product): string[] => {
+  if (product.category === "combos") {
+    const mapped = comboRemovals[product.id];
+    if (mapped) return mapped;
+    if (product.id === "promocao-super-casado") {
+      return [
+        ...ingredientsFromDescription(
+          baseProducts.find((item) => item.id === "promocao-casado")?.description ?? "",
+        ),
+        ...potatoRemovals,
+      ];
+    }
+  }
+  return ingredientsFromDescription(product.description);
+};
+
+export const products: Product[] = baseProducts.map((product) => {
+  if (!REMOVAL_CATEGORIES.has(product.category)) return product;
+  const options = Array.from(new Set(removalOptions(product)));
+  if (options.length === 0) return product;
+  return {
+    ...product,
+    customGroups: [
+      ...(product.customGroups ?? []),
+      {
+        id: "retirar",
+        label: "Retirar ingredientes",
+        options,
+        min: 0,
+        max: options.length,
+        hint: "Selecione o que deseja retirar (opcional)",
+      },
+    ],
+  };
+});
