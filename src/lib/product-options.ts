@@ -41,6 +41,33 @@ const pizzaExtras: UiOptionGroup = {
   },
 };
 
+const pizzaCreamChoice: UiOptionGroup = {
+  id: "creme-pizza",
+  label: "Escolha Catupiry ou Cheddar",
+  options: ["Catupiry", "Cheddar"],
+  min: 1,
+  max: 1,
+  hint: "Escolha 1 opção",
+};
+
+const subCheeseChoice: UiOptionGroup = {
+  id: "queijo-sub",
+  label: "Escolha o queijo",
+  options: ["Cheddar", "Mussarela"],
+  min: 1,
+  max: 1,
+  hint: "Escolha 1 opção",
+};
+
+const chickenPortionChoice: UiOptionGroup = {
+  id: "tipo-frango",
+  label: "Escolha o frango",
+  options: ["Frango a passarinho", "Drumet empanado"],
+  min: 1,
+  max: 1,
+  hint: "Escolha 1 opção",
+};
+
 const burgerComboExtra: UiOptionGroup = {
   id: "monte-combo",
   label: "Quer transformar em combo?",
@@ -55,24 +82,34 @@ const burgerComboExtra: UiOptionGroup = {
 
 const pastelCheeseChoice: UiOptionGroup = {
   id: "escolha-cremoso",
-  label: "Escolha 1 opção",
+  label: "Escolha Catupiry ou Cheddar",
   options: ["Catupiry", "Cheddar"],
   min: 1,
   max: 1,
-  hint: "Obrigatório",
+  hint: "Escolha 1 opção",
 };
 
 const pastelChoiceIds = new Set(["pastel-lombo", "pastel-frango", "pastel-palmito"]);
+const subChoiceIds = new Set(["sub-torre-carne", "sub-torre-frango"]);
+const sweetPizzaIds = new Set(["pizza-banana", "pizza-romeu-julieta", "pizza-chocolate"]);
 
 export function productOptionGroups(product: Product): UiOptionGroup[] {
-  const groups: UiOptionGroup[] = (product.customGroups ?? []).map((group) => ({
+  const existingGroups: UiOptionGroup[] = (product.customGroups ?? []).map((group) => ({
     ...group,
     options: group.options.map(normalizePattyWording),
   }));
 
-  if (product.category === "pizzas") groups.push(pizzaExtras);
-  if (product.category === "hamburgueres") groups.push(burgerComboExtra);
+  const groups: UiOptionGroup[] = [];
+
+  if (product.id === "pizza-frango-catupiry-cheddar") groups.push(pizzaCreamChoice);
+  if (subChoiceIds.has(product.id)) groups.push(subCheeseChoice);
+  if (product.id === "batata-frango") groups.push(chickenPortionChoice);
   if (pastelChoiceIds.has(product.id)) groups.push(pastelCheeseChoice);
+
+  groups.push(...existingGroups);
+
+  if (product.category === "pizzas" && !sweetPizzaIds.has(product.id)) groups.push(pizzaExtras);
+  if (product.category === "hamburgueres") groups.push(burgerComboExtra);
 
   return groups;
 }
