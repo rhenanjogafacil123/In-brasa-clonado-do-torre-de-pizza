@@ -18,6 +18,13 @@ const productImages: Record<string, string> = {
   "pizza-palmito": "/menu/pizza-palmito.png",
   "pizza-lombo": "/menu/pizza-lombo.png",
   "pizza-salame": "/menu/pizza-salame.png",
+  "calzone-4-queijos": "/menu/calzone-4-queijos.png",
+  "calzone-di-napoli": "/menu/calzone-di-napoli.png",
+  "calzone-governa": "/menu/calzone-governa.png",
+  "calzone-palmares": "/menu/calzone-palmares.png",
+  "calzone-ascoly": "/menu/calzone-ascoly.png",
+  "calzone-chambacon": "/menu/calzone-chambacon.png",
+  "calzone-sertas": "/menu/calzone-sertas.png",
   "torre-picanha": "/menu/torre-picanha.png",
 };
 
