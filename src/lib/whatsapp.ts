@@ -1,6 +1,8 @@
 import { brl, business } from "@/data/business";
 import { cartItemPrice, type CartItem } from "@/hooks/useCart";
 
+const MAX_WHATSAPP_MESSAGE_LENGTH = 8000;
+
 const emoji = {
   pizza: String.fromCodePoint(0x1f355),
   person: String.fromCodePoint(0x1f464),
@@ -15,8 +17,17 @@ const emoji = {
   check: String.fromCodePoint(0x2705),
 } as const;
 
+function safeText(value: string, maxLength: number) {
+  return value
+    .replace(/[\u0000-\u001f\u007f]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim()
+    .slice(0, maxLength);
+}
+
 export function whatsappLink(message: string) {
-  return `https://api.whatsapp.com/send?phone=${business.whatsapp}&text=${encodeURIComponent(message)}`;
+  const boundedMessage = message.slice(0, MAX_WHATSAPP_MESSAGE_LENGTH);
+  return `https://api.whatsapp.com/send?phone=${business.whatsapp}&text=${encodeURIComponent(boundedMessage)}`;
 }
 
 export function orderMessage(
@@ -28,31 +39,43 @@ export function orderMessage(
   paymentMethod: string,
   cashAmount: number | null,
 ) {
-  const lines = items.map((item) => {
+  const safeCustomerName = safeText(customerName, 100);
+  const safeAddress = safeText(address, 300);
+  const safeNotes = safeText(notes, 500);
+  const safePaymentMethod = safeText(paymentMethod, 50);
+
+  const lines = items.slice(0, 40).map((item) => {
     const options = [item.variant?.label, item.flavor].filter(Boolean);
     const option = options.length > 0 ? ` — ${options.join(" — ")}` : "";
     return `• ${item.qty}x ${item.product.name}${option} — ${brl(item.qty * cartItemPrice(item))}`;
   });
 
-  const isCash = paymentMethod === "Dinheiro";
-  const change = isCash && cashAmount !== null ? Math.max(0, cashAmount - subtotal) : null;
+  const safeCashAmount =
+    cashAmount !== null && Number.isFinite(cashAmount) && cashAmount >= 0 && cashAmount <= 1_000_000
+      ? cashAmount
+      : null;
+  const isCash = safePaymentMethod === "Dinheiro";
+  const change = isCash && safeCashAmount !== null ? Math.max(0, safeCashAmount - subtotal) : null;
 
   return [
     `${emoji.pizza} *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
     "",
     `${emoji.person} *DADOS DO CLIENTE*`,
-    `${emoji.name} *Nome:* ${customerName.trim()}`,
-    `${emoji.pin} *Endereço:* ${address.trim()}`,
-    `${emoji.card} *Pagamento:* ${paymentMethod}`,
-    ...(isCash && cashAmount !== null
-      ? [`${emoji.cash} *Vai pagar com:* ${brl(cashAmount)}`, `${emoji.change} *Troco:* ${brl(change ?? 0)}`]
+    `${emoji.name} *Nome:* ${safeCustomerName}`,
+    `${emoji.pin} *Endereço:* ${safeAddress}`,
+    `${emoji.card} *Pagamento:* ${safePaymentMethod}`,
+    ...(isCash && safeCashAmount !== null
+      ? [
+          `${emoji.cash} *Vai pagar com:* ${brl(safeCashAmount)}`,
+          `${emoji.change} *Troco:* ${brl(change ?? 0)}`,
+        ]
       : [`${emoji.change} *Troco:* Não se aplica`]),
     "",
     `${emoji.cart} *ITENS DO PEDIDO*`,
     ...lines,
     "",
     `${emoji.money} *Subtotal:* ${brl(subtotal)}`,
-    `${emoji.note} *Observações:* ${notes.trim() || "Nenhuma"}`,
+    `${emoji.note} *Observações:* ${safeNotes || "Nenhuma"}`,
     "",
     `${emoji.check} Pedido enviado pelo cardápio digital.`,
   ].join("\n");
