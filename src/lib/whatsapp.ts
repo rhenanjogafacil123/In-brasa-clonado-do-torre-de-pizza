@@ -29,7 +29,8 @@ export function orderMessage(
   cashAmount: number | null,
 ) {
   const lines = items.map((item) => {
-    const option = item.variant ? ` (${item.variant.label})` : "";
+    const options = [item.variant?.label, item.flavor].filter(Boolean);
+    const option = options.length > 0 ? ` — ${options.join(" — ")}` : "";
     return `• ${item.qty}x ${item.product.name}${option} — ${brl(item.qty * cartItemPrice(item))}`;
   });
 
