@@ -32,8 +32,8 @@ jobs:
         uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # pinned v2
       - name: Install dependencies exactly from lockfile
         run: bun install --frozen-lockfile
-      - name: Lint
-        run: bun run lint
+      - name: Scan tracked files for high-risk secrets
+        run: node scripts/security-check.mjs
       - name: Production build
         run: bun run build
       - name: Audit high and critical dependency vulnerabilities
