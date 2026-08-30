@@ -11,9 +11,22 @@ function record(error: unknown) {
 // h3's HTTPError serializes to {"status":500,"unhandled":true,"message":"HTTPError"} —
 // no stack, no cause — so a plain console.error(error) reaches the log pipeline with
 // the failure detail stripped. Expand Error-like args into a string that keeps the
-// message, stack, and the full cause chain.
+// message, stack, and the full cause chain, while redacting common secret formats.
 const CAUSE_DEPTH_LIMIT = 5;
 const DESCRIPTION_LENGTH_LIMIT = 8_000;
+
+function redactSecrets(value: string): string {
+  return value
+    .replace(/\bBearer\s+[A-Za-z0-9._~-]+/gi, "Bearer [REDACTED]")
+    .replace(/\bsb_secret_[A-Za-z0-9_-]+\b/g, "sb_secret_[REDACTED]")
+    .replace(/\beyJ[A-Za-z0-9_-]+\.eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\b/g, "[REDACTED_JWT]")
+    .replace(
+      /(SUPABASE_SERVICE_ROLE_KEY\s*[=:]\s*["']?)[^\s"',}]+/gi,
+      "$1[REDACTED]",
+    )
+    .replace(/\b(?:ghp_[A-Za-z0-9]+|github_pat_[A-Za-z0-9_]+)\b/g, "[REDACTED_GITHUB_TOKEN]")
+    .replace(/\bsk-[A-Za-z0-9_-]{20,}\b/g, "[REDACTED_API_KEY]");
+}
 
 export function describeError(error: unknown): string {
   const parts: string[] = [];
@@ -28,7 +41,7 @@ export function describeError(error: unknown): string {
     parts.push(`${label}${current.stack ?? `${current.name}: ${current.message}`}${status}`);
     current = current.cause;
   }
-  return parts.join("\n").slice(0, DESCRIPTION_LENGTH_LIMIT);
+  return redactSecrets(parts.join("\n")).slice(0, DESCRIPTION_LENGTH_LIMIT);
 }
 
 function describeStatus(error: Error): string {
@@ -55,9 +68,11 @@ function isErrorLike(value: unknown): value is Error {
 const originalConsoleError = console.error.bind(console);
 console.error = (...args: unknown[]) => {
   const expanded = args.map((arg) => {
-    if (!isErrorLike(arg)) return arg;
-    record(arg);
-    return describeError(arg);
+    if (isErrorLike(arg)) {
+      record(arg);
+      return describeError(arg);
+    }
+    return typeof arg === "string" ? redactSecrets(arg) : arg;
   });
   originalConsoleError(...expanded);
 };
