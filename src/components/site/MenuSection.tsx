@@ -23,7 +23,7 @@ export function MenuSection() {
         <p className="text-xs font-semibold uppercase tracking-[0.28em] text-secondary">Cardápio Torre de Pizza</p>
         <h2 className="mt-3 font-display text-3xl font-semibold text-foreground sm:text-4xl">Escolha o seu pedido</h2>
         <p className="mx-auto mt-3 max-w-lg text-sm text-muted-foreground">
-          Pizzas, hambúrgueres, combos, pastéis, calzones, porções, bebidas e açaí.
+          Pizzas, hambúrgueres, combos, pastéis, calzones, porções, bebidas e gelados.
         </p>
       </div>
 
