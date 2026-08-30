@@ -5,13 +5,13 @@ import { ProductCard } from "./ProductCard";
 import { cn } from "@/lib/utils";
 
 export function MenuSection() {
-  const [active, setActive] = useState<CategoryId>("destaques");
+  const [active, setActive] = useState<CategoryId>("pizzas");
   const [query, setQuery] = useState("");
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
     return products.filter((product) => {
-      const matchesCategory = q ? true : active === "destaques" ? !!product.featured : product.category === active;
+      const matchesCategory = q ? true : product.category === active;
       const matchesQuery = !q || product.name.toLowerCase().includes(q) || product.description.toLowerCase().includes(q);
       return matchesCategory && matchesQuery;
     });
@@ -40,7 +40,7 @@ export function MenuSection() {
       </div>
 
       <div className="no-scrollbar -mx-4 mb-7 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:px-0">
-        {categories.map((category) => (
+        {categories.filter((category) => category.id !== "destaques").map((category) => (
           <button
             key={category.id}
             type="button"
@@ -79,7 +79,10 @@ export function MenuSection() {
       {list.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((product) => (
-            <ProductCard key={product.id} product={product} featured={!!product.featured} />
+            <ProductCard
+              key={product.id}
+              product={{ ...product, badge: product.badge === "Destaque" ? undefined : product.badge }}
+            />
           ))}
         </div>
       ) : (
