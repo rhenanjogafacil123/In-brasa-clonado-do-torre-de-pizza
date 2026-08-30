@@ -128,7 +128,7 @@ export const products: Product[] = [
   { id: "combo-super-picanha", name: "Combo Super Picanha", description: "2 nº 06 + Kuat + batata com bacon e Cheddar.", price: 80, image: images.combo, category: "combos" },
   { id: "promocao-casado", name: "Promoção Casado", description: "2 hambúrgueres de carne, 1 fatia de queijo Cheddar, bacon, cebola, picles, alface e pão com gergelim.", price: 20, image: images.combo, category: "combos", badge: "Promoção" },
   { id: "promocao-super-casado", name: "Promoção Super Casado", description: "2 Casados + Antarctica 1L + batata com bacon e Cheddar.", price: 42, image: images.combo, category: "combos", badge: "Promoção" },
-  { id: "super-combo-double", name: "Super Combo Double", description: "4 nº 2 + Kuat + batata com bacon e Cheddar.", price: 86, image: images.combo, category: "combos" },
+  { id: "super-combo-double", name: "Super Combo Double", description: "4 nº 2 + Kuat + batata com bacon e Cheddar.", price: 65, image: images.combo, category: "combos" },
   { id: "super-combo-cheesburguer", name: "Super Combo Cheesburguer", description: "8 nº 17 + Kuat + batata com bacon e Cheddar.", price: 74, image: images.combo, category: "combos" },
 
   // PASTÉIS CHINESES
