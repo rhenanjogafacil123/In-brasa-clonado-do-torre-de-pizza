@@ -20,6 +20,7 @@ export type Product = {
   image: string;
   category: Exclude<CategoryId, "destaques">;
   variants?: ProductVariant[];
+  flavors?: string[];
   badge?: "Destaque" | "Promoção";
   featured?: boolean;
 };
@@ -172,7 +173,7 @@ export const products: Product[] = [
   { id: "porcao-fritas", name: "Porção de Fritas", description: "Porção de batatas fritas.", price: 25, image: images.fries, category: "porcoes" },
 
   // BEBIDAS
-  { id: "milkshake", name: "Milk-shake", description: "Sabores: Ovomaltine, morango, chocolate, creme, coco, tutti-frutti, abacaxi, graviola, milho verde, passas ao rum e banana.", price: 7, image: images.drink, category: "bebidas", variants: [{ id: "200ml", label: "200 ml", price: 7 }, { id: "500ml", label: "500 ml", price: 15 }, { id: "700ml", label: "700 ml", price: 17 }] },
+  { id: "milkshake", name: "Milk-shake", description: "Escolha o tamanho e o sabor.", price: 7, image: images.drink, category: "bebidas", variants: [{ id: "200ml", label: "200 ml", price: 7 }, { id: "500ml", label: "500 ml", price: 15 }, { id: "700ml", label: "700 ml", price: 17 }], flavors: ["Ovomaltine", "Morango", "Chocolate", "Creme", "Coco", "Tutti Frutti", "Abacaxi", "Graviola", "Milho Verde", "Passas ao Rum", "Banana"] },
   { id: "suco-natural", name: "Sucos Naturais", description: "Sabores: morango, abacaxi, manga, maracujá, graviola, acerola, goiaba e abacaxi com hortelã.", price: 7, image: images.drink, category: "bebidas", variants: [{ id: "natural", label: "Natural", price: 7 }, { id: "ao-leite", label: "Ao leite", price: 8 }] },
 
   // AÇAÍ
