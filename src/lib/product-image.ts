@@ -10,6 +10,10 @@ const productImages: Record<string, string> = {
   "super-combo-double": "/menu/super-combo-double.png",
   "super-combo-cheesburguer": "/menu/super-combo-cheeseburguer.png",
   "pizza-calabresa": "/menu/pizza-calabresa.png",
+  "pizza-mussarela": "/menu/pizza-mussarela.png",
+  "pizza-presunto": "/menu/pizza-presunto.png",
+  "pizza-frango-catupiry-cheddar": "/menu/pizza-frango-catupiry-cheddar.png",
+  "pizza-frango-caipira": "/menu/pizza-frango-caipira.png",
   "torre-picanha": "/menu/torre-picanha.png",
 };
 
