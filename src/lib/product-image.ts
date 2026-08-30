@@ -33,6 +33,7 @@ const productImages: Record<string, string> = {
   "calzone-chambacon": "/menu/calzone-chambacon.png",
   "calzone-sertas": "/menu/calzone-sertas.png",
   "torre-picanha": "/menu/torre-picanha.png",
+  "acai": "/menu/açaí.png",
 };
 
 export function productImage(product: Pick<Product, "id" | "image">) {
