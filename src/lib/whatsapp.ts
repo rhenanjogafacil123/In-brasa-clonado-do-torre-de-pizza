@@ -13,14 +13,12 @@ export function orderMessage(
   address: string,
   paymentMethod: string,
 ) {
-  const code = `TP-${Date.now().toString().slice(-5)}`;
   const lines = items.map(
     (i) => `• ${i.qty}x ${i.product.name} — ${brl(i.qty * i.product.price)}`,
   );
 
   return [
     `🍕 *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
-    `🧾 *Pedido:* ${code}`,
     "",
     "👤 *DADOS DO CLIENTE*",
     `🙋 *Nome:* ${customerName.trim()}`,
