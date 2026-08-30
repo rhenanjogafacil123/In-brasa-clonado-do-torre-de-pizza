@@ -3,6 +3,9 @@ name: Build and dependency security
 on:
   push:
   pull_request:
+  schedule:
+    - cron: "17 5 * * 1"
+  workflow_dispatch:
 
 permissions:
   contents: read
