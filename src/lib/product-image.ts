@@ -1,6 +1,24 @@
 import type { Product } from "@/data/menu";
 
 const productImages: Record<string, string> = {
+  // HAMBÚRGUERES E SUBS
+  "big-torre": "/menu/big torre.png",
+  "big-california": "/menu/big-california.png",
+  "big-frango": "/menu/big frango.png",
+  "big-lombo": "/menu/big lombo.png",
+  "big-presunto": "/menu/big presunto.png",
+  "torre-picanha": "/menu/torre-picanha.png",
+  "triplo-torre-picanha": "/menu/triplo torre picanha.png",
+  "duplo-torre-picanha": "/menu/duplo torre picanha.png",
+  "quatro-queijos-torre": "/menu/quatro queijos torre.png",
+  "frango-crocante-torre": "/menu/frango crocante torre.png",
+  "cheeseburguer-especial": "/menu/cheeseburguer-especial.png",
+  "torre-mas-que-bem": "/menu/torre mais que bom.png",
+  "x-torre": "/menu/x torre.png",
+  "torre-picanhas-galaxia": "/menu/torre picanhas das galaxia.png",
+  "sub-torre-carne": "/menu/sub torre carne.png",
+  "sub-torre-frango": "/menu/sub-torre-frango.png",
+  "cheeseburguer": "/menu/cheese burguer.png",
   "torre-feliz": "/menu/torre-feliz.png",
   "combo-bom-demais": "/menu/combo-bom-demais.png",
   "combo-original": "/menu/combo-original.png",
@@ -32,7 +50,6 @@ const productImages: Record<string, string> = {
   "calzone-ascoly": "/menu/calzone-ascoly.png",
   "calzone-chambacon": "/menu/calzone-chambacon.png",
   "calzone-sertas": "/menu/calzone-sertas.png",
-  "torre-picanha": "/menu/torre-picanha.png",
   "acai": "/menu/acai.png",
 };
 
