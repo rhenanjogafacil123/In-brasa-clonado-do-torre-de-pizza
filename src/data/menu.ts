@@ -7,7 +7,7 @@ export type CategoryId =
   | "calzones"
   | "porcoes"
   | "bebidas"
-  | "acai"
+  | "gelados"
   | "adicionais";
 
 export type ProductVariant = { id: string; label: string; price: number };
@@ -21,6 +21,7 @@ export type Product = {
   category: Exclude<CategoryId, "destaques">;
   variants?: ProductVariant[];
   flavors?: string[];
+  variantLabel?: string;
   badge?: "Destaque" | "Promoção";
   featured?: boolean;
 };
@@ -61,7 +62,7 @@ export const categories: { id: CategoryId; label: string }[] = [
   { id: "calzones", label: "Calzones" },
   { id: "porcoes", label: "Porções" },
   { id: "bebidas", label: "Bebidas" },
-  { id: "acai", label: "Açaí" },
+  { id: "gelados", label: "Gelados" },
   { id: "adicionais", label: "Adicionais" },
 ];
 
@@ -173,11 +174,11 @@ export const products: Product[] = [
   { id: "porcao-fritas", name: "Porção de Fritas", description: "Porção de batatas fritas.", price: 25, image: images.fries, category: "porcoes" },
 
   // BEBIDAS
-  { id: "milkshake", name: "Milk-shake", description: "Escolha o tamanho e o sabor.", price: 7, image: images.drink, category: "bebidas", variants: [{ id: "200ml", label: "200 ml", price: 7 }, { id: "500ml", label: "500 ml", price: 15 }, { id: "700ml", label: "700 ml", price: 17 }], flavors: ["Ovomaltine", "Morango", "Chocolate", "Creme", "Coco", "Tutti Frutti", "Abacaxi", "Graviola", "Milho Verde", "Passas ao Rum", "Banana"] },
-  { id: "suco-natural", name: "Sucos Naturais", description: "Sabores: morango, abacaxi, manga, maracujá, graviola, acerola, goiaba e abacaxi com hortelã.", price: 7, image: images.drink, category: "bebidas", variants: [{ id: "natural", label: "Natural", price: 7 }, { id: "ao-leite", label: "Ao leite", price: 8 }] },
+  { id: "suco-natural", name: "Sucos Naturais", description: "Escolha o tipo e o sabor.", price: 7, image: images.drink, category: "bebidas", variants: [{ id: "natural", label: "Natural", price: 7 }, { id: "ao-leite", label: "Ao leite", price: 8 }], flavors: ["Morango", "Abacaxi", "Manga", "Maracujá", "Graviola", "Acerola", "Goiaba", "Abacaxi com Hortelã"], variantLabel: "tipo" },
 
-  // AÇAÍ
-  { id: "acai", name: "Açaí", description: "Escolha o tamanho.", price: 8, image: images.drink, category: "acai", variants: [{ id: "200ml", label: "200 ml", price: 8 }, { id: "500ml", label: "500 ml", price: 16 }, { id: "700ml", label: "700 ml", price: 18 }] },
+  // GELADOS
+  { id: "milkshake", name: "Milk-shake", description: "Escolha o tamanho e o sabor.", price: 7, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 7 }, { id: "500ml", label: "500 ml", price: 15 }, { id: "700ml", label: "700 ml", price: 17 }], flavors: ["Ovomaltine", "Morango", "Chocolate", "Creme", "Coco", "Tutti Frutti", "Abacaxi", "Graviola", "Milho Verde", "Passas ao Rum", "Banana"], variantLabel: "tamanho" },
+  { id: "acai", name: "Açaí", description: "Escolha o tamanho.", price: 8, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 8 }, { id: "500ml", label: "500 ml", price: 16 }, { id: "700ml", label: "700 ml", price: 18 }] },
 
   // ADICIONAIS
   { id: "adicional-monte-combo", name: "Monte seu Combo", description: "Adicione 1 Coca-Cola lata + batata-frita ao seu hambúrguer.", price: 10, image: images.fries, category: "adicionais" },
