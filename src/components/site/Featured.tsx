@@ -28,7 +28,7 @@ export function Featured() {
         <div className="no-scrollbar -mx-4 mt-8 flex snap-x snap-mandatory gap-4 overflow-x-auto px-4 pb-2 md:mx-0 md:grid md:grid-cols-4 md:px-0">
           {featured.map((product) => (
             <article key={product.id} className="group w-[74%] shrink-0 snap-start overflow-hidden rounded-3xl bg-card shadow-lift md:w-auto">
-              <div className="relative aspect-[4/3] overflow-hidden">
+              <div className="relative aspect-square overflow-hidden">
                 <img src={productImage(product)} alt={product.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 {product.badge && (
                   <span className="absolute left-3 top-3 rounded-full bg-gradient-gold px-3 py-1 text-[11px] font-bold uppercase text-gold-foreground">
