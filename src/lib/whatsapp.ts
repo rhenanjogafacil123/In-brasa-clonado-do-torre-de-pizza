@@ -17,9 +17,15 @@ const emoji = {
   check: String.fromCodePoint(0x2705),
 } as const;
 
+function stripControlCharacters(value: string) {
+  return Array.from(value, (character) => {
+    const code = character.codePointAt(0) ?? 0;
+    return code <= 0x1f || code === 0x7f ? " " : character;
+  }).join("");
+}
+
 function safeText(value: string, maxLength: number) {
-  return value
-    .replace(/[\u0000-\u001f\u007f]/g, " ")
+  return stripControlCharacters(value)
     .replace(/\s+/g, " ")
     .trim()
     .slice(0, maxLength);
