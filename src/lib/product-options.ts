@@ -21,24 +21,11 @@ const comboDescriptions: Record<string, string> = {
   "super-combo-cheesburguer": "8 Cheeseburguer (pão, disco de carne bovina e queijo) + Kuat + batata com bacon e Cheddar.",
 };
 
-const formatVariantList = (product: Product) => {
-  const labels = product.variants?.map((variant) => variant.label).filter(Boolean) ?? [];
-  if (labels.length === 0) return "";
-  if (labels.length === 1) return labels[0];
-  if (labels.length === 2) return `${labels[0]} e ${labels[1]}`;
-  return `${labels.slice(0, -1).join(", ")} e ${labels.at(-1)}`;
-};
-
 export function displayProductDescription(product: Product) {
   const baseDescription = normalizePattyWording(comboDescriptions[product.id] ?? product.description);
-  const sizes = formatVariantList(product);
 
   if (product.category === "pizzas") {
-    return `${baseDescription} Tamanhos: ${sizes}. Grande (40 cm) acompanha refrigerante 2L Kuat ou Convenção.`;
-  }
-
-  if (product.category === "gelados" && sizes) {
-    return `${baseDescription} Tamanhos: ${sizes}.`;
+    return `${baseDescription} Grande (40 cm) acompanha refrigerante 2L Kuat ou Convenção.`;
   }
 
   return baseDescription;
