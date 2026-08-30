@@ -148,13 +148,17 @@ export function CartDrawer() {
 
                 <div className="space-y-3">
                   {items.map((item) => {
-                    const { product, qty, variant, key } = item;
+                    const { product, qty, variant, flavor, key } = item;
                     return (
                       <div key={key} className="flex gap-3 rounded-2xl border border-border/70 bg-card p-3 shadow-soft">
                         <img src={product.image} alt={product.name} className="h-20 w-20 shrink-0 rounded-xl object-cover" />
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-semibold text-foreground">{product.name}</p>
-                          {variant && <p className="text-xs font-medium text-secondary">{variant.label}</p>}
+                          {(variant || flavor) && (
+                            <p className="text-xs font-medium text-secondary">
+                              {[variant?.label, flavor].filter(Boolean).join(" • ")}
+                            </p>
+                          )}
                           <p className="text-sm font-medium text-primary">{brl(cartItemPrice(item))}</p>
                           <div className="mt-2 flex items-center gap-2">
                             <button
@@ -286,7 +290,7 @@ export function CartDrawer() {
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-background text-primary"><MessageSquareText className="h-5 w-5" /></span>
                   <div>
                     <h3 className="font-semibold text-foreground">3. Observações <span className="text-xs font-normal text-muted-foreground">(opcional)</span></h3>
-                    <p className="text-xs text-muted-foreground">Use para informar sabor de bebida, retirada de ingrediente ou detalhes da entrega.</p>
+                    <p className="text-xs text-muted-foreground">Use para informar retirada de ingrediente ou detalhes da entrega.</p>
                   </div>
                 </div>
                 <textarea
@@ -294,7 +298,7 @@ export function CartDrawer() {
                   rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Ex.: Coca normal, sem cebola, tocar o interfone..."
+                  placeholder="Ex.: sem cebola, tocar o interfone..."
                   className="w-full resize-none rounded-2xl border border-border bg-background p-4 text-sm outline-none focus:ring-4 focus:ring-primary/10"
                 />
               </section>
