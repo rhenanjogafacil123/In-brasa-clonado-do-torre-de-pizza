@@ -7,9 +7,9 @@ export const business = {
   city: "Campo Grande, Rio de Janeiro – RJ",
   address: "R. Domingos Alves Ribeiro, 20 — Campo Grande, Rio de Janeiro – RJ",
   hours: "Todos os dias, das 18h às 00h",
-  phone: "(21) 3356-2455",
-  phoneHref: "tel:+552133562455",
-  whatsapp: "5521933562455",
+  phone: "+55 21 96990-2994",
+  phoneHref: "tel:+5521969902994",
+  whatsapp: "5521969902994",
   mapsUrl: "https://www.google.com/maps/search/?api=1&query=R.+Domingos+Alves+Ribeiro,+20+Campo+Grande+Rio+de+Janeiro",
   services: ["Delivery", "Retirada", "Atendimento no local"],
 } as const;
