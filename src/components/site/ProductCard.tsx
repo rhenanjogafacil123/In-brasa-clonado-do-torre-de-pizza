@@ -10,6 +10,7 @@ import { cn } from "@/lib/utils";
 export function ProductCard({ product, featured = false }: { product: Product; featured?: boolean }) {
   const { add } = useCart();
   const hasFlavors = Boolean(product.flavors?.length);
+  const variantLabel = product.variantLabel ?? "opção";
   const [added, setAdded] = useState(false);
   const [expanded, setExpanded] = useState(false);
   const [customizing, setCustomizing] = useState(false);
@@ -73,7 +74,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                 <div>
                   <p className="text-xs font-semibold uppercase tracking-[0.2em] text-secondary">Personalize seu pedido</p>
                   <h3 className="mt-1 font-display text-2xl font-semibold text-foreground">{product.name}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">Escolha o tamanho e depois 1 sabor.</p>
+                  <p className="mt-1 text-sm text-muted-foreground">Escolha o {variantLabel} e depois 1 sabor.</p>
                 </div>
                 <button
                   type="button"
@@ -88,10 +89,10 @@ export function ProductCard({ product, featured = false }: { product: Product; f
               {product.variants && product.variants.length > 0 && (
                 <section>
                   <div className="mb-2 flex items-center justify-between">
-                    <p className="text-sm font-semibold text-foreground">1. Escolha o tamanho</p>
+                    <p className="text-sm font-semibold text-foreground">1. Escolha o {variantLabel}</p>
                     {!selectedVariant && <span className="text-xs font-medium text-destructive">Obrigatório</span>}
                   </div>
-                  <div className="grid grid-cols-3 gap-2">
+                  <div className={cn("grid gap-2", product.variants.length === 2 ? "grid-cols-2" : "grid-cols-3")}>
                     {product.variants.map((variant) => (
                       <button
                         key={variant.id}
@@ -141,7 +142,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                   <div className="min-w-0">
                     <p className="text-xs text-muted-foreground">Sua escolha</p>
                     <p className="truncate text-sm font-semibold text-foreground">
-                      {selectedVariant?.label ?? "Escolha o tamanho"}
+                      {selectedVariant?.label ?? `Escolha o ${variantLabel}`}
                       {flavor ? ` • ${flavor}` : " • Escolha o sabor"}
                     </p>
                   </div>
@@ -244,7 +245,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
 
           {hasFlavors && (
             <div className="mt-4 rounded-2xl border border-primary/15 bg-accent/40 px-3 py-2.5 text-xs text-foreground/80">
-              <span className="font-semibold text-primary">Personalizável:</span> escolha tamanho + sabor antes de adicionar.
+              <span className="font-semibold text-primary">Personalizável:</span> escolha {variantLabel} + sabor antes de adicionar.
             </div>
           )}
 
