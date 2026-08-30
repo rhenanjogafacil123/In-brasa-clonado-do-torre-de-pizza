@@ -1,9 +1,9 @@
 import type { Product } from "@/data/menu";
 
 const productImages: Record<string, string> = {
-  "torre-feliz": "/menu/combo-torre-feliz.webp",
-  "combo-bom-demais": "/menu/combo-bom-demais.webp",
-  "combo-original": "/menu/combo-original.webp",
+  "torre-feliz": "/menu/torre-feliz-q95.webp",
+  "combo-bom-demais": "/menu/combo-bom-demais-q95.webp",
+  "combo-original": "/menu/combo-original-q95.webp",
   "combo-super-picanha": "/menu/combo-super-picanha.webp",
   "promocao-casado": "/menu/promo-casado.webp",
   "promocao-super-casado": "/menu/promo-super-casado.webp",
