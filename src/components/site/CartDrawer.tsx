@@ -14,6 +14,7 @@ import {
 import { brl } from "@/data/business";
 import { cartItemPrice, useCart } from "@/hooks/useCart";
 import { orderMessage, whatsappLink } from "@/lib/whatsapp";
+import { trackWhatsappOrderClick } from "@/lib/order-tracking";
 
 const paymentOptions = [
   { value: "PIX", label: "PIX", icon: CreditCard },
