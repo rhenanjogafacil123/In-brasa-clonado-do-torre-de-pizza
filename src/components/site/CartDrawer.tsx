@@ -77,7 +77,7 @@ export function CartDrawer() {
 
     if (!notes.trim()) {
       const continueWithoutNotes = window.confirm(
-        "Você não adicionou observações. Confira se precisa informar sabor de bebida, retirada de ingrediente ou instrução de entrega. Deseja finalizar sem observações?",
+        "Você não adicionou observações. Confira se precisa informar alguma instrução de entrega ou observação extra. Deseja finalizar sem observações?",
       );
       if (!continueWithoutNotes) return;
     }
@@ -299,7 +299,7 @@ export function CartDrawer() {
                   <span className="grid h-10 w-10 shrink-0 place-items-center rounded-2xl bg-background text-primary"><MessageSquareText className="h-5 w-5" /></span>
                   <div>
                     <h3 className="font-semibold text-foreground">3. Observações <span className="text-xs font-normal text-muted-foreground">(opcional)</span></h3>
-                    <p className="text-xs text-muted-foreground">Use para informar retirada de ingrediente ou detalhes da entrega.</p>
+                    <p className="text-xs text-muted-foreground">Use para detalhes da entrega ou alguma observação extra.</p>
                   </div>
                 </div>
                 <textarea
@@ -307,7 +307,7 @@ export function CartDrawer() {
                   rows={3}
                   value={notes}
                   onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Ex.: sem cebola, tocar o interfone..."
+                  placeholder="Ex.: tocar o interfone, referência para entrega..."
                   className="w-full resize-none rounded-2xl border border-border bg-background p-4 text-sm outline-none focus:ring-4 focus:ring-primary/10"
                 />
               </section>
