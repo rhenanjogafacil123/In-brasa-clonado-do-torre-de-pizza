@@ -189,7 +189,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                       <div>
                         <p className="text-sm font-semibold text-foreground">{step}. {group.label}</p>
                         <p className="text-[11px] text-muted-foreground">
-                          {max === 1 ? "Escolha 1 opção" : `Escolha até ${max} opções`}{min === 0 ? " (opcional)" : ""}
+                          {group.hint ?? `${max === 1 ? "Escolha 1 opção" : `Escolha até ${max} opções`}${min === 0 ? " (opcional)" : ""}`}
                         </p>
                       </div>
                       {min > 0 && selected.length < min && <span className="text-xs font-medium text-destructive">Obrigatório</span>}
@@ -229,6 +229,8 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                     <p className="text-sm font-semibold text-foreground">{selectedVariant?.label ?? `Escolha o ${variantLabel}`}</p>
                     {selectedCustomDetails.length > 0 ? (
                       <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{selectedCustomDetails.join(" • ")}</p>
+                    ) : onlyRemovalGroup ? (
+                      <p className="mt-1 text-xs text-muted-foreground">Nenhum ingrediente retirado.</p>
                     ) : hasCustomGroups ? (
                       <p className="mt-1 text-xs text-muted-foreground">Sem complementos selecionados.</p>
                     ) : (
@@ -335,7 +337,13 @@ export function ProductCard({ product, featured = false }: { product: Product; f
           {isCustomizable && (
             <div className="mt-4 rounded-2xl border border-primary/15 bg-accent/40 px-3 py-2.5 text-xs text-foreground/80">
               <span className="font-semibold text-primary">Personalizável:</span>{" "}
-              {hasFlavors ? `escolha ${variantLabel} + sabor antes de adicionar.` : `escolha ${variantLabel}, calda e guloseimas.`}
+              {hasFlavors
+                ? `escolha ${variantLabel} + sabor antes de adicionar.`
+                : onlyRemovalGroup
+                  ? hasVariants
+                    ? `escolha o ${variantLabel} e retire ingredientes se quiser.`
+                    : "retire ingredientes se quiser."
+                  : `escolha ${variantLabel}, calda e guloseimas.`}
             </div>
           )}
 
