@@ -5,6 +5,7 @@ export type CartItem = {
   product: Product;
   qty: number;
   variant?: ProductVariant;
+  flavor?: string;
   key: string;
 };
 
@@ -14,7 +15,7 @@ type CartContext = {
   subtotal: number;
   notes: string;
   setNotes: (v: string) => void;
-  add: (product: Product, variant?: ProductVariant) => void;
+  add: (product: Product, variant?: ProductVariant, flavor?: string) => void;
   remove: (key: string) => void;
   setQty: (key: string, qty: number) => void;
   clear: () => void;
@@ -27,8 +28,8 @@ const Ctx = createContext<CartContext | null>(null);
 export const cartItemPrice = (item: Pick<CartItem, "product" | "variant">) =>
   item.variant?.price ?? item.product.price;
 
-export const cartItemKey = (product: Product, variant?: ProductVariant) =>
-  `${product.id}::${variant?.id ?? "default"}`;
+export const cartItemKey = (product: Product, variant?: ProductVariant, flavor?: string) =>
+  `${product.id}::${variant?.id ?? "default"}::${flavor ?? "default"}`;
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
@@ -49,13 +50,13 @@ export function CartProvider({ children }: { children: ReactNode }) {
       setOpen,
       count: items.reduce((sum, item) => sum + item.qty, 0),
       subtotal: items.reduce((sum, item) => sum + item.qty * cartItemPrice(item), 0),
-      add: (product, variant) =>
+      add: (product, variant, flavor) =>
         setItems((prev) => {
-          const key = cartItemKey(product, variant);
+          const key = cartItemKey(product, variant, flavor);
           const found = prev.find((i) => i.key === key);
           return found
             ? prev.map((i) => (i.key === key ? { ...i, qty: i.qty + 1 } : i))
-            : [...prev, { product, variant, key, qty: 1 }];
+            : [...prev, { product, variant, flavor, key, qty: 1 }];
         }),
       remove: (key) => setItems((prev) => prev.filter((i) => i.key !== key)),
       setQty,
