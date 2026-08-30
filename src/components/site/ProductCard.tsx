@@ -183,41 +183,82 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                 const min = group.min ?? 0;
                 const max = group.max ?? 1;
                 const step = (product.variants?.length ? 1 : 0) + (hasFlavors ? 1 : 0) + index + 1;
+                const isRemoval = group.id === "retirar";
                 return (
                   <section key={group.id} className="mt-5">
                     <div className="mb-2 flex items-center justify-between gap-3">
                       <div>
-                        <p className="text-sm font-semibold text-foreground">{step}. {group.label}</p>
+                        <p className="text-sm font-semibold text-foreground">
+                          {isRemoval ? `${step}. O que você quer retirar?` : `${step}. ${group.label}`}
+                        </p>
                         <p className="text-[11px] text-muted-foreground">
-                          {group.hint ?? `${max === 1 ? "Escolha 1 opção" : `Escolha até ${max} opções`}${min === 0 ? " (opcional)" : ""}`}
+                          {isRemoval
+                            ? "Selecione os ingredientes que deseja retirar (opcional)"
+                            : group.hint ?? `${max === 1 ? "Escolha 1 opção" : `Escolha até ${max} opções`}${min === 0 ? " (opcional)" : ""}`}
                         </p>
                       </div>
                       {min > 0 && selected.length < min && <span className="text-xs font-medium text-destructive">Obrigatório</span>}
                     </div>
-                    <div className="grid grid-cols-2 gap-2">
-                      {group.options.map((option) => {
-                        const checked = selected.includes(option);
-                        const limitReached = !checked && max > 1 && selected.length >= max;
-                        return (
-                          <button
-                            key={option}
-                            type="button"
-                            disabled={limitReached}
-                            onClick={() => toggleGroupOption(group.id, option, max)}
-                            className={cn(
-                              "min-h-11 rounded-2xl border px-3 py-2.5 text-sm font-semibold transition",
-                              checked
-                                ? "border-primary bg-accent text-primary shadow-soft"
-                                : "border-border bg-card text-foreground/80 hover:border-primary/30",
-                              limitReached && "cursor-not-allowed opacity-45",
-                            )}
-                          >
-                            {checked && <Check className="mr-1 inline h-3.5 w-3.5" />}
-                            {option}
-                          </button>
-                        );
-                      })}
-                    </div>
+                    {isRemoval ? (
+                      <div className="flex flex-col gap-2">
+                        {group.options.map((option) => {
+                          const checked = selected.includes(option);
+                          return (
+                            <button
+                              key={option}
+                              type="button"
+                              onClick={() => toggleGroupOption(group.id, option, max)}
+                              className={cn(
+                                "flex items-center justify-between rounded-2xl border px-4 py-3.5 text-left transition",
+                                checked
+                                  ? "border-destructive/40 bg-destructive/10"
+                                  : "border-border bg-card hover:border-primary/30",
+                              )}
+                            >
+                              <div className="min-w-0">
+                                <p className={cn("text-sm font-semibold", checked && "text-destructive")}>{option}</p>
+                                {checked && <p className="text-xs text-destructive/80">Será retirado</p>}
+                              </div>
+                              <div
+                                className={cn(
+                                  "grid h-6 w-6 shrink-0 place-items-center rounded-md border transition",
+                                  checked
+                                    ? "border-destructive bg-destructive text-destructive-foreground"
+                                    : "border-muted-foreground/30 bg-background",
+                                )}
+                              >
+                                {checked && <Check className="h-4 w-4" />}
+                              </div>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    ) : (
+                      <div className="grid grid-cols-2 gap-2">
+                        {group.options.map((option) => {
+                          const checked = selected.includes(option);
+                          const limitReached = !checked && max > 1 && selected.length >= max;
+                          return (
+                            <button
+                              key={option}
+                              type="button"
+                              disabled={limitReached}
+                              onClick={() => toggleGroupOption(group.id, option, max)}
+                              className={cn(
+                                "min-h-11 rounded-2xl border px-3 py-2.5 text-sm font-semibold transition",
+                                checked
+                                  ? "border-primary bg-accent text-primary shadow-soft"
+                                  : "border-border bg-card text-foreground/80 hover:border-primary/30",
+                                limitReached && "cursor-not-allowed opacity-45",
+                              )}
+                            >
+                              {checked && <Check className="mr-1 inline h-3.5 w-3.5" />}
+                              {option}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
                   </section>
                 );
               })}
@@ -334,16 +375,12 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             </div>
           )}
 
-          {isCustomizable && (
+          {isCustomizable && !onlyRemovalGroup && (
             <div className="mt-4 rounded-2xl border border-primary/15 bg-accent/40 px-3 py-2.5 text-xs text-foreground/80">
               <span className="font-semibold text-primary">Personalizável:</span>{" "}
               {hasFlavors
                 ? `escolha ${variantLabel} + sabor antes de adicionar.`
-                : onlyRemovalGroup
-                  ? hasVariants
-                    ? `escolha o ${variantLabel} e retire ingredientes se quiser.`
-                    : "retire ingredientes se quiser."
-                  : `escolha ${variantLabel}, calda e guloseimas.`}
+                : `escolha ${variantLabel}, calda e guloseimas.`}
             </div>
           )}
 
