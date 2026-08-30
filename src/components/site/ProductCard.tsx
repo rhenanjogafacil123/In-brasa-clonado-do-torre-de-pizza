@@ -1,16 +1,23 @@
 import { useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { Check, Plus, X } from "lucide-react";
+import { Check, Minus, Plus, X } from "lucide-react";
 import { brl } from "@/data/business";
 import type { Product } from "@/data/menu";
 import { useCart } from "@/hooks/useCart";
 import { productImage, productWithImage } from "@/lib/product-image";
+import {
+  displayProductDescription,
+  optionPrice,
+  productOptionGroups,
+  type UiOptionGroup,
+} from "@/lib/product-options";
 import { cn } from "@/lib/utils";
 
 export function ProductCard({ product, featured = false }: { product: Product; featured?: boolean }) {
   const { add } = useCart();
+  const customGroups = useMemo(() => productOptionGroups(product), [product]);
   const hasFlavors = Boolean(product.flavors?.length);
-  const hasCustomGroups = Boolean(product.customGroups?.length);
+  const hasCustomGroups = customGroups.length > 0;
   const isCustomizable = hasFlavors || hasCustomGroups;
   const variantLabel = product.variantLabel ?? "opção";
   const [added, setAdded] = useState(false);
@@ -19,20 +26,31 @@ export function ProductCard({ product, featured = false }: { product: Product; f
   const [flavor, setFlavor] = useState("");
   const [groupSelections, setGroupSelections] = useState<Record<string, string[]>>({});
   const [variantId, setVariantId] = useState(isCustomizable ? "" : product.variants?.[0]?.id ?? "");
+  const [customQty, setCustomQty] = useState(1);
 
   const selectedVariant = useMemo(
     () => product.variants?.find((variant) => variant.id === variantId),
     [product.variants, variantId],
   );
 
-  const displayedPrice = selectedVariant?.price ?? product.price;
+  const basePrice = selectedVariant?.price ?? product.price;
   const displayImage = productImage(product);
   const isCustomImage = displayImage.startsWith("/menu/");
-  const longDescription = product.description.length > 68;
-  const customGroupsValid =
-    product.customGroups?.every((group) => (groupSelections[group.id]?.length ?? 0) >= (group.min ?? 0)) ?? true;
+  const displayDescription = displayProductDescription(product);
+  const longDescription = displayDescription.length > 90;
+  const customGroupsValid = customGroups.every(
+    (group) => (groupSelections[group.id]?.length ?? 0) >= (group.min ?? 0),
+  );
   const canAddCustom =
     (!product.variants?.length || Boolean(selectedVariant)) && (!hasFlavors || Boolean(flavor)) && customGroupsValid;
+
+  const extrasPrice = customGroups.reduce((sum, group) => {
+    const selected = groupSelections[group.id] ?? [];
+    return sum + selected.reduce((groupSum, option) => groupSum + optionPrice(group, option), 0);
+  }, 0);
+
+  const unitPrice = basePrice + extrasPrice;
+  const totalPrice = unitPrice * customQty;
 
   const showAddedFeedback = () => {
     setAdded(true);
@@ -63,9 +81,14 @@ export function ProductCard({ product, featured = false }: { product: Product; f
 
   const selectedCustomDetails = [
     flavor || "",
-    ...(product.customGroups ?? []).flatMap((group) => {
+    ...customGroups.flatMap((group) => {
       const selected = groupSelections[group.id] ?? [];
-      return selected.length > 0 ? [`${group.label}: ${selected.join(", ")}`] : [];
+      if (selected.length === 0) return [];
+      const details = selected.map((option) => {
+        const price = optionPrice(group, option);
+        return price > 0 ? `${option} (+${brl(price)})` : option;
+      });
+      return [`${group.label}: ${details.join(", ")}`];
     }),
   ].filter(Boolean);
 
@@ -73,6 +96,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
     setFlavor("");
     setGroupSelections({});
     setVariantId("");
+    setCustomQty(1);
   };
 
   const closeCustomization = () => {
@@ -83,31 +107,118 @@ export function ProductCard({ product, featured = false }: { product: Product; f
   const confirmCustomization = () => {
     if (!canAddCustom) return;
 
-    add(productWithImage(product), selectedVariant, selectedCustomDetails.join(" • ") || undefined);
+    const details = selectedCustomDetails.join(" • ") || undefined;
+    for (let i = 0; i < customQty; i += 1) {
+      add(productWithImage(product), selectedVariant, details, extrasPrice);
+    }
     setCustomizing(false);
     resetCustomization();
     showAddedFeedback();
   };
 
+  const optionControl = (checked: boolean, singleChoice: boolean, isRemoval: boolean) => (
+    <span
+      className={cn(
+        "grid h-6 w-6 shrink-0 place-items-center border-2 transition",
+        singleChoice ? "rounded-full" : "rounded-md",
+        checked
+          ? isRemoval
+            ? "border-destructive bg-destructive text-destructive-foreground"
+            : "border-primary bg-primary text-primary-foreground"
+          : "border-muted-foreground/35 bg-background",
+      )}
+    >
+      {checked && (singleChoice ? <span className="h-2.5 w-2.5 rounded-full bg-primary-foreground" /> : <Check className="h-4 w-4" />)}
+    </span>
+  );
+
+  const renderGroup = (group: UiOptionGroup) => {
+    const selected = groupSelections[group.id] ?? [];
+    const min = group.min ?? 0;
+    const max = group.max ?? 1;
+    const isRemoval = group.id === "retirar";
+    const singleChoice = max === 1;
+    const helpText = isRemoval
+      ? "Selecione os ingredientes que você NÃO quer no pedido"
+      : group.hint ?? (singleChoice ? "Escolha 1 opção" : `Escolha até ${max} opções`);
+
+    return (
+      <section key={group.id} className="border-b-[8px] border-muted/70 bg-background px-5 py-5">
+        <div className="mb-3 flex items-start justify-between gap-4">
+          <div className="min-w-0">
+            <h4 className="text-base font-semibold leading-snug text-foreground">
+              {isRemoval ? "O que você quer retirar?" : group.label}
+            </h4>
+            <p className="mt-1 text-sm leading-snug text-muted-foreground">{helpText}</p>
+          </div>
+          <span
+            className={cn(
+              "shrink-0 rounded-md px-2 py-1 text-xs font-semibold",
+              min > 0 ? "bg-destructive/10 text-destructive" : "bg-muted text-muted-foreground",
+            )}
+          >
+            {min > 0 ? "Obrigatório" : "Opcional"}
+          </span>
+        </div>
+
+        <div>
+          {group.options.map((option, index) => {
+            const checked = selected.includes(option);
+            const limitReached = !checked && max > 1 && selected.length >= max;
+            const price = optionPrice(group, option);
+
+            return (
+              <button
+                key={option}
+                type="button"
+                disabled={limitReached}
+                onClick={() => toggleGroupOption(group.id, option, max)}
+                className={cn(
+                  "flex min-h-14 w-full items-center justify-between gap-4 py-3.5 text-left transition",
+                  index > 0 && "border-t border-border",
+                  limitReached && "cursor-not-allowed opacity-45",
+                )}
+              >
+                <div className="min-w-0 flex-1">
+                  <p className={cn("text-sm font-medium", checked && isRemoval ? "text-destructive" : "text-foreground")}>
+                    {option}
+                  </p>
+                  {checked && isRemoval && (
+                    <p className="mt-0.5 text-xs font-medium text-destructive">Será retirado</p>
+                  )}
+                </div>
+
+                <div className="flex shrink-0 items-center gap-3">
+                  {price > 0 && <span className="text-sm font-medium text-foreground">+ {brl(price)}</span>}
+                  {optionControl(checked, singleChoice, isRemoval)}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </section>
+    );
+  };
+
   const customizer =
     customizing && typeof document !== "undefined"
       ? createPortal(
-          <div className="fixed inset-0 z-[80] flex items-end justify-center sm:items-center sm:p-6">
+          <div className="fixed inset-0 z-[80] flex items-end justify-center bg-foreground/55 sm:items-center sm:p-5">
             <button
               type="button"
               aria-label="Fechar personalização"
               onClick={closeCustomization}
-              className="absolute inset-0 bg-foreground/60 backdrop-blur-sm"
+              className="absolute inset-0"
             />
 
             <div
               role="dialog"
               aria-modal="true"
               aria-label={`Personalizar ${product.name}`}
-              className="relative z-10 flex h-[94svh] w-full flex-col overflow-hidden rounded-t-[2rem] bg-background shadow-lift sm:h-auto sm:max-h-[90svh] sm:max-w-xl sm:rounded-[2rem]"
+              className="relative z-10 flex h-[96svh] w-full flex-col overflow-hidden rounded-t-2xl bg-background sm:h-auto sm:max-h-[92svh] sm:max-w-xl sm:rounded-2xl"
             >
-              <div className="flex items-center gap-3 border-b border-border bg-background px-4 py-4 sm:px-5">
-                <div className={cn("h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-muted", isCustomImage && "bg-black")}>
+              <header className="flex items-center gap-3 border-b border-border bg-background px-5 py-4">
+                <div className={cn("h-16 w-16 shrink-0 overflow-hidden rounded-xl bg-muted", isCustomImage && "bg-black")}>
                   <img
                     src={displayImage}
                     alt={product.name}
@@ -115,32 +226,32 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                   />
                 </div>
                 <div className="min-w-0 flex-1">
-                  <p className="text-xs font-medium text-muted-foreground">Personalize seu pedido</p>
-                  <h3 className="truncate font-display text-xl font-semibold text-foreground">{product.name}</h3>
-                  <p className="mt-0.5 font-display text-lg font-semibold text-primary">{brl(displayedPrice)}</p>
+                  <h3 className="truncate text-lg font-semibold text-foreground">{product.name}</h3>
+                  <p className="mt-0.5 line-clamp-1 text-xs text-muted-foreground">{displayDescription}</p>
+                  <p className="mt-1 text-base font-semibold text-foreground">{brl(unitPrice)}</p>
                 </div>
                 <button
                   type="button"
                   onClick={closeCustomization}
                   aria-label="Fechar"
-                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-border bg-card text-foreground"
+                  className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-muted text-foreground"
                 >
                   <X className="h-5 w-5" />
                 </button>
-              </div>
+              </header>
 
-              <div className="flex-1 overflow-y-auto bg-muted/25">
+              <div className="flex-1 overflow-y-auto bg-muted/70">
                 {product.variants && product.variants.length > 0 && (
-                  <section className="border-b border-border bg-background px-4 py-5 sm:px-5">
-                    <div className="mb-3 flex items-start justify-between gap-3">
+                  <section className="border-b-[8px] border-muted/70 bg-background px-5 py-5">
+                    <div className="mb-3 flex items-start justify-between gap-4">
                       <div>
                         <h4 className="text-base font-semibold text-foreground">Escolha o {variantLabel}</h4>
-                        <p className="mt-0.5 text-sm text-muted-foreground">Escolha 1 opção</p>
+                        <p className="mt-1 text-sm text-muted-foreground">Escolha 1 opção</p>
                       </div>
-                      <span className="rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-semibold text-destructive">Obrigatório</span>
+                      <span className="rounded-md bg-destructive/10 px-2 py-1 text-xs font-semibold text-destructive">Obrigatório</span>
                     </div>
 
-                    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                    <div>
                       {product.variants.map((variant, index) => {
                         const checked = variant.id === variantId;
                         return (
@@ -149,23 +260,15 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                             type="button"
                             onClick={() => setVariantId(variant.id)}
                             className={cn(
-                              "flex min-h-14 w-full items-center justify-between gap-4 px-4 py-3 text-left transition",
+                              "flex min-h-14 w-full items-center justify-between gap-4 py-3.5 text-left",
                               index > 0 && "border-t border-border",
-                              checked && "bg-accent/55",
                             )}
                           >
-                            <div className="min-w-0">
-                              <p className="text-sm font-semibold text-foreground">{variant.label}</p>
-                              <p className="mt-0.5 text-xs text-muted-foreground">{brl(variant.price)}</p>
+                            <p className="text-sm font-medium text-foreground">{variant.label}</p>
+                            <div className="flex items-center gap-3">
+                              <span className="text-sm font-medium text-foreground">{brl(variant.price)}</span>
+                              {optionControl(checked, true, false)}
                             </div>
-                            <span
-                              className={cn(
-                                "grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition",
-                                checked ? "border-primary bg-primary" : "border-muted-foreground/35 bg-background",
-                              )}
-                            >
-                              {checked && <span className="h-2.5 w-2.5 rounded-full bg-primary-foreground" />}
-                            </span>
                           </button>
                         );
                       })}
@@ -174,16 +277,16 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                 )}
 
                 {hasFlavors && (
-                  <section className="border-b border-border bg-background px-4 py-5 sm:px-5">
-                    <div className="mb-3 flex items-start justify-between gap-3">
+                  <section className="border-b-[8px] border-muted/70 bg-background px-5 py-5">
+                    <div className="mb-3 flex items-start justify-between gap-4">
                       <div>
                         <h4 className="text-base font-semibold text-foreground">Escolha o sabor</h4>
-                        <p className="mt-0.5 text-sm text-muted-foreground">Escolha 1 opção</p>
+                        <p className="mt-1 text-sm text-muted-foreground">Escolha 1 opção</p>
                       </div>
-                      <span className="rounded-full bg-destructive/10 px-2.5 py-1 text-xs font-semibold text-destructive">Obrigatório</span>
+                      <span className="rounded-md bg-destructive/10 px-2 py-1 text-xs font-semibold text-destructive">Obrigatório</span>
                     </div>
 
-                    <div className="overflow-hidden rounded-2xl border border-border bg-card">
+                    <div>
                       {product.flavors?.map((item, index) => {
                         const checked = flavor === item;
                         return (
@@ -192,20 +295,12 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                             type="button"
                             onClick={() => setFlavor(item)}
                             className={cn(
-                              "flex min-h-14 w-full items-center justify-between gap-4 px-4 py-3 text-left transition",
+                              "flex min-h-14 w-full items-center justify-between gap-4 py-3.5 text-left",
                               index > 0 && "border-t border-border",
-                              checked && "bg-accent/55",
                             )}
                           >
-                            <p className="text-sm font-semibold text-foreground">{item}</p>
-                            <span
-                              className={cn(
-                                "grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition",
-                                checked ? "border-primary bg-primary" : "border-muted-foreground/35 bg-background",
-                              )}
-                            >
-                              {checked && <span className="h-2.5 w-2.5 rounded-full bg-primary-foreground" />}
-                            </span>
+                            <p className="text-sm font-medium text-foreground">{item}</p>
+                            {optionControl(checked, true, false)}
                           </button>
                         );
                       })}
@@ -213,111 +308,47 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                   </section>
                 )}
 
-                {product.customGroups?.map((group) => {
-                  const selected = groupSelections[group.id] ?? [];
-                  const min = group.min ?? 0;
-                  const max = group.max ?? 1;
-                  const isRemoval = group.id === "retirar";
-                  const singleChoice = max === 1;
-                  const statusLabel = min > 0 ? "Obrigatório" : "Opcional";
-                  const helpText = isRemoval
-                    ? "Selecione os ingredientes que deseja retirar (opcional)"
-                    : group.hint ?? (singleChoice ? "Escolha até 1 opção" : `Escolha até ${max} opções`);
-
-                  return (
-                    <section key={group.id} className="border-b border-border bg-background px-4 py-5 sm:px-5">
-                      <div className="mb-3 flex items-start justify-between gap-3">
-                        <div>
-                          <h4 className="text-base font-semibold text-foreground">
-                            {isRemoval ? "O que você quer retirar?" : group.label}
-                          </h4>
-                          <p className="mt-0.5 text-sm text-muted-foreground">{helpText}</p>
-                        </div>
-                        <span
-                          className={cn(
-                            "rounded-full px-2.5 py-1 text-xs font-semibold",
-                            min > 0
-                              ? "bg-destructive/10 text-destructive"
-                              : "bg-muted text-muted-foreground",
-                          )}
-                        >
-                          {statusLabel}
-                        </span>
-                      </div>
-
-                      <div className="overflow-hidden rounded-2xl border border-border bg-card">
-                        {group.options.map((option, index) => {
-                          const checked = selected.includes(option);
-                          const limitReached = !checked && max > 1 && selected.length >= max;
-
-                          return (
-                            <button
-                              key={option}
-                              type="button"
-                              disabled={limitReached}
-                              onClick={() => toggleGroupOption(group.id, option, max)}
-                              className={cn(
-                                "flex min-h-14 w-full items-center justify-between gap-4 px-4 py-3 text-left transition",
-                                index > 0 && "border-t border-border",
-                                checked && (isRemoval ? "bg-destructive/8" : "bg-accent/55"),
-                                limitReached && "cursor-not-allowed opacity-45",
-                              )}
-                            >
-                              <div className="min-w-0">
-                                <p className={cn("text-sm font-semibold", checked && isRemoval ? "text-destructive" : "text-foreground")}>
-                                  {option}
-                                </p>
-                                {checked && isRemoval && <p className="mt-0.5 text-xs font-medium text-destructive/80">Será retirado</p>}
-                              </div>
-
-                              {singleChoice ? (
-                                <span
-                                  className={cn(
-                                    "grid h-6 w-6 shrink-0 place-items-center rounded-full border-2 transition",
-                                    checked ? "border-primary bg-primary" : "border-muted-foreground/35 bg-background",
-                                  )}
-                                >
-                                  {checked && <span className="h-2.5 w-2.5 rounded-full bg-primary-foreground" />}
-                                </span>
-                              ) : (
-                                <span
-                                  className={cn(
-                                    "grid h-6 w-6 shrink-0 place-items-center rounded-md border-2 transition",
-                                    checked
-                                      ? isRemoval
-                                        ? "border-destructive bg-destructive text-destructive-foreground"
-                                        : "border-primary bg-primary text-primary-foreground"
-                                      : "border-muted-foreground/35 bg-background",
-                                  )}
-                                >
-                                  {checked && <Check className="h-4 w-4" />}
-                                </span>
-                              )}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </section>
-                  );
-                })}
+                {customGroups.map(renderGroup)}
               </div>
 
-              <div className="border-t border-border bg-background p-4 sm:p-5">
-                <button
-                  type="button"
-                  onClick={confirmCustomization}
-                  disabled={!canAddCustom}
-                  className={cn(
-                    "inline-flex w-full items-center justify-center gap-2 rounded-2xl py-4 text-base font-semibold transition",
-                    canAddCustom
-                      ? "bg-gradient-primary text-primary-foreground shadow-soft"
-                      : "cursor-not-allowed bg-muted text-muted-foreground opacity-70",
-                  )}
-                >
-                  <Plus className="h-4 w-4" />
-                  Adicionar • {brl(displayedPrice)}
-                </button>
-              </div>
+              <footer className="border-t border-border bg-background p-4">
+                <div className="flex items-stretch gap-3">
+                  <div className="flex shrink-0 items-center rounded-xl border border-border bg-background">
+                    <button
+                      type="button"
+                      aria-label="Diminuir quantidade"
+                      onClick={() => setCustomQty((qty) => Math.max(1, qty - 1))}
+                      disabled={customQty <= 1}
+                      className="grid h-14 w-11 place-items-center text-primary disabled:text-muted-foreground"
+                    >
+                      <Minus className="h-4 w-4" />
+                    </button>
+                    <span className="min-w-8 text-center text-base font-semibold text-foreground">{customQty}</span>
+                    <button
+                      type="button"
+                      aria-label="Aumentar quantidade"
+                      onClick={() => setCustomQty((qty) => Math.min(20, qty + 1))}
+                      className="grid h-14 w-11 place-items-center text-primary"
+                    >
+                      <Plus className="h-4 w-4" />
+                    </button>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={confirmCustomization}
+                    disabled={!canAddCustom}
+                    className={cn(
+                      "min-h-14 min-w-0 flex-1 rounded-xl px-3 text-sm font-semibold transition sm:text-base",
+                      canAddCustom
+                        ? "bg-gradient-primary text-primary-foreground shadow-soft"
+                        : "cursor-not-allowed bg-muted text-muted-foreground opacity-70",
+                    )}
+                  >
+                    Adicionar • {brl(totalPrice)}
+                  </button>
+                </div>
+              </footer>
             </div>
           </div>,
           document.body,
@@ -339,9 +370,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             loading="lazy"
             className={cn(
               "h-full w-full",
-              isCustomImage
-                ? "object-contain"
-                : "object-cover transition-transform duration-700 group-hover:scale-105",
+              isCustomImage ? "object-contain" : "object-cover transition-transform duration-700 group-hover:scale-105",
             )}
           />
           {product.badge && (
@@ -360,8 +389,8 @@ export function ProductCard({ product, featured = false }: { product: Product; f
 
         <div className="flex flex-1 flex-col p-5">
           <h3 className="font-display text-lg font-semibold leading-snug text-foreground">{product.name}</h3>
-          <p className={cn("mt-1.5 text-sm leading-relaxed text-muted-foreground", !expanded && "line-clamp-2")}>
-            {product.description}
+          <p className={cn("mt-1.5 text-sm leading-relaxed text-muted-foreground", !expanded && "line-clamp-3")}>
+            {displayDescription}
           </p>
           {longDescription && (
             <button
@@ -401,7 +430,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             <div>
               {product.variants && !isCustomizable && <span className="block text-[11px] text-muted-foreground">Opção selecionada</span>}
               {isCustomizable && <span className="block text-[11px] text-muted-foreground">A partir de</span>}
-              <span className="font-display text-2xl font-semibold text-primary">{brl(displayedPrice)}</span>
+              <span className="font-display text-2xl font-semibold text-primary">{brl(basePrice)}</span>
             </div>
             <button
               type="button"
