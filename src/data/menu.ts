@@ -49,7 +49,7 @@ const images = {
 const sizes = (broto: number, media: number, grande: number): ProductVariant[] => [
   { id: "broto", label: "Broto", price: broto },
   { id: "media", label: "Média", price: media },
-  { id: "grande", label: "Grande", price: grande },
+  { id: "grande", label: "Grande (40 cm)", price: grande },
 ];
 
 const pizza = (id: string, name: string, description: string, prices: [number, number, number]): Product => ({
@@ -73,11 +73,10 @@ export const categories: { id: CategoryId; label: string }[] = [
   { id: "porcoes", label: "Porções" },
   { id: "bebidas", label: "Bebidas" },
   { id: "gelados", label: "Gelados" },
-  { id: "adicionais", label: "Adicionais" },
 ];
 
 export const pizzaNotices = [
-  "Todas as pizzas de 40 cm acompanham refrigerante de 2L Kuat ou Convenção.",
+  "Pizza Grande (40 cm) acompanha refrigerante 2L Kuat ou Convenção.",
   "Acréscimo de Catupiry ou Cheddar: R$ 6,00.",
   "Linha Premium — Catupiry, Cheddar ou Cream Cheese: R$ 8,00.",
 ];
@@ -189,11 +188,6 @@ const baseProducts: Product[] = [
   // GELADOS
   { id: "milkshake", name: "Milk-shake", description: "Escolha o tamanho e o sabor.", price: 7, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 7 }, { id: "500ml", label: "500 ml", price: 15 }, { id: "700ml", label: "700 ml", price: 17 }], flavors: ["Ovomaltine", "Morango", "Chocolate", "Creme", "Coco", "Tutti Frutti", "Abacaxi", "Graviola", "Milho Verde", "Passas ao Rum", "Banana"], variantLabel: "tamanho" },
   { id: "acai", name: "Açaí", description: "Escolha o tamanho, a calda, o que deseja no meio e suas guloseimas.", price: 8, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 8 }, { id: "500ml", label: "500 ml", price: 16 }, { id: "700ml", label: "700 ml", price: 18 }], variantLabel: "tamanho", customGroups: [{ id: "calda", label: "Calda", options: ["Chocolate", "Morango", "Leite condensado"], max: 1 }, { id: "meio", label: "No meio do açaí", options: ["Não quero nada no meio", "Paçoca", "Granulado", "Confete", "Jujuba", "Leite Ninho"], min: 0, max: 1 }, { id: "guloseimas", label: "Guloseimas", options: ["Paçoca", "Granulado", "Confete", "Jujuba", "Leite Ninho"], max: 3 }] },
-
-  // ADICIONAIS
-  { id: "adicional-monte-combo", name: "Monte seu Combo", description: "Adicione 1 Coca-Cola lata + batata-frita ao seu hambúrguer.", price: 10, image: images.fries, category: "adicionais" },
-  { id: "adicional-catupiry-cheddar", name: "Acréscimo Catupiry ou Cheddar", description: "Acréscimo para pizza.", price: 6, image: images.pizza, category: "adicionais" },
-  { id: "adicional-linha-premium", name: "Linha Premium", description: "Catupiry, Cheddar ou Cream Cheese.", price: 8, image: images.pizza, category: "adicionais" },
 ];
 // ---------------------------------------------------------------------------
 // "Retirar ingredientes" (opcional) para pizzas, hambúrgueres e combos.
