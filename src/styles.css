@@ -81,6 +81,18 @@
   h1,h2,h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
 }
 
+/* Hide Lovable branding when the host injects a badge inside the app DOM. */
+#lovable-badge,
+.lovable-badge,
+[data-lovable-badge],
+[data-lovable-branding],
+a[href="https://lovable.dev"],
+a[href^="https://lovable.dev/"] {
+  display: none !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+}
+
 @utility bg-gradient-primary { background-image: var(--gradient-primary); }
 @utility bg-gradient-gold { background-image: var(--gradient-gold); }
 @utility bg-gradient-hero { background-image: var(--gradient-hero); }
