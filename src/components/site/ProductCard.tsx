@@ -80,9 +80,17 @@ export function ProductCard({ product, featured = false }: { product: Product; f
     showAddedFeedback();
   };
 
+  const hasVariants = Boolean(product.variants?.length);
+  const onlyRemovalGroup =
+    !hasFlavors && (product.customGroups?.every((group) => group.id === "retirar") ?? false);
+
   const customizerIntro = hasFlavors
     ? `Escolha o ${variantLabel} e depois 1 sabor.`
-    : `Escolha o ${variantLabel} e personalize do seu jeito.`;
+    : onlyRemovalGroup
+      ? hasVariants
+        ? `Escolha o ${variantLabel} e retire ingredientes se quiser.`
+        : "Selecione o que deseja retirar (opcional)."
+      : `Escolha o ${variantLabel} e personalize do seu jeito.`;
 
   const customizer =
     customizing && typeof document !== "undefined"
