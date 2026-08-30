@@ -1,1 +1,1 @@
-sync 2026-08-30
+sync 2026-08-30 remove-destaques
