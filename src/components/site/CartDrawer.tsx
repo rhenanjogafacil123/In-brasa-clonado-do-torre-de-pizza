@@ -81,6 +81,14 @@ export function CartDrawer() {
       if (!continueWithoutNotes) return;
     }
 
+    trackWhatsappOrderClick({
+      items,
+      subtotal,
+      notes,
+      paymentMethod,
+      cashAmount: paymentMethod === "Dinheiro" ? validCashValue : null,
+    });
+
     window.open(
       whatsappLink(
         orderMessage(
