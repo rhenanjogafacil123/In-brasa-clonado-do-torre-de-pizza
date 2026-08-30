@@ -1,8 +1,23 @@
 import { brl, business } from "@/data/business";
 import type { CartItem } from "@/hooks/useCart";
 
+const emoji = {
+  pizza: "\u{1F355}",
+  person: "\u{1F464}",
+  name: "\u{1F64B}",
+  pin: "\u{1F4CD}",
+  card: "\u{1F4B3}",
+  cash: "\u{1F4B5}",
+  change: "\u{1F504}",
+  cart: "\u{1F6D2}",
+  money: "\u{1F4B0}",
+  note: "\u{1F4DD}",
+  check: "\u2705",
+} as const;
+
 export function whatsappLink(message: string) {
-  return `https://wa.me/${business.whatsapp}?text=${encodeURIComponent(message)}`;
+  const params = new URLSearchParams({ text: message });
+  return `https://wa.me/${business.whatsapp}?${params.toString()}`;
 }
 
 export function orderMessage(
@@ -15,29 +30,32 @@ export function orderMessage(
   cashAmount: number | null,
 ) {
   const lines = items.map(
-    (i) => `• ${i.qty}x ${i.product.name} — ${brl(i.qty * i.product.price)}`,
+    (i) => `\u2022 ${i.qty}x ${i.product.name} — ${brl(i.qty * i.product.price)}`,
   );
 
   const isCash = paymentMethod === "Dinheiro";
   const change = isCash && cashAmount !== null ? Math.max(0, cashAmount - subtotal) : null;
 
   return [
-    `🍕 *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
+    `${emoji.pizza} *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
     "",
-    "👤 *DADOS DO CLIENTE*",
-    `🙋 *Nome:* ${customerName.trim()}`,
-    `📍 *Endereço:* ${address.trim()}`,
-    `💳 *Pagamento:* ${paymentMethod}`,
+    `${emoji.person} *DADOS DO CLIENTE*`,
+    `${emoji.name} *Nome:* ${customerName.trim()}`,
+    `${emoji.pin} *Endereço:* ${address.trim()}`,
+    `${emoji.card} *Pagamento:* ${paymentMethod}`,
     ...(isCash && cashAmount !== null
-      ? [`💵 *Vai pagar com:* ${brl(cashAmount)}`, `🔄 *Troco:* ${brl(change ?? 0)}`]
-      : ["🔄 *Troco:* Não se aplica"]),
+      ? [
+          `${emoji.cash} *Vai pagar com:* ${brl(cashAmount)}`,
+          `${emoji.change} *Troco:* ${brl(change ?? 0)}`,
+        ]
+      : [`${emoji.change} *Troco:* Não se aplica`]),
     "",
-    "🛒 *ITENS DO PEDIDO*",
+    `${emoji.cart} *ITENS DO PEDIDO*`,
     ...lines,
     "",
-    `💰 *Subtotal:* ${brl(subtotal)}`,
-    `📝 *Observações:* ${notes.trim() || "Nenhuma"}`,
+    `${emoji.money} *Subtotal:* ${brl(subtotal)}`,
+    `${emoji.note} *Observações:* ${notes.trim() || "Nenhuma"}`,
     "",
-    "✅ Pedido enviado pelo cardápio digital.",
+    `${emoji.check} Pedido enviado pelo cardápio digital.`,
   ].join("\n");
 }
