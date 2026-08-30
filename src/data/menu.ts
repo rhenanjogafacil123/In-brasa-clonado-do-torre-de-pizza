@@ -96,9 +96,9 @@ const baseProducts: Product[] = [
   pizza("pizza-champignon-alho", "Champignon c/ Alho", "Molho, mussarela, champignon, alho e orégano.", [24, 35, 52]),
   pizza("pizza-2-queijos", "2 Queijos", "Molho, mussarela, provolone e orégano.", [24, 35, 52]),
   pizza("pizza-3-queijos", "3 Queijos", "Molho, mussarela, provolone, Catupiry e orégano.", [26, 40, 52]),
-  pizza("pizza-4-queijos", "4 Queijos", "Molho, mussarela, Catupiry, Cheddar e orégano.", [27, 38, 55]),
-  pizza("pizza-5-queijos", "5 Queijos", "Molho, mussarela, Catupiry, Cheddar, parmesão e orégano.", [28, 39, 58]),
-  pizza("pizza-6-queijos", "6 Queijos", "Molho, mussarela, Catupiry, Cheddar, parmesão, gorgonzola e orégano.", [29, 40, 61]),
+  pizza("pizza-4-queijos", "4 Queijos", "Molho, mussarela, provolone, Catupiry, Cheddar e orégano.", [27, 38, 55]),
+  pizza("pizza-5-queijos", "5 Queijos", "Molho, mussarela, provolone, Catupiry, Cheddar, parmesão e orégano.", [28, 39, 58]),
+  pizza("pizza-6-queijos", "6 Queijos", "Molho, mussarela, provolone, Catupiry, Cheddar, parmesão, gorgonzola e orégano.", [29, 40, 61]),
   pizza("pizza-portuguesa", "Portuguesa", "Molho, mussarela, presunto, tomate, pimentão, cebola, ervilha, milho, ovo e orégano.", [24, 35, 52]),
   pizza("pizza-alho", "Alho", "Molho, mussarela, alho torrado e orégano.", [24, 35, 52]),
   pizza("pizza-carne-seca", "Carne Seca", "Molho, mussarela, carne seca, cebola e orégano.", [29, 40, 57]),
@@ -141,7 +141,7 @@ const baseProducts: Product[] = [
   { id: "promocao-casado", name: "Promoção Casado", description: "2 hambúrgueres de carne, 1 fatia de queijo Cheddar, bacon, cebola, picles, alface e pão com gergelim.", price: 20, image: images.combo, category: "combos", badge: "Promoção" },
   { id: "promocao-super-casado", name: "Promoção Super Casado", description: "2 Casados + Antarctica 1L + batata com bacon e Cheddar.", price: 42, image: images.combo, category: "combos", badge: "Promoção" },
   { id: "super-combo-double", name: "Super Combo Double", description: "4 nº 2 + Kuat + batata com bacon e Cheddar.", price: 65, image: images.combo, category: "combos" },
-  { id: "super-combo-cheesburguer", name: "Super Combo Cheesburguer", description: "8 nº 17 + Kuat + batata com bacon e Cheddar.", price: 74, image: images.combo, category: "combos" },
+  { id: "super-combo-cheesburguer", name: "Super Combo Cheeseburguer", description: "8 nº 17 + Kuat + batata com bacon e Cheddar.", price: 74, image: images.combo, category: "combos" },
 
   // PASTÉIS CHINESES
   { id: "pastel-queijo-minas", name: "Queijo Minas", description: "Queijo minas com orégano.", price: 13, image: images.pastel, category: "pasteis" },
