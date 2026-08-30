@@ -2,6 +2,7 @@ import { Flame } from "lucide-react";
 import { brl } from "@/data/business";
 import { products } from "@/data/menu";
 import { useCart } from "@/hooks/useCart";
+import { productImage, productWithImage } from "@/lib/product-image";
 
 export function Featured() {
   const { add } = useCart();
@@ -28,7 +29,7 @@ export function Featured() {
           {featured.map((product) => (
             <article key={product.id} className="group w-[74%] shrink-0 snap-start overflow-hidden rounded-3xl bg-card shadow-lift md:w-auto">
               <div className="relative aspect-[4/3] overflow-hidden">
-                <img src={product.image} alt={product.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                <img src={productImage(product)} alt={product.name} loading="lazy" className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 {product.badge && (
                   <span className="absolute left-3 top-3 rounded-full bg-gradient-gold px-3 py-1 text-[11px] font-bold uppercase text-gold-foreground">
                     {product.badge}
@@ -39,7 +40,7 @@ export function Featured() {
                 <h3 className="font-display text-base font-semibold text-foreground">{product.name}</h3>
                 <div className="mt-3 flex items-center justify-between gap-2">
                   <span className="font-display text-xl font-semibold text-primary">{brl(product.price)}</span>
-                  <button type="button" onClick={() => add(product)} className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold">
+                  <button type="button" onClick={() => add(productWithImage(product))} className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold">
                     Adicionar
                   </button>
                 </div>
