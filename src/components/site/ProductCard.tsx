@@ -34,7 +34,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
         featured && "border-gold/50",
       )}
     >
-      <div className="relative aspect-[5/4] overflow-hidden">
+      <div className="relative aspect-square overflow-hidden">
         <img
           src={displayImage}
           alt={product.name}
