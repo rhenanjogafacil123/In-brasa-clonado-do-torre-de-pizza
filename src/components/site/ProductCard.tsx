@@ -19,6 +19,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
 
   const displayedPrice = selectedVariant?.price ?? product.price;
   const displayImage = productImage(product);
+  const isCustomImage = displayImage.startsWith("/menu/");
   const longDescription = product.description.length > 68;
 
   const handleAdd = () => {
@@ -34,12 +35,17 @@ export function ProductCard({ product, featured = false }: { product: Product; f
         featured && "border-gold/50",
       )}
     >
-      <div className="relative aspect-square overflow-hidden">
+      <div className={cn("relative aspect-square overflow-hidden", isCustomImage && "bg-black")}>
         <img
           src={displayImage}
           alt={product.name}
           loading="lazy"
-          className="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105"
+          className={cn(
+            "h-full w-full",
+            isCustomImage
+              ? "object-contain"
+              : "object-cover transition-transform duration-700 group-hover:scale-105",
+          )}
         />
         {product.badge && (
           <span
