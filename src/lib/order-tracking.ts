@@ -22,6 +22,7 @@ function buildPayload({ items, subtotal, notes, paymentMethod, cashAmount }: Tra
         variant_label: item.variant?.label ?? null,
         flavor: item.flavor ?? null,
         options,
+        extra_price: item.extraPrice ?? 0,
         qty: item.qty,
         unit_price: unit,
         line_total: Number((unit * item.qty).toFixed(2)),
@@ -45,8 +46,8 @@ function buildPayload({ items, subtotal, notes, paymentMethod, cashAmount }: Tra
  */
 export function trackWhatsappOrderClick(args: TrackArgs): Promise<void> {
   try {
-    const url = import.meta.env['VITE_SUPABASE_URL'] as string | undefined;
-    const key = import.meta.env['VITE_SUPABASE_PUBLISHABLE_KEY'] as string | undefined;
+    const url = import.meta.env["VITE_SUPABASE_URL"] as string | undefined;
+    const key = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string | undefined;
     if (!url || !key) return Promise.resolve();
 
     const body = JSON.stringify(buildPayload(args));
@@ -64,7 +65,6 @@ export function trackWhatsappOrderClick(args: TrackArgs): Promise<void> {
       .then((res) => {
         if (!res.ok) {
           console.warn("order tracking failed", res.status);
-          // Última tentativa: beacon (sobrevive ao unload, sem headers custom).
           try {
             navigator.sendBeacon?.(
               `${url}/rest/v1/order_clicks?apikey=${encodeURIComponent(key)}`,
