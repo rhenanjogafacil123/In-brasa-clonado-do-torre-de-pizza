@@ -19,6 +19,8 @@ export type ProductOptionGroup = {
   min?: number;
   max?: number;
   hint?: string;
+  /** Exibe o grupo apenas quando uma destas variantes estiver selecionada. */
+  onlyVariantIds?: string[];
 };
 
 export type Product = {
