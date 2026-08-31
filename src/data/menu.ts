@@ -132,8 +132,8 @@ const baseProducts: Product[] = [
   { id: "torre-mas-que-bem", name: "Torre Mas Que Bem", description: "2 hambúrgueres de carne, alface, queijo, ovo, provolone, molho especial, bacon e pão com gergelim.", price: 19, image: images.burger, category: "hamburgueres" },
   { id: "x-torre", name: "X-Torre", description: "Hambúrguer de carne, alface, queijo, ovo, presunto, molho especial, bacon, calabresa e pão com gergelim.", price: 16, image: images.burger, category: "hamburgueres" },
   { id: "torre-picanhas-galaxia", name: "Torre Picanhas das Galáxia", description: "Hambúrguer de carne, 4 fatias crocantes de bacon, Cheddar cremoso, cebola, picles e pão com gergelim.", price: 20, image: images.burger, category: "hamburgueres" },
-  { id: "sub-torre-carne", name: "Sub Torre Carne", description: "Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.", price: 21, image: images.burger, category: "subtorre" },
-  { id: "sub-torre-frango", name: "Sub Torre Frango", description: "Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.", price: 21, image: images.burger, category: "subtorre" },
+  { id: "sub-torre-carne", name: "Sub Torre Carne", description: "Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.", price: 21, image: images.burger, category: "subtorre" },
+  { id: "sub-torre-frango", name: "Sub Torre Frango", description: "Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.", price: 21, image: images.burger, category: "subtorre" },
   { id: "cheeseburguer", name: "Cheeseburguer", description: "Pão, hambúrguer de carne e queijo.", price: 8, image: images.burger, category: "hamburgueres" },
 
   // COMBOS
@@ -215,6 +215,7 @@ export function ingredientsFromDescription(description: string): string[] {
   const last = parts.pop() ?? "";
   const tokens = [...parts, ...last.split(/ e (?=[^,]*$)/)];
   return tokens
+    .flatMap((token) => token.split(/\s+ou\s+|\s*\/\s*/i))
     .map(tidy)
     .filter((item) => item.length > 0 && !/pão/i.test(item));
 }
