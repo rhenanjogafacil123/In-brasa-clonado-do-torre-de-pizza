@@ -47,6 +47,16 @@ const pizzaExtras: UiOptionGroup = {
   },
 };
 
+const pizzaFreeDrink: UiOptionGroup = {
+  id: "refri-gratis",
+  label: "Refrigerante 2L (incluso)",
+  options: ["Kuat", "Convenção"],
+  min: 1,
+  max: 1,
+  hint: "Incluso na pizza Grande (40 cm) — escolha 1 opção",
+  onlyVariantIds: ["grande"],
+};
+
 const pizzaCreamChoice: UiOptionGroup = {
   id: "creme-pizza",
   label: "Escolha Catupiry ou Cheddar",
@@ -114,6 +124,7 @@ export function productOptionGroups(product: Product): UiOptionGroup[] {
 
   groups.push(...existingGroups);
 
+  if (product.category === "pizzas") groups.push(pizzaFreeDrink);
   if (product.category === "pizzas" && !sweetPizzaIds.has(product.id)) groups.push(pizzaExtras);
   if (product.category === "hamburgueres") groups.push(burgerComboExtra);
 

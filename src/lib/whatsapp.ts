@@ -42,18 +42,25 @@ export function orderMessage(
   notes: string,
   customerName: string,
   address: string,
+  complement: string,
   paymentMethod: string,
   cashAmount: number | null,
 ) {
   const safeCustomerName = safeText(customerName, 100);
   const safeAddress = safeText(address, 300);
+  const safeComplement = safeText(complement, 200);
   const safeNotes = safeText(notes, 500);
   const safePaymentMethod = safeText(paymentMethod, 50);
 
-  const lines = items.slice(0, 40).map((item) => {
-    const options = [item.variant?.label, item.flavor].filter(Boolean);
-    const option = options.length > 0 ? ` — ${options.join(" — ")}` : "";
-    return `• ${item.qty}x ${item.product.name}${option} — ${brl(item.qty * cartItemPrice(item))}`;
+  const lines = items.slice(0, 40).flatMap((item) => {
+    const size = item.variant?.label ? ` (${item.variant.label})` : "";
+    const head = `${item.qty}x ${item.product.name}${size} — ${brl(item.qty * cartItemPrice(item))}`;
+    const details = (item.flavor ?? "")
+      .split("•")
+      .map((part) => safeText(part, 200))
+      .filter(Boolean)
+      .map((part) => `   ↳ ${part}`);
+    return [head, ...details];
   });
 
   const safeCashAmount =
@@ -66,23 +73,21 @@ export function orderMessage(
   return [
     `${emoji.pizza} *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
     "",
-    `${emoji.person} *DADOS DO CLIENTE*`,
-    `${emoji.name} *Nome:* ${safeCustomerName}`,
-    `${emoji.pin} *Endereço:* ${safeAddress}`,
-    `${emoji.card} *Pagamento:* ${safePaymentMethod}`,
-    ...(isCash && safeCashAmount !== null
-      ? [
-          `${emoji.cash} *Vai pagar com:* ${brl(safeCashAmount)}`,
-          `${emoji.change} *Troco:* ${brl(change ?? 0)}`,
-        ]
-      : [`${emoji.change} *Troco:* Não se aplica`]),
-    "",
-    `${emoji.cart} *ITENS DO PEDIDO*`,
+    `${emoji.cart} *PEDIDO*`,
     ...lines,
     "",
-    `${emoji.money} *Subtotal:* ${brl(subtotal)}`,
-    `${emoji.note} *Observações:* ${safeNotes || "Nenhuma"}`,
+    `${emoji.money} *Total:* ${brl(subtotal)}`,
+    ...(safeNotes ? ["", `${emoji.note} *Obs.:* ${safeNotes}`] : []),
     "",
-    `${emoji.check} Pedido enviado pelo cardápio digital.`,
+    `${emoji.person} *CLIENTE*`,
+    `${emoji.name} ${safeCustomerName}`,
+    `${emoji.pin} ${safeAddress}`,
+    `${emoji.pin} Complemento/Referência: ${safeComplement}`,
+    "",
+    `${emoji.card} *PAGAMENTO*`,
+    safePaymentMethod,
+    ...(isCash && safeCashAmount !== null
+      ? [`${emoji.cash} Paga com ${brl(safeCashAmount)} — troco ${brl(change ?? 0)}`]
+      : []),
   ].join("\n");
 }
