@@ -192,10 +192,10 @@ const baseProducts: Product[] = [
   { id: "acai", name: "Açaí", description: "Escolha o tamanho, a calda, o que deseja no meio e suas guloseimas.", price: 8, image: images.drink, category: "gelados", variants: [{ id: "200ml", label: "200 ml", price: 8 }, { id: "500ml", label: "500 ml", price: 16 }, { id: "700ml", label: "700 ml", price: 18 }], variantLabel: "tamanho", customGroups: [{ id: "calda", label: "Calda", options: ["Chocolate", "Morango", "Leite condensado"], max: 1 }, { id: "meio", label: "No meio do açaí", options: ["Não quero nada no meio", "Paçoca", "Granulado", "Confete", "Jujuba", "Leite Ninho"], min: 0, max: 1 }, { id: "guloseimas", label: "Guloseimas", options: ["Paçoca", "Granulado", "Confete", "Jujuba", "Leite Ninho"], max: 3 }] },
 ];
 // ---------------------------------------------------------------------------
-// "Retirar ingredientes" (opcional) para pizzas, hambúrgueres e combos.
+// "Retirar ingredientes" (opcional) para pizzas, hambúrgueres, Sub Torre e combos.
 // ---------------------------------------------------------------------------
 
-const REMOVAL_CATEGORIES = new Set<Product["category"]>(["pizzas", "hamburgueres", "combos"]);
+const REMOVAL_CATEGORIES = new Set<Product["category"]>(["pizzas", "hamburgueres", "subtorre", "combos"]);
 
 const PROPER_NOUNS = ["Catupiry", "Cheddar", "Billy", "Kuat", "Antarctica", "Coca"];
 
