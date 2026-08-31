@@ -29,47 +29,53 @@ jobs:
           path = Path("src/data/menu.ts")
           text = path.read_text(encoding="utf-8")
 
-          old_carne = 'Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.'
-          new_carne = 'Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.'
-          old_frango = 'Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.'
-          new_frango = 'Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.'
+          replacements = {
+              'Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.':
+              'Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.',
+              'Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.':
+              'Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.',
+          }
 
-          if old_carne not in text or old_frango not in text:
-              raise SystemExit("Sub Torre descriptions no longer match expected source; refusing unsafe patch")
+          for old, new in replacements.items():
+              if old not in text:
+                  raise SystemExit(f"Expected Sub Torre description not found: {old}")
+              text = text.replace(old, new, 1)
 
-          text = text.replace(old_carne, new_carne, 1)
-          text = text.replace(old_frango, new_frango, 1)
+          fn_marker = "export function ingredientsFromDescription(description: string): string[] {"
+          fn_start = text.find(fn_marker)
+          if fn_start < 0:
+              raise SystemExit("ingredientsFromDescription function not found")
+          fn_end = text.find("\n}\n", fn_start)
+          if fn_end < 0:
+              raise SystemExit("ingredientsFromDescription function end not found")
+          fn_end += 3
+          fn = text[fn_start:fn_end]
 
-          old_parser = '''  const tokens = [...parts, ...last.split(/ e (?=[^,]*$)/)];
-          return tokens
-            .map(tidy)
-            .filter((item) => item.length > 0 && !/pão/i.test(item));'''
-          new_parser = '''  const tokens = [...parts, ...last.split(/ e (?=[^,]*$)/)];
-          return tokens
-            .flatMap((token) => token.split(/\\s+ou\\s+|\\s*\\/\\s*/i))
-            .map(tidy)
-            .filter((item) => item.length > 0 && !/pão/i.test(item));'''
+          parser_needle = "  return tokens\n    .map(tidy)"
+          parser_replacement = "  return tokens\n    .flatMap((token) => token.split(/\\s+ou\\s+|\\s*\\/\\s*/i))\n    .map(tidy)"
+          if parser_needle not in fn:
+              raise SystemExit("Expected return pipeline not found in ingredientsFromDescription")
 
-          if old_parser not in text:
-              raise SystemExit("Ingredient parser no longer matches expected source; refusing unsafe patch")
-
-          text = text.replace(old_parser, new_parser, 1)
+          fn = fn.replace(parser_needle, parser_replacement, 1)
+          text = text[:fn_start] + fn + text[fn_end:]
           path.write_text(text, encoding="utf-8")
           PY
 
-      - name: Verify generated removal options
+      - name: Verify corrections
         shell: bash
         run: |
           python3 - <<'PY'
           from pathlib import Path
           text = Path("src/data/menu.ts").read_text(encoding="utf-8")
-          required = [
-              "mostarda, maionese e Billy Jack",
-              ".flatMap((token) => token.split(/\\s+ou\\s+|\\s*\\/\\s*/i))",
-          ]
-          for needle in required:
+
+          checks = {
+              "Sub Torre sauces separated": "mostarda, maionese e Billy Jack",
+              "alternative ingredients split": ".flatMap((token) => token.split(/\\s+ou\\s+|\\s*\\/\\s*/i))",
+          }
+          for label, needle in checks.items():
               if needle not in text:
-                  raise SystemExit(f"Missing expected correction: {needle}")
+                  raise SystemExit(f"Failed check: {label}")
+
           if "maionese Billy Jack" in text:
               raise SystemExit("Combined 'maionese Billy Jack' still exists")
           PY
