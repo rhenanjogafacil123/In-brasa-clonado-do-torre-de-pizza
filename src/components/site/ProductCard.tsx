@@ -15,9 +15,9 @@ import { cn } from "@/lib/utils";
 
 export function ProductCard({ product, featured = false }: { product: Product; featured?: boolean }) {
   const { add } = useCart();
-  const customGroups = useMemo(() => productOptionGroups(product), [product]);
+  const allCustomGroups = useMemo(() => productOptionGroups(product), [product]);
   const hasFlavors = Boolean(product.flavors?.length);
-  const hasCustomGroups = customGroups.length > 0;
+  const hasCustomGroups = allCustomGroups.length > 0;
   const isCustomizable = hasFlavors || hasCustomGroups;
   const showCardVariants =
     Boolean(product.variants?.length) &&
@@ -34,6 +34,11 @@ export function ProductCard({ product, featured = false }: { product: Product; f
   const selectedVariant = useMemo(
     () => product.variants?.find((variant) => variant.id === variantId),
     [product.variants, variantId],
+  );
+
+  const customGroups = useMemo(
+    () => allCustomGroups.filter((group) => !group.onlyVariantIds || group.onlyVariantIds.includes(variantId)),
+    [allCustomGroups, variantId],
   );
 
   const basePrice = selectedVariant?.price ?? product.price;
