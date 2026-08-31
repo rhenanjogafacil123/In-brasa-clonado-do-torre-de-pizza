@@ -34,7 +34,7 @@ export type Product = {
   flavors?: string[];
   variantLabel?: string;
   customGroups?: ProductOptionGroup[];
-  badge?: "Destaque" | "Promoção";
+  badge?: "Destaque" | "Promoção" | undefined;
   featured?: boolean;
 };
 
