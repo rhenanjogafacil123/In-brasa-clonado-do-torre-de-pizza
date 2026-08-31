@@ -454,7 +454,7 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                         : "border-border bg-background text-foreground/75 hover:border-primary/30",
                     )}
                   >
-                    <span className="block">{variant.label}</span>
+                    <span className="block whitespace-nowrap text-[11px] sm:text-xs">{variant.label}</span>
                     <span className="mt-0.5 block text-[11px]">{brl(variant.price)}</span>
                   </button>
                 ))}
