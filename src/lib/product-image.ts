@@ -50,6 +50,7 @@ const productImages: Record<string, string> = {
   "calzone-ascoly": "/menu/calzone-ascoly.webp",
   "calzone-chambacon": "/menu/calzone-chambacon.webp",
   "calzone-sertas": "/menu/calzone-sertas.webp",
+  "suco-natural": "/menu/sucos-naturais.webp",
   "acai": "/menu/acai.webp",
   "batata-bacon-cheddar": "/menu/porcao-batata-bacon-cheddar.webp",
   "batata-frango": "/menu/porcao-batata-frango.webp",
