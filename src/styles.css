@@ -112,3 +112,9 @@ img[alt="Sucos Naturais"] {
   object-fit: cover !important;
   object-position: center 45% !important;
 }
+
+/* Milk-shake: preencher o quadro do card sem faixas pretas, mantendo os copos centralizados. */
+img[alt="Milk-shake"] {
+  object-fit: cover !important;
+  object-position: center center !important;
+}
