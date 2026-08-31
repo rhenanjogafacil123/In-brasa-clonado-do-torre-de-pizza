@@ -113,6 +113,13 @@ img[alt="Sucos Naturais"] {
   object-position: center 45% !important;
 }
 
+/* Evita ampliar a imagem original 320x240 para um quadro quadrado.
+   Em 4:3 ela fica praticamente no tamanho nativo e aparece mais nítida. */
+div.relative.aspect-square:has(> img[alt="Sucos Naturais"]) {
+  aspect-ratio: 4 / 3 !important;
+  background: transparent !important;
+}
+
 /* Milk-shake: preencher o quadro do card sem faixas pretas, mantendo os copos centralizados. */
 img[alt="Milk-shake"] {
   object-fit: cover !important;
