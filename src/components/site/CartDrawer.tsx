@@ -27,6 +27,7 @@ export function CartDrawer() {
   const { open, setOpen, items, subtotal, count, setQty, remove, notes, setNotes, clear } = useCart();
   const [customerName, setCustomerName] = useState("");
   const [address, setAddress] = useState("");
+  const [complement, setComplement] = useState("");
   const [paymentMethod, setPaymentMethod] = useState("");
   const [cashAmount, setCashAmount] = useState("");
   const [attemptedSubmit, setAttemptedSubmit] = useState(false);
@@ -39,6 +40,7 @@ export function CartDrawer() {
 
   const nameMissing = attemptedSubmit && !customerName.trim();
   const addressMissing = attemptedSubmit && !address.trim();
+  const complementMissing = attemptedSubmit && !complement.trim();
   const paymentMissing = attemptedSubmit && !paymentMethod;
   const cashMissing = attemptedSubmit && paymentMethod === "Dinheiro" && validCashValue === null;
   const cashInsufficient = paymentMethod === "Dinheiro" && validCashValue !== null && validCashValue < subtotal;
@@ -46,6 +48,7 @@ export function CartDrawer() {
   const resetCheckout = () => {
     setCustomerName("");
     setAddress("");
+    setComplement("");
     setPaymentMethod("");
     setCashAmount("");
     setAttemptedSubmit(false);
@@ -57,6 +60,7 @@ export function CartDrawer() {
     const missing: string[] = [];
     if (!customerName.trim()) missing.push("nome");
     if (!address.trim()) missing.push("endereço");
+    if (!complement.trim()) missing.push("complemento/referência");
     if (!paymentMethod) missing.push("forma de pagamento");
 
     if (missing.length > 0) {
@@ -98,6 +102,7 @@ export function CartDrawer() {
           notes,
           customerName,
           address,
+          complement,
           paymentMethod,
           paymentMethod === "Dinheiro" ? validCashValue : null,
         ),
@@ -242,6 +247,20 @@ export function CartDrawer() {
                       />
                     </div>
                     {addressMissing && <p className="mt-1 text-xs font-medium text-destructive">Informe o endereço.</p>}
+                  </div>
+
+                  <div>
+                    <label htmlFor="complement" className="mb-1.5 block text-sm font-medium text-foreground">Complemento / Referência <span className="text-destructive">*</span></label>
+                    <input
+                      id="complement"
+                      type="text"
+                      value={complement}
+                      onChange={(e) => setComplement(e.target.value)}
+                      placeholder="Ex.: muro branco, portão preto, casa dos fundos, apto 202..."
+                      aria-invalid={complementMissing}
+                      className={`w-full rounded-2xl border bg-background px-4 py-3 text-sm outline-none focus:ring-4 focus:ring-primary/10 ${complementMissing ? "border-destructive" : "border-border"}`}
+                    />
+                    {complementMissing && <p className="mt-1 text-xs font-medium text-destructive">Informe um complemento ou ponto de referência.</p>}
                   </div>
                 </div>
               </section>
