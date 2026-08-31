@@ -1,0 +1,94 @@
+name: Fix menu ingredients once
+
+on:
+  push:
+    paths:
+      - ".github/workflows/fix-menu-ingredients-once.yml"
+
+permissions:
+  contents: write
+
+jobs:
+  fix-menu:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Bun
+        uses: oven-sh/setup-bun@v2
+
+      - name: Correct descriptions and ingredient parsing
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          path = Path("src/data/menu.ts")
+          text = path.read_text(encoding="utf-8")
+
+          old_carne = 'Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.'
+          new_carne = 'Carne, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.'
+          old_frango = 'Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda e maionese Billy Jack.'
+          new_frango = 'Frango, cebola, picles, alface, queijo Cheddar ou mussarela em fatias, tomate, azeitona, pimentão, ketchup, mostarda, maionese e Billy Jack.'
+
+          if old_carne not in text or old_frango not in text:
+              raise SystemExit("Sub Torre descriptions no longer match expected source; refusing unsafe patch")
+
+          text = text.replace(old_carne, new_carne, 1)
+          text = text.replace(old_frango, new_frango, 1)
+
+          old_parser = '''  const tokens = [...parts, ...last.split(/ e (?=[^,]*$)/)];
+          return tokens
+            .map(tidy)
+            .filter((item) => item.length > 0 && !/pão/i.test(item));'''
+          new_parser = '''  const tokens = [...parts, ...last.split(/ e (?=[^,]*$)/)];
+          return tokens
+            .flatMap((token) => token.split(/\\s+ou\\s+|\\s*\\/\\s*/i))
+            .map(tidy)
+            .filter((item) => item.length > 0 && !/pão/i.test(item));'''
+
+          if old_parser not in text:
+              raise SystemExit("Ingredient parser no longer matches expected source; refusing unsafe patch")
+
+          text = text.replace(old_parser, new_parser, 1)
+          path.write_text(text, encoding="utf-8")
+          PY
+
+      - name: Verify generated removal options
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          text = Path("src/data/menu.ts").read_text(encoding="utf-8")
+          required = [
+              "mostarda, maionese e Billy Jack",
+              ".flatMap((token) => token.split(/\\s+ou\\s+|\\s*\\/\\s*/i))",
+          ]
+          for needle in required:
+              if needle not in text:
+                  raise SystemExit(f"Missing expected correction: {needle}")
+          if "maionese Billy Jack" in text:
+              raise SystemExit("Combined 'maionese Billy Jack' still exists")
+          PY
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Typecheck
+        run: bunx tsgo --noEmit
+
+      - name: Build
+        run: bun run build
+
+      - name: Commit correction and remove one-time workflow
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/fix-menu-ingredients-once.yml
+          git add src/data/menu.ts
+          git commit -m "fix: separate menu ingredients and removal options"
+          git push origin HEAD:main
