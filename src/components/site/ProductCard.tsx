@@ -272,7 +272,11 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                               index > 0 && "border-t border-border",
                             )}
                           >
-                            <p className="text-sm font-medium text-foreground">{variant.label}</p>
+                            <p className="text-sm font-medium text-foreground">
+                              {product.category === "pizzas" && variant.id === "grande"
+                                ? `${variant.label} — + Refri 2L GRÁTIS`
+                                : variant.label}
+                            </p>
                             <div className="flex items-center gap-3">
                               <span className="text-sm font-medium text-foreground">{brl(variant.price)}</span>
                               {optionControl(checked, true, false)}
@@ -314,6 +318,18 @@ export function ProductCard({ product, featured = false }: { product: Product; f
                       })}
                     </div>
                   </section>
+                )}
+
+                {product.category === "pizzas" && variantId === "grande" && (
+                  <div className="border-b-[8px] border-muted/70 bg-primary/10 px-5 py-4">
+                    <div className="flex items-center gap-3 rounded-2xl border border-primary/20 bg-background px-4 py-3.5 shadow-soft">
+                      <span className="text-xl leading-none">🎁</span>
+                      <div className="min-w-0">
+                        <p className="text-sm font-semibold text-foreground">Você ganhou 1 Refri 2L</p>
+                        <p className="text-xs text-muted-foreground">Escolha Kuat ou Convenção abaixo</p>
+                      </div>
+                    </div>
+                  </div>
                 )}
 
                 {customGroups.map(renderGroup)}
@@ -408,6 +424,16 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             >
               {expanded ? "ver menos" : "ver mais"}
             </button>
+          )}
+
+          {product.category === "pizzas" && (
+            <div className="mt-3 flex items-center gap-2.5 rounded-2xl bg-gradient-to-r from-primary/10 to-accent/60 px-3.5 py-2.5">
+              <span className="text-lg leading-none">🎁</span>
+              <div className="min-w-0">
+                <p className="text-xs font-semibold text-foreground">Pizza GRANDE ganha Refri 2L</p>
+                <p className="text-[11px] text-muted-foreground">Kuat ou Convenção</p>
+              </div>
+            </div>
           )}
 
           {showCardVariants && (
