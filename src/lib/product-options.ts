@@ -109,12 +109,73 @@ const pastelChoiceIds = new Set(["pastel-lombo", "pastel-frango", "pastel-palmit
 const subChoiceIds = new Set(["sub-torre-carne", "sub-torre-frango"]);
 const sweetPizzaIds = new Set(["pizza-banana", "pizza-romeu-julieta", "pizza-chocolate"]);
 
+const splitRemovalIngredients = (description: string) => {
+  const parts = description.split(",");
+  const last = parts.pop() ?? "";
+  const tokens = [...parts, ...last.split(/ e (?=[^,]*$)/)];
+
+  return tokens
+    .flatMap((token) => token.split(/\s+ou\s+|\s*\/\s*/i))
+    .map((item) => normalizePattyWording(item.trim().replace(/\.$/, "")))
+    .filter((item) => item.length > 0 && !/pão/i.test(item));
+};
+
+const sameOption = (left: string, right: string) =>
+  normalizePattyWording(left).trim().toLocaleLowerCase("pt-BR") ===
+  normalizePattyWording(right).trim().toLocaleLowerCase("pt-BR");
+
+/**
+ * Quando a descrição começa com algo como:
+ * "2 X-Torre (ingredientes...) + ..."
+ * cria uma retirada independente para cada unidade.
+ * A mesma regra passa a funcionar para futuros combos como "2 Pastel ...".
+ */
+const multiUnitRemovalGroups = (product: Product, existingGroups: UiOptionGroup[]) => {
+  const source = normalizePattyWording(comboDescriptions[product.id] ?? product.description);
+  const match = source.match(/^\s*(\d+)\s+(.+?)\s*\(([^)]+)\)/);
+  if (!match) return null;
+
+  const quantity = Number(match[1]);
+  const itemName = match[2]?.trim() ?? "item";
+  const itemIngredients = splitRemovalIngredients(match[3] ?? "");
+
+  if (!Number.isFinite(quantity) || quantity < 2 || itemIngredients.length === 0) return null;
+
+  const perUnitGroups: UiOptionGroup[] = Array.from({ length: quantity }, (_, index) => ({
+    id: `retirar-unidade-${index + 1}`,
+    label: `Retirar da unidade ${index + 1} — ${itemName}`,
+    options: itemIngredients,
+    min: 0,
+    max: itemIngredients.length,
+    hint: "Opcional — selecione apenas o que não deve vir nesta unidade",
+  }));
+
+  const genericRemoval = existingGroups.find((group) => group.id === "retirar");
+  const accompanimentOptions = (genericRemoval?.options ?? []).filter(
+    (option) => !itemIngredients.some((ingredient) => sameOption(option, ingredient)),
+  );
+
+  if (accompanimentOptions.length > 0) {
+    perUnitGroups.push({
+      id: "retirar-acompanhamento",
+      label: "Retirar do acompanhamento",
+      options: accompanimentOptions,
+      min: 0,
+      max: accompanimentOptions.length,
+      hint: "Opcional",
+    });
+  }
+
+  return perUnitGroups;
+};
+
 export function productOptionGroups(product: Product): UiOptionGroup[] {
   const existingGroups: UiOptionGroup[] = (product.customGroups ?? []).map((group) => ({
     ...group,
     options: group.options.map(normalizePattyWording),
   }));
 
+  const perUnitRemovalGroups = multiUnitRemovalGroups(product, existingGroups);
   const groups: UiOptionGroup[] = [];
 
   if (product.id === "pizza-frango-catupiry-cheddar") groups.push(pizzaCreamChoice);
@@ -122,7 +183,12 @@ export function productOptionGroups(product: Product): UiOptionGroup[] {
   if (product.id === "batata-frango") groups.push(chickenPortionChoice);
   if (pastelChoiceIds.has(product.id)) groups.push(pastelCheeseChoice);
 
-  groups.push(...existingGroups);
+  if (perUnitRemovalGroups) {
+    groups.push(...existingGroups.filter((group) => group.id !== "retirar"));
+    groups.push(...perUnitRemovalGroups);
+  } else {
+    groups.push(...existingGroups);
+  }
 
   if (product.category === "pizzas") groups.push(pizzaFreeDrink);
   if (product.category === "pizzas" && !sweetPizzaIds.has(product.id)) groups.push(pizzaExtras);
