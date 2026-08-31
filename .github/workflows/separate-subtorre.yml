@@ -1,0 +1,66 @@
+name: Separate Sub Torre category
+
+on:
+  push:
+    paths:
+      - '.github/workflows/separate-subtorre.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  update-menu:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          fetch-depth: 1
+
+      - name: Separate Sub Torre from hamburgers
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          menu = Path('src/data/menu.ts')
+          text = menu.read_text()
+
+          if '| "subtorre"' not in text:
+              text = text.replace('  | "hamburgueres"\n', '  | "hamburgueres"\n  | "subtorre"\n', 1)
+
+          if '{ id: "subtorre", label: "Sub Torre" },' not in text:
+              text = text.replace(
+                  '  { id: "hamburgueres", label: "Hambúrgueres" },\n',
+                  '  { id: "hamburgueres", label: "Hambúrgueres" },\n  { id: "subtorre", label: "Sub Torre" },\n',
+                  1,
+              )
+
+          lines = []
+          for line in text.splitlines():
+              if 'id: "sub-torre-carne"' in line or 'id: "sub-torre-frango"' in line:
+                  line = line.replace('category: "hamburgueres"', 'category: "subtorre"')
+              lines.append(line)
+          menu.write_text('\n'.join(lines) + '\n')
+
+          section = Path('src/components/site/MenuSection.tsx')
+          section_text = section.read_text()
+          section_text = section_text.replace(
+              'Pizzas, hambúrgueres, combos, pastéis, calzones, porções, bebidas e gelados.',
+              'Pizzas, hambúrgueres, Sub Torre, combos, pastéis, calzones, porções, bebidas e gelados.'
+          )
+          section.write_text(section_text)
+          PY
+
+      - name: Commit menu category split
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add src/data/menu.ts src/components/site/MenuSection.tsx
+          if git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "feat: separate Sub Torre from hamburgers"
+          git push
