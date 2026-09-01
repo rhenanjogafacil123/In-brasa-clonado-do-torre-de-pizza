@@ -1,8 +1,13 @@
-import { useDeferredValue, useMemo, useState } from "react";
+import { memo, useDeferredValue, useMemo, useState } from "react";
 import { Info, Search, UtensilsCrossed } from "lucide-react";
 import { categories, pizzaNotices, products, type CategoryId } from "@/data/menu";
 import { ProductCard } from "./ProductCard";
 import { cn } from "@/lib/utils";
+
+const MenuProductCard = memo(ProductCard);
+const menuProducts = products.map((product) =>
+  product.badge === "Destaque" ? { ...product, badge: undefined } : product,
+);
 
 export function MenuSection() {
   const [active, setActive] = useState<CategoryId>("pizzas");
@@ -11,7 +16,7 @@ export function MenuSection() {
 
   const list = useMemo(() => {
     const q = deferredQuery.trim().toLowerCase();
-    return products.filter((product) => {
+    return menuProducts.filter((product) => {
       const matchesCategory = q ? true : product.category === active;
       const matchesQuery = !q || product.name.toLowerCase().includes(q) || product.description.toLowerCase().includes(q);
       return matchesCategory && matchesQuery;
@@ -80,10 +85,12 @@ export function MenuSection() {
       {list.length > 0 ? (
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {list.map((product) => (
-            <ProductCard
+            <div
               key={product.id}
-              product={{ ...product, badge: product.badge === "Destaque" ? undefined : product.badge }}
-            />
+              style={{ contentVisibility: "auto", containIntrinsicSize: "auto 520px" }}
+            >
+              <MenuProductCard product={product} />
+            </div>
           ))}
         </div>
       ) : (
