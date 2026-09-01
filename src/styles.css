@@ -79,6 +79,12 @@
   html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
   body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
   h1,h2,h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  img {
+    -webkit-user-drag: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
 }
 
 /* Hide Lovable branding when the host injects a badge inside the app DOM. */
@@ -124,4 +130,11 @@ div.relative.aspect-square:has(> img[alt="Sucos Naturais"]) {
 img[alt="Milk-shake"] {
   object-fit: cover !important;
   object-position: center center !important;
+}
+
+/* Proteção visual: se alguém tentar imprimir/salvar a página como PDF, as fotos não aparecem. */
+@media print {
+  img {
+    visibility: hidden !important;
+  }
 }
