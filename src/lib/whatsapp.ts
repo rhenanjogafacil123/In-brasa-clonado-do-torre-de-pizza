@@ -31,6 +31,12 @@ function safeText(value: string, maxLength: number) {
     .slice(0, maxLength);
 }
 
+function hasIngredientException(details: string[]) {
+  return details.some((detail) =>
+    /^(retirar\b|sem\b)|ingrediente(?:s)?\s+(?:retirado|removido)|\bretirar\s+(?:da|do|de|ingrediente)/i.test(detail),
+  );
+}
+
 export function whatsappLink(message: string) {
   const boundedMessage = message.slice(0, MAX_WHATSAPP_MESSAGE_LENGTH);
   return `https://api.whatsapp.com/send?phone=${business.whatsapp}&text=${encodeURIComponent(boundedMessage)}`;
@@ -55,11 +61,14 @@ export function orderMessage(
   const lines = items.slice(0, 40).flatMap((item) => {
     const size = item.variant?.label ? ` (${item.variant.label})` : "";
     const head = `${item.qty}x ${item.product.name}${size} — ${brl(item.qty * cartItemPrice(item))}`;
-    const details = (item.flavor ?? "")
+    const rawDetails = (item.flavor ?? "")
       .split("•")
       .map((part) => safeText(part, 200))
-      .filter(Boolean)
-      .map((part) => `   ↳ ${part}`);
+      .filter(Boolean);
+    const details = rawDetails.map((part) => `   ↳ ${part}`);
+    if (hasIngredientException(rawDetails)) {
+      details.push("   ↳ Restante dos ingredientes: normal");
+    }
     return [head, ...details];
   });
 
