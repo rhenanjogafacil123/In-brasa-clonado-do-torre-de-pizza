@@ -1,6 +1,8 @@
 import { business } from "@/data/business";
 
-const developerWhatsapp = "https://wa.me/5521973152056";
+const developerWhatsappMessage =
+  "Olá, Rhenan! 👋 Vi o site que você desenvolveu para a Torre de Pizza e gostaria de entender melhor como funciona seu serviço e os valores para criar um site para minha empresa.";
+const developerWhatsapp = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
 function WhatsappIcon() {
   return (
