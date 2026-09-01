@@ -1,1 +1,1 @@
-sync 2026-08-30 per-item-removal-options
+sync 2026-09-01 performance-optimized-images
