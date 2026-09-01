@@ -171,7 +171,7 @@ article > div.relative.aspect-square::before,
 
 article > div.relative.aspect-square::after,
 #sobre .relative:has(> img[alt="Preparo artesanal na Torre de Pizza"])::after {
-  content: "PRÉVIA PROTEGIDA • versão final sem esta marca";
+  content: "As imagens originais serão disponibilizadas após a contratação oficial do site.";
   position: absolute;
   left: 50%;
   bottom: 12px;
@@ -225,7 +225,7 @@ article > div.relative.aspect-square::after,
 }
 
 #topo::after {
-  content: "PRÉVIA PROTEGIDA • versão final sem esta marca";
+  content: "As imagens originais serão disponibilizadas após a contratação oficial do site.";
   position: absolute;
   right: 18px;
   top: 100px;
