@@ -42,7 +42,7 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="mt-6 border-t border-border pt-6 text-center">
+        <div className="mt-6 pt-6 text-center">
           <p className="flex items-center justify-center gap-2 text-[15px] text-muted-foreground">
             <span className="font-mono text-lg font-black text-red-500" aria-hidden="true">&lt;/&gt;</span>
             <span>
@@ -55,14 +55,14 @@ export function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Falar com Rhenan pelo WhatsApp no número (21) 97315-2056"
-            className="mx-auto mt-3 flex w-full max-w-[360px] items-center justify-center gap-3 rounded-2xl border border-[#25D366] px-5 py-3 text-left transition hover:bg-[#25D366]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+            className="mx-auto mt-3 flex min-h-[62px] w-full max-w-[360px] items-center justify-center gap-3 rounded-2xl border border-[#25D366] px-5 py-2.5 text-left transition hover:bg-[#25D366]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
           >
-            <span className="text-[#25D366]">
+            <span className="flex h-8 w-8 shrink-0 self-center items-center justify-center text-[#25D366]">
               <WhatsappIcon />
             </span>
-            <span className="leading-tight">
-              <strong className="block text-lg font-extrabold text-foreground">(21) 97315-2056</strong>
-              <small className="mt-1 block text-sm text-muted-foreground">Fale comigo no WhatsApp</small>
+            <span className="flex min-h-10 flex-col justify-center leading-none">
+              <strong className="block text-lg font-extrabold leading-none text-foreground">(21) 97315-2056</strong>
+              <small className="mt-1.5 block text-sm leading-none text-muted-foreground">Fale comigo no WhatsApp</small>
             </span>
           </a>
         </div>
