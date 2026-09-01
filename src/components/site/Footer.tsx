@@ -1,5 +1,6 @@
 import { business } from "@/data/business";
 
+// Build the emoji at runtime so WhatsApp receives a clean UTF-8 encoded message.
 const developerWhatsappMessage =
   "Olá, Rhenan! " +
   String.fromCodePoint(0x1f44b) +
