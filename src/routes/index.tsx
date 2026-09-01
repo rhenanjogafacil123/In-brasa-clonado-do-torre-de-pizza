@@ -5,7 +5,6 @@ import { Header } from "@/components/site/Header";
 import { Hero } from "@/components/site/Hero";
 import { MenuSection } from "@/components/site/MenuSection";
 import { About } from "@/components/site/About";
-import { Info } from "@/components/site/Info";
 import { Contact } from "@/components/site/Contact";
 import { Footer } from "@/components/site/Footer";
 import { MobileCartBar } from "@/components/site/MobileCartBar";
@@ -23,7 +22,7 @@ export const Route=createFileRoute("/")({head:()=>({meta:[{title},{name:"descrip
 function PageContent(){
   const { open, count } = useCart();
   useEffect(()=>{if(count>0) void loadCartDrawer()},[count]);
-  return <><Header/><main><Hero/><MenuSection/><About/><Info/><Contact/></main><Footer/>{open&&<Suspense fallback={null}><LazyCartDrawer/></Suspense>}<MobileCartBar/></>;
+  return <><Header/><main><Hero/><MenuSection/><About/><Contact/></main><Footer/>{open&&<Suspense fallback={null}><LazyCartDrawer/></Suspense>}<MobileCartBar/></>;
 }
 
 function Index(){return <CartProvider><PageContent/></CartProvider>}
