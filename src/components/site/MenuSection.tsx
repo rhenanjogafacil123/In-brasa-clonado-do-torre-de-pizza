@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useDeferredValue, useMemo, useState } from "react";
 import { Info, Search, UtensilsCrossed } from "lucide-react";
 import { categories, pizzaNotices, products, type CategoryId } from "@/data/menu";
 import { ProductCard } from "./ProductCard";
@@ -7,15 +7,16 @@ import { cn } from "@/lib/utils";
 export function MenuSection() {
   const [active, setActive] = useState<CategoryId>("pizzas");
   const [query, setQuery] = useState("");
+  const deferredQuery = useDeferredValue(query);
 
   const list = useMemo(() => {
-    const q = query.trim().toLowerCase();
+    const q = deferredQuery.trim().toLowerCase();
     return products.filter((product) => {
       const matchesCategory = q ? true : product.category === active;
       const matchesQuery = !q || product.name.toLowerCase().includes(q) || product.description.toLowerCase().includes(q);
       return matchesCategory && matchesQuery;
     });
-  }, [active, query]);
+  }, [active, deferredQuery]);
 
   return (
     <section id="cardapio" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
