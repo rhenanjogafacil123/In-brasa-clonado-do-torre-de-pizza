@@ -1,4 +1,4 @@
-name: Optimize portion images
+name: Optimize site images
 
 on:
   push:
@@ -12,58 +12,133 @@ permissions:
 jobs:
   optimize:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 12
     steps:
       - name: Checkout repository
         uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
           fetch-depth: 1
 
-      - name: Install WebP tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y webp
+      - name: Install image optimizer
+        run: python3 -m pip install --quiet pillow
 
-      - name: Convert portion images to WebP
+      - name: Download hero and about images
         run: |
-          cwebp -quiet -q 80 -resize 720 720 "public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_48 (1).png" -o "public/menu/porcao-batata-bacon-cheddar.webp"
-          cwebp -quiet -q 80 -resize 720 720 "public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (2).png" -o "public/menu/porcao-batata-frango.webp"
-          cwebp -quiet -q 80 -resize 720 720 "public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (3).png" -o "public/menu/porcao-batata-barquinho.webp"
-          cwebp -quiet -q 80 -resize 720 720 "public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (4).png" -o "public/menu/porcao-nuggets-20.webp"
-          cwebp -quiet -q 80 -resize 720 720 "public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (5).png" -o "public/menu/porcao-aneis-cebola-20.webp"
-          cwebp -quiet -q 80 -resize 720 720 "public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_50 (6).png" -o "public/menu/porcao-fritas.webp"
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://pizza-prime-digital.lovable.app/assets/hero-pizza-52s91XwR.jpg" \
+            -o /tmp/torre-hero.jpg
+          curl --fail --location --retry 3 --retry-delay 2 \
+            "https://pizza-prime-digital.lovable.app/assets/about-pizzeria-C2ZPZmx1.jpg" \
+            -o /tmp/torre-about.jpg
 
-      - name: Link WebP images to portion products
+      - name: Generate optimized WebP assets
         run: |
           python3 - <<'PY'
           from pathlib import Path
-          p = Path("src/lib/product-image.ts")
-          text = p.read_text()
-          if '"batata-bacon-cheddar"' not in text:
-              needle = '  "acai": "/menu/acai.webp",\n};'
-              rows = [
-                  '  "acai": "/menu/acai.webp",',
-                  '  "batata-bacon-cheddar": "/menu/porcao-batata-bacon-cheddar.webp",',
-                  '  "batata-frango": "/menu/porcao-batata-frango.webp",',
-                  '  "batata-barquinho": "/menu/porcao-batata-barquinho.webp",',
-                  '  "nuggets-20": "/menu/porcao-nuggets-20.webp",',
-                  '  "aneis-cebola-20": "/menu/porcao-aneis-cebola-20.webp",',
-                  '  "porcao-fritas": "/menu/porcao-fritas.webp",',
-                  '};',
-              ]
-              if needle not in text:
-                  raise SystemExit("Expected insertion point not found in product-image.ts")
-              p.write_text(text.replace(needle, "\n".join(rows)))
+          from PIL import Image
+
+          def optimize(source, destination, max_side, quality=80):
+              destination = Path(destination)
+              destination.parent.mkdir(parents=True, exist_ok=True)
+              with Image.open(source) as image:
+                  image.thumbnail((max_side, max_side), Image.Resampling.LANCZOS)
+                  if image.mode not in ("RGB", "RGBA"):
+                      image = image.convert("RGBA" if "transparency" in image.info else "RGB")
+                  image.save(destination, "WEBP", quality=quality, method=6)
+                  print(f"{source} -> {destination} ({destination.stat().st_size / 1024:.1f} KB)")
+
+          # Critical / global images.
+          optimize("/tmp/torre-hero.jpg", "public/hero-pizza.webp", 1600, 79)
+          optimize("/tmp/torre-about.jpg", "public/about-pizzeria.webp", 1000, 79)
+          optimize("public/logo.png", "public/logo.webp", 320, 84)
+          optimize("public/menu/milkshakes com calda.png", "public/menu/milkshakes-com-calda.webp", 720, 80)
+
+          # Existing portion source images kept only as source material; visitors receive WebP.
+          portion_sources = [
+              ("public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_48 (1).png", "public/menu/porcao-batata-bacon-cheddar.webp"),
+              ("public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (2).png", "public/menu/porcao-batata-frango.webp"),
+              ("public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (3).png", "public/menu/porcao-batata-barquinho.webp"),
+              ("public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (4).png", "public/menu/porcao-nuggets-20.webp"),
+              ("public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_49 (5).png", "public/menu/porcao-aneis-cebola-20.webp"),
+              ("public/menu/ChatGPT Image 30 de ago. de 2026, 21_32_50 (6).png", "public/menu/porcao-fritas.webp"),
+          ]
+          for source, destination in portion_sources:
+              optimize(source, destination, 720, 80)
           PY
 
-      - name: Commit optimized portion images
+      - name: Point the site to optimized assets
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          def update(path, replacements):
+              file = Path(path)
+              text = file.read_text()
+              original = text
+              for old, new in replacements:
+                  text = text.replace(old, new)
+              if text != original:
+                  file.write_text(text)
+
+          update("src/lib/product-image.ts", [
+              ('"milkshake": "/menu/milkshakes com calda.png"', '"milkshake": "/menu/milkshakes-com-calda.webp"'),
+          ])
+
+          update("src/components/site/Hero.tsx", [
+              ('const heroImg="https://pizza-prime-digital.lovable.app/assets/hero-pizza-52s91XwR.jpg";', 'const heroImg="/hero-pizza.webp";'),
+              ('<img src={heroImg} alt="Pizza artesanal da Torre de Pizza" className=', '<img src={heroImg} alt="Pizza artesanal da Torre de Pizza" loading="eager" fetchPriority="high" decoding="async" className='),
+              ('src="/logo.png"', 'src="/logo.webp"'),
+          ])
+
+          update("src/components/site/Header.tsx", [
+              ('src="/logo.png"', 'src="/logo.webp"'),
+              ('alt={business.name} className="h-full w-full object-contain"', 'alt={business.name} decoding="async" className="h-full w-full object-contain"'),
+          ])
+
+          update("src/components/site/About.tsx", [
+              ('const aboutImg="https://pizza-prime-digital.lovable.app/assets/about-pizzeria-C2ZPZmx1.jpg";', 'const aboutImg="/about-pizzeria.webp";'),
+              ('loading="lazy" className=', 'loading="lazy" decoding="async" fetchPriority="low" className='),
+          ])
+
+          for path in ["src/components/site/ProductCard.tsx", "src/components/site/Featured.tsx"]:
+              file = Path(path)
+              text = file.read_text()
+              if 'loading="lazy"\n            decoding="async"' not in text:
+                  text = text.replace(
+                      'loading="lazy"\n            className=',
+                      'loading="lazy"\n            decoding="async"\n            fetchPriority="low"\n            className=',
+                  )
+              file.write_text(text)
+
+          root = Path("src/routes/__root.tsx")
+          text = root.read_text()
+          text = text.replace(
+              'links:[{rel:"stylesheet",href:appCss},{rel:"preconnect",href:"https://fonts.googleapis.com"}',
+              'links:[{rel:"stylesheet",href:appCss},{rel:"preload",href:"/hero-pizza.webp",as:"image",type:"image/webp"},{rel:"preconnect",href:"https://fonts.googleapis.com"}',
+          )
+          text = text.replace('{rel:"icon",type:"image/png",href:"/favicon.png"}', '{rel:"icon",type:"image/x-icon",href:"/favicon.ico"}')
+          root.write_text(text)
+          PY
+
+      - name: Commit optimized assets and performance hints
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/menu/*.webp src/lib/product-image.ts
+          git add \
+            public/hero-pizza.webp \
+            public/about-pizzeria.webp \
+            public/logo.webp \
+            public/menu/*.webp \
+            src/lib/product-image.ts \
+            src/components/site/Hero.tsx \
+            src/components/site/Header.tsx \
+            src/components/site/About.tsx \
+            src/components/site/ProductCard.tsx \
+            src/components/site/Featured.tsx \
+            src/routes/__root.tsx
           if git diff --cached --quiet; then
             echo "No changes to commit"
             exit 0
           fi
-          git commit -m "perf: add optimized portion images"
+          git commit -m "perf: serve optimized images and prioritize LCP"
           git push
