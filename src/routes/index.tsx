@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, useEffect } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { CartProvider, useCart } from "@/hooks/useCart";
 import { Header } from "@/components/site/Header";
@@ -10,8 +10,9 @@ import { Contact } from "@/components/site/Contact";
 import { Footer } from "@/components/site/Footer";
 import { MobileCartBar } from "@/components/site/MobileCartBar";
 
+const loadCartDrawer = () => import("@/components/site/CartDrawer");
 const LazyCartDrawer = lazy(async () => {
-  const module = await import("@/components/site/CartDrawer");
+  const module = await loadCartDrawer();
   return { default: module.CartDrawer };
 });
 
@@ -20,7 +21,8 @@ const description="Cardápio digital da Torre de Pizza: pizzas artesanais no for
 export const Route=createFileRoute("/")({head:()=>({meta:[{title},{name:"description",content:description},{property:"og:title",content:title},{property:"og:description",content:description},{property:"og:type",content:"restaurant"},{name:"twitter:card",content:"summary_large_image"}]}),component:Index});
 
 function PageContent(){
-  const { open } = useCart();
+  const { open, count } = useCart();
+  useEffect(()=>{if(count>0) void loadCartDrawer()},[count]);
   return <><Header/><main><Hero/><MenuSection/><About/><Info/><Contact/></main><Footer/>{open&&<Suspense fallback={null}><LazyCartDrawer/></Suspense>}<MobileCartBar/></>;
 }
 
