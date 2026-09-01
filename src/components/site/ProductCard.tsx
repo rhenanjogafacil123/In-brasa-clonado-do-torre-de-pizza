@@ -392,6 +392,8 @@ export function ProductCard({ product, featured = false }: { product: Product; f
             src={displayImage}
             alt={product.name}
             loading="lazy"
+            decoding="async"
+            fetchPriority="low"
             className={cn(
               "h-full w-full",
               isCustomImage ? "object-contain" : "object-cover transition-transform duration-700 group-hover:scale-105",
