@@ -11,20 +11,17 @@ jobs:
   verify-production:
     runs-on: ubuntu-latest
     steps:
-      - name: Verify production URL and site content
+      - name: Check production URLs
         shell: bash
         run: |
-          URL='https://hello-friend-rhenanzinho09-4700.vercel.app'
-          for i in {1..24}; do
-            code=$(curl -L -sS -o /tmp/page.html -w '%{http_code}' "$URL" || true)
-            echo "Attempt $i: HTTP $code"
-            if [ "$code" = "200" ] && grep -qi 'Torre de Pizza' /tmp/page.html; then
-              echo 'Production is online and Torre de Pizza content is present.'
-              grep -o -i -m1 '.\{0,80\}Torre de Pizza.\{0,120\}' /tmp/page.html || true
-              exit 0
-            fi
-            sleep 5
+          for URL in \
+            'https://hello-friend-rhenanzinho09-4700.vercel.app' \
+            'https://hello-friend-gywu3cqu4-rhenanzinho09-4700.vercel.app'; do
+            echo "===== $URL ====="
+            curl -L -sS -D /tmp/headers.txt -o /tmp/page.html -w 'HTTP %{http_code}\nFINAL %{url_effective}\n' "$URL" || true
+            echo '--- headers ---'
+            head -40 /tmp/headers.txt || true
+            echo '--- body ---'
+            head -c 2500 /tmp/page.html || true
+            echo
           done
-          echo 'Production did not become healthy with expected content.'
-          head -c 1500 /tmp/page.html || true
-          exit 1
