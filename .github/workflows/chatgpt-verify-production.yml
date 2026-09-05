@@ -11,17 +11,14 @@ jobs:
   verify-production:
     runs-on: ubuntu-latest
     steps:
-      - name: Check production URLs
+      - name: Check Vercel URLs
         shell: bash
         run: |
           for URL in \
-            'https://hello-friend-rhenanzinho09-4700.vercel.app' \
-            'https://hello-friend-gywu3cqu4-rhenanzinho09-4700.vercel.app'; do
+            'https://torre-pizza-public-test-rhenanzinho09-4700.vercel.app' \
+            'https://hello-friend-rhenanzinho09-4700.vercel.app'; do
             echo "===== $URL ====="
-            curl -L -sS -D /tmp/headers.txt -o /tmp/page.html -w 'HTTP %{http_code}\nFINAL %{url_effective}\n' "$URL" || true
-            echo '--- headers ---'
-            head -40 /tmp/headers.txt || true
-            echo '--- body ---'
-            head -c 2500 /tmp/page.html || true
+            curl -L -sS -o /tmp/page.html -w 'HTTP %{http_code}\nFINAL %{url_effective}\n' "$URL" || true
+            head -c 600 /tmp/page.html || true
             echo
           done
