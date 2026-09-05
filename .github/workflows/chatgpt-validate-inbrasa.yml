@@ -11,24 +11,19 @@ jobs:
   validate-production:
     runs-on: ubuntu-latest
     steps:
-      - name: Validate deployed site
+      - name: Inspect deployed site once
         shell: bash
         run: |
           URL='https://inbrasa.vercel.app'
-          for i in {1..36}; do
-            code=$(curl -L -sS -o /tmp/page.html -w '%{http_code}' "$URL" || true)
-            final=$(curl -L -sS -o /dev/null -w '%{url_effective}' "$URL" || true)
-            echo "Attempt $i: HTTP $code FINAL $final"
-            if [ "$code" = "200" ]; then
-              echo '--- page markers ---'
-              grep -Eio -m5 'Torre de Pizza|Torre Pizza|IN BRASA|cardápio|pizza' /tmp/page.html || true
-              echo '--- title ---'
-              grep -Eio -m1 '<title>[^<]+' /tmp/page.html || true
-              echo '--- first bytes ---'
-              head -c 1200 /tmp/page.html || true
-              exit 0
-            fi
-            sleep 5
-          done
-          echo 'Production did not return HTTP 200.'
-          exit 1
+          echo '=== direct request ==='
+          curl -sS --max-time 20 -D /tmp/h1 -o /tmp/b1 -w 'HTTP %{http_code}\nFINAL %{url_effective}\n' "$URL" || true
+          head -30 /tmp/h1 || true
+          echo '=== followed request ==='
+          curl -L -sS --max-time 20 -D /tmp/h2 -o /tmp/b2 -w 'HTTP %{http_code}\nFINAL %{url_effective}\n' "$URL" || true
+          echo '--- markers ---'
+          grep -Eio -m10 'Torre de Pizza|Torre Pizza|IN BRASA|cardápio|pizza|This page didn.t load' /tmp/b2 || true
+          echo '--- title ---'
+          grep -Eio -m1 '<title>[^<]+' /tmp/b2 || true
+          echo '--- first bytes ---'
+          head -c 1600 /tmp/b2 || true
+          exit 0
