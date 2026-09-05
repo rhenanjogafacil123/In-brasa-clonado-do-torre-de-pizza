@@ -11,14 +11,14 @@ jobs:
   verify-production:
     runs-on: ubuntu-latest
     steps:
-      - name: Check Vercel URLs
+      - name: Check Vercel public flags
         shell: bash
         run: |
           for URL in \
-            'https://torre-pizza-public-test-rhenanzinho09-4700.vercel.app' \
-            'https://hello-friend-rhenanzinho09-4700.vercel.app'; do
+            'https://torre-public-flag-rhenanzinho09-4700.vercel.app' \
+            'https://torre-protection-false-rhenanzinho09-4700.vercel.app' \
+            'https://torre-unprotected-rhenanzinho09-4700.vercel.app'; do
             echo "===== $URL ====="
             curl -L -sS -o /tmp/page.html -w 'HTTP %{http_code}\nFINAL %{url_effective}\n' "$URL" || true
-            head -c 600 /tmp/page.html || true
-            echo
+            grep -Eo 'PUBLIC_FLAG_OK|PROTECTION_FALSE_OK|UNPROTECTED_OK' /tmp/page.html || true
           done
