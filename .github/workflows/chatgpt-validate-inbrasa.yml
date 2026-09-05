@@ -1,0 +1,34 @@
+name: ChatGPT Validate Production
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate deployed site
+        shell: bash
+        run: |
+          URL='https://inbrasa.vercel.app'
+          for i in {1..36}; do
+            code=$(curl -L -sS -o /tmp/page.html -w '%{http_code}' "$URL" || true)
+            final=$(curl -L -sS -o /dev/null -w '%{url_effective}' "$URL" || true)
+            echo "Attempt $i: HTTP $code FINAL $final"
+            if [ "$code" = "200" ]; then
+              echo '--- page markers ---'
+              grep -Eio -m5 'Torre de Pizza|Torre Pizza|IN BRASA|cardápio|pizza' /tmp/page.html || true
+              echo '--- title ---'
+              grep -Eio -m1 '<title>[^<]+' /tmp/page.html || true
+              echo '--- first bytes ---'
+              head -c 1200 /tmp/page.html || true
+              exit 0
+            fi
+            sleep 5
+          done
+          echo 'Production did not return HTTP 200.'
+          exit 1
