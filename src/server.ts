@@ -1,6 +1,6 @@
 import "./lib/error-capture";
 
-import { consumeLastCapturedError } from "./lib/error-capture";
+import { consumeLastCapturedError, describeError } from "./lib/error-capture";
 import { renderErrorPage } from "./lib/error-page";
 
 type ServerEntry = {
@@ -16,6 +16,13 @@ async function getServerEntry(): Promise<ServerEntry> {
     );
   }
   return serverEntryPromise;
+}
+
+function safeDebugHeader(error: unknown): string {
+  return describeError(error)
+    .replace(/[\r\n]+/g, " | ")
+    .replace(/[^\x20-\x7E]/g, "?")
+    .slice(0, 1200);
 }
 
 function applySecurityHeaders(request: Request, response: Response): Response {
@@ -66,12 +73,14 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
   const body = await response.clone().text();
   if (!isH3SwallowedErrorBody(body)) return response;
 
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  const captured = consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`);
+  console.error(captured);
   return new Response(renderErrorPage(), {
     status: 500,
     headers: {
       "content-type": "text/html; charset=utf-8",
       "cache-control": "no-store",
+      "x-ssr-debug": safeDebugHeader(captured),
     },
   });
 }
@@ -101,6 +110,7 @@ export default {
           headers: {
             "content-type": "text/html; charset=utf-8",
             "cache-control": "no-store",
+            "x-ssr-debug": safeDebugHeader(error),
           },
         }),
       );
