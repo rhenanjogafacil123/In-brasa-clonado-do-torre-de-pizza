@@ -1,0 +1,25 @@
+name: ChatGPT Export Source
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Package source
+        run: |
+          zip -r hello-friend-source.zip . -x '.git/*' 'node_modules/*' 'hello-friend-source.zip'
+      - name: Upload source artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: hello-friend-source
+          path: hello-friend-source.zip
+          if-no-files-found: error
+          retention-days: 1
