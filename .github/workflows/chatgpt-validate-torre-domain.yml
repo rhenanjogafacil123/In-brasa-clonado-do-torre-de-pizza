@@ -1,0 +1,25 @@
+name: ChatGPT Validate Torre Domain
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate-domain:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate torredepizza.vercel.app
+        shell: bash
+        run: |
+          URL='https://torredepizza.vercel.app'
+          code=$(curl -L -sS --max-time 20 -o /tmp/page.html -w '%{http_code}' "$URL" || true)
+          final=$(curl -L -sS --max-time 20 -o /dev/null -w '%{url_effective}' "$URL" || true)
+          echo "HTTP $code"
+          echo "FINAL $final"
+          grep -aEio -m3 'Torre de Pizza|This page didn.t load|404|DEPLOYMENT_NOT_FOUND' /tmp/page.html || true
+          grep -aEio -m1 '<title>[^<]+' /tmp/page.html || true
+          test "$code" = "200"
+          grep -aq 'Torre de Pizza' /tmp/page.html
