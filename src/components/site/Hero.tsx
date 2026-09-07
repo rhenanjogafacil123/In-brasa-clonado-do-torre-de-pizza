@@ -22,6 +22,24 @@ const developerWhatsappMessage =
   "Olá, Rhenan! Vi o site que você desenvolveu para a Torre de Pizza e gostaria de conversarmos sobre um design baseado na identidade visual da minha empresa gratuitamente, e já ter informação sobre o preço. Sem compromisso, enrolação e perda de tempo!";
 const developerWhatsappUrl = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
+function WhatsappIcon({ className = "h-4 w-4" }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className={className}
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M20.4 11.6a8.4 8.4 0 0 1-12.5 7.35L3 20.5l1.5-4.75A8.4 8.4 0 1 1 20.4 11.6Z" />
+      <path d="M8.15 8.1c.35-.42.72-.27.9-.02l1.05 1.48c.18.25.13.58-.08.8l-.62.65c-.18.2-.2.48-.04.7.7.96 1.58 1.76 2.6 2.37.23.14.51.1.69-.1l.6-.7c.2-.23.53-.3.8-.14l1.58.93c.28.17.38.52.23.8-.4.75-1.1 1.45-1.95 1.62-1.44.29-3.7-.87-5.45-2.57-1.78-1.74-2.96-4-2.72-5.45.13-.82.7-1.74 1.41-2.37Z" />
+    </svg>
+  );
+}
+
 function InformationModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
 
@@ -120,7 +138,7 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#25D366]/35 bg-[#25D366]/10 px-3.5 py-3">
             <div className="flex min-w-0 items-center gap-3">
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#25D366] text-white">
-                <MessageCircle className="h-4 w-4" />
+                <WhatsappIcon className="h-5 w-5" />
               </span>
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#159447]">Desenvolvedor do site</p>
@@ -138,7 +156,7 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
               aria-label="Falar com Rhenan pelo WhatsApp no número (21) 97315-2056"
               className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
             >
-              <MessageCircle className="h-3.5 w-3.5" />
+              <WhatsappIcon className="h-3.5 w-3.5" />
               WhatsApp
             </a>
           </div>
