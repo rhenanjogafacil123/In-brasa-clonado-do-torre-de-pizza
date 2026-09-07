@@ -1,18 +1,9 @@
-import { MapPin, MessageCircle, Navigation, Phone } from "lucide-react";
+import { MapPin, Navigation, Phone } from "lucide-react";
 import { business } from "@/data/business";
-import { whatsappLink } from "@/lib/whatsapp";
 
 export function Contact() {
   const openMaps = () => {
     window.open(business.mapsUrl, "_blank", "noopener,noreferrer");
-  };
-
-  const openWhatsApp = () => {
-    window.open(
-      whatsappLink("Olá! Gostaria de fazer um pedido na Torre de Pizza."),
-      "_blank",
-      "noopener,noreferrer",
-    );
   };
 
   return (
@@ -44,15 +35,6 @@ export function Contact() {
             >
               <Navigation className="h-4 w-4" />
               Como chegar
-            </button>
-
-            <button
-              type="button"
-              onClick={openWhatsApp}
-              className="inline-flex w-full cursor-pointer items-center justify-center gap-2 rounded-full bg-gradient-gold px-6 py-4 text-sm font-semibold text-gold-foreground shadow-gold"
-            >
-              <MessageCircle className="h-4 w-4" />
-              Pedir no WhatsApp
             </button>
           </div>
         </div>
