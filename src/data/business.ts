@@ -10,6 +10,8 @@ export const business = {
   phone: "+55 21 96990-2994",
   phoneHref: "tel:+5521969902994",
   whatsapp: "5521969902994",
+  instagram: "@torredepizzacg",
+  instagramUrl: "https://www.instagram.com/torredepizzacg/",
   mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=R.+Domingos+Alves+Ribeiro,+28,+Campo+Grande,+Rio+de+Janeiro,+RJ",
   services: ["Delivery", "Retirada", "Atendimento no local"],
 } as const;
