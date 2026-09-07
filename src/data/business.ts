@@ -16,12 +16,11 @@ export const business = {
   services: ["Delivery", "Retirada", "Atendimento no local"],
   deliveryPricing: {
     /**
-     * Regra de taxa por distância.
-     * Exemplo: se a loja cobrar R$ 1 a cada 1,5 km, use amount: 1 e everyKm: 1.5.
-     * Enquanto amount for null, a distância é calculada, mas nenhuma taxa é cobrada.
+     * REGRA DE TESTE: R$ 1,00 a cada 1,5 km de rota.
+     * O cálculo usa blocos: até 1,5 km = R$ 1; até 3 km = R$ 2; etc.
      */
-    amount: null as number | null,
-    everyKm: 1,
+    amount: 1 as number | null,
+    everyKm: 1.5,
     calculation: "blocks" as "blocks" | "proportional",
     minimumFee: 0,
     maximumDistanceKm: null as number | null,
