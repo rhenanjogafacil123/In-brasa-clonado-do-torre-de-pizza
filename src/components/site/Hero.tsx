@@ -17,6 +17,12 @@ import { business } from "@/data/business";
 const heroImg = "/hero-pizza.webp";
 const serviceIcons = [Bike, ShoppingBag, Store];
 
+const developerWhatsappMessage =
+  "Olá, Rhenan! " +
+  String.fromCodePoint(0x1f44b) +
+  " Vi o site que você desenvolveu para a Torre de Pizza e gostaria de entender melhor como funciona seu serviço e os valores para criar um site para minha empresa.";
+const developerWhatsappUrl = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
+
 function InformationModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   if (!open) return null;
 
@@ -38,7 +44,7 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
         role="dialog"
         aria-modal="true"
         aria-labelledby="information-title"
-        className="animate-rise relative z-10 w-full max-w-md overflow-hidden rounded-[2rem] border border-border bg-card p-5 text-card-foreground shadow-lift sm:p-6"
+        className="animate-rise relative z-10 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[2rem] border border-border bg-card p-5 text-card-foreground shadow-lift sm:p-6"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -109,6 +115,34 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
             </span>
             <span className="text-xs font-semibold text-primary">Rota</span>
           </a>
+        </div>
+
+        <div className="mt-6 border-t border-border pt-5">
+          <div className="rounded-3xl border border-[#25D366]/45 bg-[#25D366]/10 p-4 shadow-soft">
+            <div className="flex items-start gap-3">
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#25D366] text-white shadow-sm">
+                <MessageCircle className="h-5 w-5" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#159447]">Desenvolvedor do site</p>
+                <p className="mt-1 font-display text-xl font-semibold text-foreground">Rhenan ✦</p>
+                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
+                  Gostou do site? Fale diretamente com o desenvolvedor para criar um projeto para sua empresa.
+                </p>
+              </div>
+            </div>
+
+            <a
+              href={developerWhatsappUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Falar com Rhenan pelo WhatsApp no número (21) 97315-2056"
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+            >
+              <MessageCircle className="h-4 w-4" />
+              WhatsApp • (21) 97315-2056
+            </a>
+          </div>
         </div>
       </div>
     </div>
