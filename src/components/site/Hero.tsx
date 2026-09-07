@@ -2,6 +2,7 @@ import { useState } from "react";
 import {
   Bike,
   Clock,
+  Code2,
   Info,
   Instagram,
   MapPin,
@@ -125,7 +126,10 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
               </span>
               <div className="min-w-0">
                 <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#159447]">Desenvolvedor do site</p>
-                <p className="truncate text-sm font-semibold text-foreground">Rhenan ✦</p>
+                <p className="flex items-center gap-1 truncate text-sm font-semibold text-foreground">
+                  <span>Rhenan</span>
+                  <Code2 className="h-4 w-4 shrink-0" aria-hidden="true" />
+                </p>
               </div>
             </div>
 
