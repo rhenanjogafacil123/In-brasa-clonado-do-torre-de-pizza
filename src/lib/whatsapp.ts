@@ -3,6 +3,8 @@ import { cartItemPrice, type CartItem } from "@/hooks/useCart";
 
 const MAX_WHATSAPP_MESSAGE_LENGTH = 8000;
 
+export type FulfillmentType = "delivery" | "pickup";
+
 const emoji = {
   pizza: String.fromCodePoint(0x1f355),
   person: String.fromCodePoint(0x1f464),
@@ -15,6 +17,9 @@ const emoji = {
   money: String.fromCodePoint(0x1f4b0),
   note: String.fromCodePoint(0x1f4dd),
   check: String.fromCodePoint(0x2705),
+  delivery: String.fromCodePoint(0x1f6f5),
+  store: String.fromCodePoint(0x1f3ea),
+  route: String.fromCodePoint(0x1f4cf),
 } as const;
 
 function stripControlCharacters(value: string) {
@@ -51,6 +56,9 @@ export function orderMessage(
   complement: string,
   paymentMethod: string,
   cashAmount: number | null,
+  fulfillmentType: FulfillmentType,
+  deliveryFee: number | null,
+  deliveryDistanceKm: number | null,
 ) {
   const safeCustomerName = safeText(customerName, 100);
   const safeAddress = safeText(address, 300);
@@ -76,8 +84,29 @@ export function orderMessage(
     cashAmount !== null && Number.isFinite(cashAmount) && cashAmount >= 0 && cashAmount <= 1_000_000
       ? cashAmount
       : null;
+  const safeDeliveryFee =
+    fulfillmentType === "delivery" && deliveryFee !== null && Number.isFinite(deliveryFee) && deliveryFee >= 0
+      ? deliveryFee
+      : 0;
+  const finalTotal = subtotal + safeDeliveryFee;
   const isCash = safePaymentMethod === "Dinheiro";
-  const change = isCash && safeCashAmount !== null ? Math.max(0, safeCashAmount - subtotal) : null;
+  const change = isCash && safeCashAmount !== null ? Math.max(0, safeCashAmount - finalTotal) : null;
+
+  const fulfillmentLines =
+    fulfillmentType === "delivery"
+      ? [
+          `${emoji.delivery} Entrega`,
+          `${emoji.pin} ${safeAddress}`,
+          `${emoji.pin} Complemento/Referência: ${safeComplement}`,
+          ...(deliveryDistanceKm !== null && Number.isFinite(deliveryDistanceKm)
+            ? [`${emoji.route} Distância estimada: ${deliveryDistanceKm.toFixed(1).replace(".", ",")} km`]
+            : []),
+          `${emoji.money} Taxa de entrega: ${brl(safeDeliveryFee)}`,
+        ]
+      : [
+          `${emoji.store} Retirada no local`,
+          `${emoji.pin} Retirada em: ${business.address}`,
+        ];
 
   return [
     `${emoji.pizza} *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
@@ -85,13 +114,16 @@ export function orderMessage(
     `${emoji.cart} *PEDIDO*`,
     ...lines,
     "",
-    `${emoji.money} *Total:* ${brl(subtotal)}`,
+    `${emoji.money} Produtos: ${brl(subtotal)}`,
+    ...(fulfillmentType === "delivery" ? [`${emoji.money} Taxa de entrega: ${brl(safeDeliveryFee)}`] : []),
+    `${emoji.money} *Total:* ${brl(finalTotal)}`,
     ...(safeNotes ? ["", `${emoji.note} *Obs.:* ${safeNotes}`] : []),
     "",
     `${emoji.person} *CLIENTE*`,
     `${emoji.name} ${safeCustomerName}`,
-    `${emoji.pin} ${safeAddress}`,
-    `${emoji.pin} Complemento/Referência: ${safeComplement}`,
+    "",
+    `${emoji.check} *RECEBIMENTO*`,
+    ...fulfillmentLines,
     "",
     `${emoji.card} *PAGAMENTO*`,
     safePaymentMethod,
