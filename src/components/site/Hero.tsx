@@ -117,18 +117,15 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
           </a>
         </div>
 
-        <div className="mt-6 border-t border-border pt-5">
-          <div className="rounded-3xl border border-[#25D366]/45 bg-[#25D366]/10 p-4 shadow-soft">
-            <div className="flex items-start gap-3">
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-[#25D366] text-white shadow-sm">
-                <MessageCircle className="h-5 w-5" />
+        <div className="mt-5 border-t border-border pt-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[#25D366]/35 bg-[#25D366]/10 px-3.5 py-3">
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-xl bg-[#25D366] text-white">
+                <MessageCircle className="h-4 w-4" />
               </span>
-              <div className="min-w-0 flex-1">
-                <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#159447]">Desenvolvedor do site</p>
-                <p className="mt-1 font-display text-xl font-semibold text-foreground">Rhenan ✦</p>
-                <p className="mt-1 text-sm leading-relaxed text-muted-foreground">
-                  Gostou do site? Fale diretamente com o desenvolvedor para criar um projeto para sua empresa.
-                </p>
+              <div className="min-w-0">
+                <p className="text-[10px] font-bold uppercase tracking-[0.16em] text-[#159447]">Desenvolvedor do site</p>
+                <p className="truncate text-sm font-semibold text-foreground">Rhenan ✦</p>
               </div>
             </div>
 
@@ -137,10 +134,10 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
               target="_blank"
               rel="noopener noreferrer"
               aria-label="Falar com Rhenan pelo WhatsApp no número (21) 97315-2056"
-              className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#25D366] px-5 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+              className="inline-flex shrink-0 items-center justify-center gap-1.5 rounded-full bg-[#25D366] px-3.5 py-2 text-xs font-bold text-white transition hover:brightness-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
             >
-              <MessageCircle className="h-4 w-4" />
-              WhatsApp • (21) 97315-2056
+              <MessageCircle className="h-3.5 w-3.5" />
+              WhatsApp
             </a>
           </div>
         </div>
