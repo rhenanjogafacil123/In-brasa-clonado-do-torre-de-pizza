@@ -46,7 +46,7 @@ export function Footer() {
           <p className="flex items-center justify-center gap-2 text-[15px] text-muted-foreground">
             <span className="font-mono text-lg font-black text-red-500" aria-hidden="true">&lt;/&gt;</span>
             <span>
-              Desenvolvido por <strong className="font-bold text-red-500">Rhenan ✦</strong>
+              Desenvolvido por <strong className="font-bold text-red-500">Rhenan</strong>
             </span>
           </p>
 
