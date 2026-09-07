@@ -60,24 +60,43 @@ async function getStoreCoordinates() {
   return cachedStoreCoordinates;
 }
 
-async function getDrivingDistanceKm(origin: Coordinates, destination: Coordinates) {
-  const coordinates = `${origin.lon},${origin.lat};${destination.lon},${destination.lat}`;
-  const url = `https://router.project-osrm.org/route/v1/driving/${coordinates}?overview=false&alternatives=false&steps=false`;
-  const response = await fetch(url);
-
-  if (!response.ok) throw new Error("Não foi possível calcular a rota agora.");
-
-  const data = (await response.json()) as {
-    code?: string;
-    routes?: Array<{ distance?: number }>;
+async function getMotorcycleDistanceKm(origin: Coordinates, destination: Coordinates) {
+  const request = {
+    locations: [
+      { lat: origin.lat, lon: origin.lon },
+      { lat: destination.lat, lon: destination.lon },
+    ],
+    costing: "motorcycle",
+    units: "km",
+    directions_options: { units: "km" },
   };
-  const distanceMeters = Number(data.routes?.[0]?.distance);
 
-  if (data.code !== "Ok" || !Number.isFinite(distanceMeters)) {
-    throw new Error("Não foi possível calcular uma rota para esse endereço.");
+  const url = new URL("https://valhalla.openstreetmap.de/route");
+  url.searchParams.set("json", JSON.stringify(request));
+
+  const response = await fetch(url.toString(), {
+    headers: { Accept: "application/json" },
+  });
+
+  if (!response.ok) {
+    throw new Error("Não foi possível calcular a rota de motocicleta agora.");
   }
 
-  return Math.round((distanceMeters / 1000) * 10) / 10;
+  const data = (await response.json()) as {
+    trip?: {
+      summary?: {
+        length?: number;
+      };
+    };
+  };
+
+  const distanceKm = Number(data.trip?.summary?.length);
+
+  if (!Number.isFinite(distanceKm) || distanceKm < 0) {
+    throw new Error("Não foi possível calcular uma rota de motocicleta para esse endereço.");
+  }
+
+  return Math.round(distanceKm * 10) / 10;
 }
 
 export function calculateDeliveryFee(distanceKm: number) {
@@ -101,7 +120,7 @@ export async function getDeliveryQuote(customerAddress: string): Promise<Deliver
 
   const origin = await getStoreCoordinates();
   const destination = await geocodeAddress(`${cleanAddress}, ${business.city}, Brasil`);
-  const distanceKm = await getDrivingDistanceKm(origin, destination);
+  const distanceKm = await getMotorcycleDistanceKm(origin, destination);
 
   const maximumDistance = business.deliveryPricing.maximumDistanceKm;
   if (maximumDistance !== null && distanceKm > maximumDistance) {
