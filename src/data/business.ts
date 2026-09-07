@@ -14,6 +14,18 @@ export const business = {
   instagramUrl: "https://www.instagram.com/torredepizzacg/",
   mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=R.+Domingos+Alves+Ribeiro,+28,+Campo+Grande,+Rio+de+Janeiro,+RJ",
   services: ["Delivery", "Retirada", "Atendimento no local"],
+  deliveryPricing: {
+    /**
+     * Regra de taxa por distância.
+     * Exemplo: se a loja cobrar R$ 1 a cada 1,5 km, use amount: 1 e everyKm: 1.5.
+     * Enquanto amount for null, a distância é calculada, mas nenhuma taxa é cobrada.
+     */
+    amount: null as number | null,
+    everyKm: 1,
+    calculation: "blocks" as "blocks" | "proportional",
+    minimumFee: 0,
+    maximumDistanceKm: null as number | null,
+  },
 } as const;
 
 export const brl = (value: number) =>
