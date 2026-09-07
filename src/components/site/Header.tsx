@@ -3,6 +3,7 @@ import { Menu, Moon, Phone, ShoppingBag, Sun, X } from "lucide-react";
 import { business } from "@/data/business";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
+import "../../theme.css";
 
 const links = [
   { href: "#cardapio", label: "Cardápio" },
