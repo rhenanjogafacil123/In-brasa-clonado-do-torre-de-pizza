@@ -63,37 +63,57 @@ async function getStoreCoordinates() {
 async function getMotorcycleDistanceKm(origin: Coordinates, destination: Coordinates) {
   const request = {
     locations: [
-      { lat: origin.lat, lon: origin.lon },
-      { lat: destination.lat, lon: destination.lon },
+      { lat: origin.lat, lon: origin.lon, radius: 100 },
+      { lat: destination.lat, lon: destination.lon, radius: 100 },
     ],
     costing: "motorcycle",
     units: "km",
+    directions_type: "none",
     directions_options: { units: "km" },
   };
 
-  const url = new URL("https://valhalla.openstreetmap.de/route");
+  // valhalla.openstreetmap.de é a interface web. A API pública fica no
+  // subdomínio valhalla1.openstreetmap.de.
+  const url = new URL("https://valhalla1.openstreetmap.de/route");
   url.searchParams.set("json", JSON.stringify(request));
 
-  const response = await fetch(url.toString(), {
-    headers: { Accept: "application/json" },
-  });
-
-  if (!response.ok) {
-    throw new Error("Não foi possível calcular a rota de motocicleta agora.");
+  let response: Response;
+  try {
+    response = await fetch(url.toString(), {
+      headers: { Accept: "application/json" },
+    });
+  } catch {
+    throw new Error("Não foi possível acessar o serviço de rota de motocicleta agora. Tente novamente em instantes.");
   }
 
-  const data = (await response.json()) as {
-    trip?: {
-      summary?: {
-        length?: number;
-      };
-    };
-  };
+  let data: {
+    trip?: { summary?: { length?: number } };
+    error?: string;
+    error_code?: number;
+    status_message?: string;
+  } = {};
+
+  try {
+    data = (await response.json()) as typeof data;
+  } catch {
+    if (!response.ok) {
+      throw new Error("O serviço de rota de motocicleta não respondeu corretamente. Tente novamente.");
+    }
+  }
+
+  if (!response.ok) {
+    const reason = data.error || data.status_message;
+    throw new Error(
+      reason
+        ? `Não foi possível calcular a rota de motocicleta: ${reason}.`
+        : "Não foi possível calcular a rota de motocicleta agora.",
+    );
+  }
 
   const distanceKm = Number(data.trip?.summary?.length);
 
   if (!Number.isFinite(distanceKm) || distanceKm < 0) {
-    throw new Error("Não foi possível calcular uma rota de motocicleta para esse endereço.");
+    throw new Error("Não foi possível obter a distância da rota de motocicleta para esse endereço.");
   }
 
   return Math.round(distanceKm * 10) / 10;
