@@ -19,7 +19,7 @@ const heroImg = "/hero-pizza.webp";
 const serviceIcons = [Bike, ShoppingBag, Store];
 
 const developerWhatsappMessage =
-  "Olá, Rhenan! Vi o site que você desenvolveu para a Torre de Pizza e gostaria de conversarmos sobre um design baseado na identidade visual da minha empresa gratuitamente, e já ter informação sobre o preço. Sem compromisso, enrolação e perda de tempo!";
+  "Opa, Rhenan! Vi o site que você desenvolveu para a Torre de Pizza e gostaria de conversar sobre um design baseado na identidade visual da minha empresa gratuitamente, e já ter informação sobre o preço exclusivo que inclui todos os seus serviços. Sem compromisso, enrolação e perda de tempo!";
 const developerWhatsappUrl = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
 function WhatsappIcon({ className = "h-4 w-4" }: { className?: string }) {
