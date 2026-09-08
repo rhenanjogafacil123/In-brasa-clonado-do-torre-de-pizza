@@ -14,12 +14,13 @@ export const business = {
   instagramUrl: "https://www.instagram.com/torredepizzacg/",
   mapsUrl: "https://www.google.com/maps/dir/?api=1&destination=R.+Domingos+Alves+Ribeiro,+28,+Campo+Grande,+Rio+de+Janeiro,+RJ",
   services: ["Delivery", "Retirada", "Atendimento no local"],
+  siteUsageFee: 1.15,
   deliveryPricing: {
     /**
-     * REGRA DE TESTE: R$ 1,15 a cada 1,5 km de rota.
-     * O cálculo usa blocos: até 1,5 km = R$ 1,15; até 3 km = R$ 2,30; etc.
+     * REGRA DE TESTE: R$ 1,00 a cada 1,5 km de rota.
+     * O cálculo usa blocos: até 1,5 km = R$ 1; até 3 km = R$ 2; etc.
      */
-    amount: 1.15 as number | null,
+    amount: 1 as number | null,
     everyKm: 1.5,
     calculation: "blocks" as "blocks" | "proportional",
     minimumFee: 0,
