@@ -48,7 +48,7 @@ export function CartDrawer() {
 
   const isDelivery = fulfillmentType === "delivery";
   const deliveryFee = isDelivery ? deliveryQuote?.fee ?? null : 0;
-  const displayedTotal = subtotal + (deliveryFee ?? 0);
+  const displayedTotal = subtotal + (deliveryFee ?? 0) + business.siteUsageFee;
   const parsedCash = cashAmount.trim() ? Number(cashAmount.replace(",", ".")) : Number.NaN;
   const validCashValue = Number.isFinite(parsedCash) ? parsedCash : null;
   const change = paymentMethod === "Dinheiro" && validCashValue !== null ? validCashValue - displayedTotal : null;
@@ -141,7 +141,7 @@ export function CartDrawer() {
     }
 
     const feeForOrder = fulfillmentType === "delivery" ? quoteForOrder?.fee ?? 0 : 0;
-    const totalForOrder = subtotal + feeForOrder;
+    const totalForOrder = subtotal + feeForOrder + business.siteUsageFee;
 
     if (paymentMethod === "Dinheiro") {
       if (validCashValue === null) {
@@ -476,13 +476,17 @@ export function CartDrawer() {
                 </div>
               )}
               {isDelivery && (
-                <div className="mb-3 flex items-center justify-between text-sm">
+                <div className="mb-2 flex items-center justify-between text-sm">
                   <span className="text-muted-foreground">Taxa de entrega</span>
                   <span className="font-semibold text-primary">
                     {deliveryQuote?.fee !== null && deliveryQuote?.fee !== undefined ? brl(deliveryQuote.fee) : "A configurar"}
                   </span>
                 </div>
               )}
+              <div className="mb-3 flex items-center justify-between text-sm">
+                <span className="text-muted-foreground">Taxa de uso do site</span>
+                <span className="font-semibold text-primary">{brl(business.siteUsageFee)}</span>
+              </div>
               <div className="mb-3 flex items-center justify-between">
                 <span className="text-sm text-muted-foreground">{isDelivery && deliveryFee === null ? "Total parcial" : "Total do pedido"}</span>
                 <span className="font-display text-2xl font-semibold text-primary">{brl(displayedTotal)}</span>
