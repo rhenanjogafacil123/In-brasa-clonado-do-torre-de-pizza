@@ -88,7 +88,9 @@ export function orderMessage(
     fulfillmentType === "delivery" && deliveryFee !== null && Number.isFinite(deliveryFee) && deliveryFee >= 0
       ? deliveryFee
       : 0;
-  const finalTotal = subtotal + safeDeliveryFee;
+  const safeSiteUsageFee =
+    Number.isFinite(business.siteUsageFee) && business.siteUsageFee >= 0 ? business.siteUsageFee : 0;
+  const finalTotal = subtotal + safeDeliveryFee + safeSiteUsageFee;
   const isCash = safePaymentMethod === "Dinheiro";
   const change = isCash && safeCashAmount !== null ? Math.max(0, safeCashAmount - finalTotal) : null;
 
@@ -116,6 +118,7 @@ export function orderMessage(
     "",
     `${emoji.money} Produtos: ${brl(subtotal)}`,
     ...(fulfillmentType === "delivery" ? [`${emoji.money} Taxa de entrega: ${brl(safeDeliveryFee)}`] : []),
+    `${emoji.money} Taxa de uso do site: ${brl(safeSiteUsageFee)}`,
     `${emoji.money} *Total:* ${brl(finalTotal)}`,
     ...(safeNotes ? ["", `${emoji.note} *Obs.:* ${safeNotes}`] : []),
     "",
