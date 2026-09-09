@@ -53,15 +53,18 @@ export function Header() {
     const viewport = document.querySelector('meta[name="viewport"]');
     const physicalPhone = window.screen.width <= 640;
 
-    try {
-      const savedView = window.localStorage.getItem("bora-view-mode");
-      if (physicalPhone && savedView === "desktop") {
-        viewport?.setAttribute("content", "width=1180, initial-scale=1");
-        setMobileView(false);
-        return;
+    // Em celular, sempre começa na versão mobile real.
+    // O modo desktop é apenas temporário durante a sessão e nunca fica salvo
+    // para a próxima visita, evitando cards cortados na abertura do site.
+    if (physicalPhone) {
+      viewport?.setAttribute("content", "width=device-width, initial-scale=1");
+      setMobileView(true);
+      try {
+        window.localStorage.removeItem("bora-view-mode");
+      } catch {
+        // A visualização continua funcionando mesmo sem localStorage.
       }
-    } catch {
-      // Usa a detecção automática se o localStorage estiver indisponível.
+      return;
     }
 
     const syncViewMode = () => setMobileView(window.innerWidth <= 640);
@@ -82,11 +85,6 @@ export function Header() {
       }
 
       if (physicalPhone) {
-        try {
-          window.localStorage.setItem("bora-view-mode", "desktop");
-        } catch {
-          // O modo continua funcionando mesmo sem localStorage.
-        }
         viewport?.setAttribute("content", "width=1180, initial-scale=1");
         setMobileView(false);
         return;
@@ -94,11 +92,6 @@ export function Header() {
     }
 
     if (!mobileView && physicalPhone) {
-      try {
-        window.localStorage.setItem("bora-view-mode", "mobile");
-      } catch {
-        // O modo continua funcionando mesmo sem localStorage.
-      }
       viewport?.setAttribute("content", "width=device-width, initial-scale=1");
       setMobileView(true);
       return;
