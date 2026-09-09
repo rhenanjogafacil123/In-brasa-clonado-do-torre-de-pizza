@@ -4,7 +4,7 @@ import { business } from "@/data/business";
 const developerWhatsappMessage =
   "Olá, Rhenan! " +
   String.fromCodePoint(0x1f44b) +
-  " Vi o site que você desenvolveu para a Torre de Pizza e gostaria de entender melhor como funciona seu serviço e os valores para criar um site para minha empresa.";
+  " Vi o site que você desenvolveu para a Bora de Batata e gostaria de entender melhor como funciona seu serviço e os valores para criar um site para minha empresa.";
 const developerWhatsapp = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
 function WhatsappIcon() {
@@ -31,7 +31,9 @@ export function Footer() {
       <div className="mx-auto max-w-6xl px-4 py-8 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-4">
           <div className="flex min-w-0 items-center gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-lg">🍕</span>
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-primary text-lg">
+              🥔
+            </span>
             <div className="min-w-0">
               <p className="truncate font-display font-semibold text-foreground">{business.name}</p>
               <p className="truncate text-xs text-muted-foreground">{business.hours}</p>
@@ -44,7 +46,9 @@ export function Footer() {
 
         <div className="mt-6 pt-6 text-center">
           <p className="flex items-center justify-center gap-2 text-[15px] text-muted-foreground">
-            <span className="font-mono text-lg font-black text-red-500" aria-hidden="true">&lt;/&gt;</span>
+            <span className="font-mono text-lg font-black text-red-500" aria-hidden="true">
+              &lt;/&gt;
+            </span>
             <span>
               Desenvolvido por <strong className="font-bold text-red-500">Rhenan</strong>
             </span>
@@ -61,8 +65,12 @@ export function Footer() {
               <WhatsappIcon />
             </span>
             <span className="flex min-h-10 flex-col justify-center leading-none">
-              <strong className="block text-lg font-extrabold leading-none text-foreground">(21) 97315-2056</strong>
-              <small className="mt-1.5 block text-sm leading-none text-muted-foreground">Fale comigo no WhatsApp</small>
+              <strong className="block text-lg font-extrabold leading-none text-foreground">
+                (21) 97315-2056
+              </strong>
+              <small className="mt-1.5 block text-sm leading-none text-muted-foreground">
+                Fale comigo no WhatsApp
+              </small>
             </span>
           </a>
         </div>

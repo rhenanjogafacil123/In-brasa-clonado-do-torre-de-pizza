@@ -29,11 +29,32 @@
 }
 
 body {
-  transition: background-color 220ms ease, color 220ms ease;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
 }
 
 .dark .shadow-soft,
 .dark .shadow-card,
 .dark .shadow-lift {
   --tw-shadow-color: rgb(0 0 0 / 0.35);
+}
+
+.dark {
+  --background: #1a1a1a;
+  --foreground: #f5e6c8;
+  --card: #242321;
+  --card-foreground: #f5e6c8;
+  --popover: #242321;
+  --popover-foreground: #f5e6c8;
+  --primary: #f4b400;
+  --primary-foreground: #1a1a1a;
+  --secondary: #e67e22;
+  --accent: #353025;
+  --muted: #302e28;
+  --muted-foreground: #c2b9a6;
+  --border: #484237;
+  --gold: #f4b400;
+  --gradient-primary: linear-gradient(135deg, #f4b400, #e6a120);
+  --ring: #f4b400;
 }

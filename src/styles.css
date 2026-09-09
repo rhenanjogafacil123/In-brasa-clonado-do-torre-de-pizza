@@ -35,11 +35,12 @@
   --color-ring: var(--ring);
   --color-success: var(--success);
   --color-success-foreground: var(--success-foreground);
-  --font-display: "Fraunces", ui-serif, Georgia, serif;
-  --font-sans: "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Poppins", ui-sans-serif, system-ui, sans-serif;
+  --font-sans: "Poppins", ui-sans-serif, system-ui, sans-serif;
   --shadow-soft: 0 1px 2px oklch(0.28 0.08 25 / 0.06), 0 8px 24px -12px oklch(0.28 0.08 25 / 0.18);
   --shadow-card: 0 2px 6px oklch(0.28 0.08 25 / 0.05), 0 18px 40px -22px oklch(0.28 0.08 25 / 0.35);
-  --shadow-lift: 0 4px 10px oklch(0.28 0.08 25 / 0.08), 0 30px 60px -28px oklch(0.28 0.08 25 / 0.45);
+  --shadow-lift:
+    0 4px 10px oklch(0.28 0.08 25 / 0.08), 0 30px 60px -28px oklch(0.28 0.08 25 / 0.45);
   --shadow-gold: 0 12px 34px -14px oklch(0.78 0.13 78 / 0.65);
 }
 
@@ -68,17 +69,41 @@
   --border: oklch(0.905 0.021 68);
   --input: oklch(0.905 0.021 68);
   --ring: oklch(0.353 0.108 17.5);
-  --gradient-hero: linear-gradient(180deg, oklch(0.2 0.05 20 / 0.28) 0%, oklch(0.2 0.05 20 / 0.62) 55%, oklch(0.18 0.045 20 / 0.92) 100%);
+  --gradient-hero: linear-gradient(
+    180deg,
+    oklch(0.2 0.05 20 / 0.28) 0%,
+    oklch(0.2 0.05 20 / 0.62) 55%,
+    oklch(0.18 0.045 20 / 0.92) 100%
+  );
   --gradient-primary: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
   --gradient-gold: linear-gradient(135deg, oklch(0.86 0.1 88) 0%, var(--gold) 100%);
-  --gradient-fade: linear-gradient(180deg, oklch(0.982 0.014 78 / 0) 0%, oklch(0.982 0.014 78) 100%);
+  --gradient-fade: linear-gradient(
+    180deg,
+    oklch(0.982 0.014 78 / 0) 0%,
+    oklch(0.982 0.014 78) 100%
+  );
 }
 
 @layer base {
-  * { border-color: var(--color-border); }
-  html { scroll-behavior: smooth; scroll-padding-top: 5.5rem; }
-  body { background-color: var(--color-background); color: var(--color-foreground); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
-  h1,h2,h3 { font-family: var(--font-display); letter-spacing: -0.02em; }
+  * {
+    border-color: var(--color-border);
+  }
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5.5rem;
+  }
+  body {
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: -0.02em;
+  }
   img {
     -webkit-user-drag: none;
     -webkit-touch-callout: none;
@@ -99,169 +124,112 @@ a[href^="https://lovable.dev/"] {
   pointer-events: none !important;
 }
 
-@utility bg-gradient-primary { background-image: var(--gradient-primary); }
-@utility bg-gradient-gold { background-image: var(--gradient-gold); }
-@utility bg-gradient-hero { background-image: var(--gradient-hero); }
-@utility bg-gradient-fade { background-image: var(--gradient-fade); }
-@utility shadow-soft { box-shadow: var(--shadow-soft); }
-@utility shadow-card { box-shadow: var(--shadow-card); }
-@utility shadow-lift { box-shadow: var(--shadow-lift); }
-@utility shadow-gold { box-shadow: var(--shadow-gold); }
-@utility no-scrollbar { scrollbar-width: none; &::-webkit-scrollbar { display: none; } }
-@utility animate-rise { animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both; }
-@keyframes rise { from { opacity: 0; transform: translateY(18px); } to { opacity: 1; transform: none; } }
-@utility animate-pop { animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1); }
-@keyframes pop { 0% { transform: scale(1); } 50% { transform: scale(1.14); } 100% { transform: scale(1); } }
-
-/* Sucos Naturais: preencher o quadro do card sem faixas pretas. */
-img[alt="Sucos Naturais"] {
-  object-fit: cover !important;
-  object-position: center 45% !important;
+@utility bg-gradient-primary {
+  background-image: var(--gradient-primary);
 }
-
-/* Evita ampliar a imagem original 320x240 para um quadro quadrado.
-   Em 4:3 ela fica praticamente no tamanho nativo e aparece mais nítida. */
-div.relative.aspect-square:has(> img[alt="Sucos Naturais"]) {
-  aspect-ratio: 4 / 3 !important;
-  background: transparent !important;
+@utility bg-gradient-gold {
+  background-image: var(--gradient-gold);
 }
-
-/* Milk-shake: preencher o quadro do card sem faixas pretas, mantendo os copos centralizados. */
-img[alt="Milk-shake"] {
-  object-fit: cover !important;
-  object-position: center center !important;
+@utility bg-gradient-hero {
+  background-image: var(--gradient-hero);
 }
-
-/* Proteção visual: se alguém tentar imprimir/salvar a página como PDF, as fotos não aparecem. */
-@media print {
-  img {
-    visibility: hidden !important;
+@utility bg-gradient-fade {
+  background-image: var(--gradient-fade);
+}
+@utility shadow-soft {
+  box-shadow: var(--shadow-soft);
+}
+@utility shadow-card {
+  box-shadow: var(--shadow-card);
+}
+@utility shadow-lift {
+  box-shadow: var(--shadow-lift);
+}
+@utility shadow-gold {
+  box-shadow: var(--shadow-gold);
+}
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+@utility animate-rise {
+  animation: rise 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@utility animate-pop {
+  animation: pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.14);
+  }
+  100% {
+    transform: scale(1);
   }
 }
 
-/* ================================================================
-   MODO PRÉVIA PARA CLIENTE
-   Protege as fotos durante a apresentação. Na entrega final, basta
-   remover este bloco para todas as imagens voltarem a ficar limpas.
-   ================================================================ */
-article > div.relative.aspect-square,
-#sobre .relative:has(> img[alt="Preparo artesanal na Torre de Pizza"]) {
-  isolation: isolate;
+:root {
+  --background: #fff8e9;
+  --foreground: #25211c;
+  --card: #ffffff;
+  --primary: #8a4a08;
+  --secondary: #a44b12;
+  --gold: #f4b400;
+  --accent: #f5e6c8;
+  --border: #e7d8b9;
+  --gradient-primary: linear-gradient(135deg, #714009, #a64d10);
+  --gradient-gold: linear-gradient(135deg, #ffc82f, #f4b400);
 }
-
-article > div.relative.aspect-square::before,
-#sobre .relative:has(> img[alt="Preparo artesanal na Torre de Pizza"])::before {
-  content: "PRÉVIA";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  z-index: 2;
-  transform: translate(-50%, -50%) rotate(-22deg);
-  color: rgb(255 255 255 / 0.42);
-  font-family: var(--font-sans);
-  font-size: clamp(2.1rem, 7vw, 4.5rem);
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  line-height: 1;
-  text-shadow: 0 2px 16px rgb(0 0 0 / 0.45);
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
-}
-
-article > div.relative.aspect-square::after,
-#sobre .relative:has(> img[alt="Preparo artesanal na Torre de Pizza"])::after {
-  content: "As imagens originais serão disponibilizadas após a contratação oficial do site.";
-  position: absolute;
-  left: 50%;
-  bottom: 12px;
-  z-index: 3;
-  transform: translateX(-50%);
-  width: max-content;
-  max-width: calc(100% - 20px);
-  padding: 7px 11px;
-  border: 1px solid rgb(255 255 255 / 0.28);
-  border-radius: 999px;
-  background: rgb(24 18 16 / 0.82);
-  box-shadow: 0 6px 22px rgb(0 0 0 / 0.26);
-  color: white;
-  font-family: var(--font-sans);
-  font-size: 10px;
+.brush {
+  font-family: "Kalam", cursive;
   font-weight: 700;
-  letter-spacing: 0.015em;
-  line-height: 1.25;
-  text-align: center;
-  white-space: normal;
-  backdrop-filter: blur(6px);
-  pointer-events: none;
-  user-select: none;
+  letter-spacing: -0.045em;
 }
-
-#sobre .relative:has(> img[alt="Preparo artesanal na Torre de Pizza"]) > .absolute {
-  z-index: 4;
+.bora-hero-shade {
+  background: linear-gradient(
+    90deg,
+    rgba(15, 14, 12, 0.96),
+    rgba(15, 14, 12, 0.8) 35%,
+    rgba(15, 14, 12, 0.12) 80%
+  );
 }
-
-#topo > .relative {
-  z-index: 4;
+img[src="/bora-pastel-reference.png"] {
+  object-fit: cover !important;
+  object-position: 72% 47%;
 }
-
-#topo::before {
-  content: "PRÉVIA";
-  position: absolute;
-  left: 50%;
-  top: 48%;
-  z-index: 2;
-  transform: translate(-50%, -50%) rotate(-18deg);
-  color: rgb(255 255 255 / 0.27);
-  font-family: var(--font-sans);
-  font-size: clamp(5rem, 18vw, 14rem);
-  font-weight: 800;
-  letter-spacing: 0.18em;
-  line-height: 1;
-  text-shadow: 0 3px 24px rgb(0 0 0 / 0.36);
-  white-space: nowrap;
-  pointer-events: none;
-  user-select: none;
+article img[src="/bora-hero.png"] {
+  object-position: 90% center;
 }
-
-#topo::after {
-  content: "As imagens originais serão disponibilizadas após a contratação oficial do site.";
-  position: absolute;
-  right: 18px;
-  top: 100px;
-  z-index: 5;
-  max-width: min(320px, calc(100% - 36px));
-  padding: 9px 13px;
-  border: 1px solid rgb(255 255 255 / 0.3);
-  border-radius: 999px;
-  background: rgb(24 18 16 / 0.8);
-  box-shadow: 0 8px 28px rgb(0 0 0 / 0.28);
-  color: white;
-  font-family: var(--font-sans);
-  font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.02em;
-  line-height: 1.25;
-  text-align: center;
-  backdrop-filter: blur(8px);
-  pointer-events: none;
-  user-select: none;
-}
-
 @media (max-width: 640px) {
-  article > div.relative.aspect-square::after,
-  #sobre .relative:has(> img[alt="Preparo artesanal na Torre de Pizza"])::after {
-    bottom: 9px;
-    max-width: calc(100% - 16px);
-    padding: 6px 9px;
-    font-size: 9px;
+  .bora-hero > img {
+    object-position: 70% center;
   }
-
-  #topo::after {
-    right: 12px;
-    top: 92px;
-    max-width: calc(100% - 24px);
-    padding: 8px 11px;
-    font-size: 10px;
+  .bora-hero-shade {
+    background: linear-gradient(180deg, rgba(15, 14, 12, 0.5), rgba(15, 14, 12, 0.9) 45%, #151310);
+  }
+  .bora-hero h1 {
+    font-size: 3.2rem;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .animate-rise {
+    animation: none;
   }
 }

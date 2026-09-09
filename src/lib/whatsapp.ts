@@ -6,7 +6,7 @@ const MAX_WHATSAPP_MESSAGE_LENGTH = 8000;
 export type FulfillmentType = "delivery" | "pickup";
 
 const emoji = {
-  pizza: String.fromCodePoint(0x1f355),
+  pizza: String.fromCodePoint(0x1f954),
   person: String.fromCodePoint(0x1f464),
   name: String.fromCodePoint(0x1f64b),
   pin: String.fromCodePoint(0x1f4cd),
@@ -30,15 +30,14 @@ function stripControlCharacters(value: string) {
 }
 
 function safeText(value: string, maxLength: number) {
-  return stripControlCharacters(value)
-    .replace(/\s+/g, " ")
-    .trim()
-    .slice(0, maxLength);
+  return stripControlCharacters(value).replace(/\s+/g, " ").trim().slice(0, maxLength);
 }
 
 function hasIngredientException(details: string[]) {
   return details.some((detail) =>
-    /^(retirar\b|sem\b)|ingrediente(?:s)?\s+(?:retirado|removido)|\bretirar\s+(?:da|do|de|ingrediente)/i.test(detail),
+    /^(retirar\b|sem\b)|ingrediente(?:s)?\s+(?:retirado|removido)|\bretirar\s+(?:da|do|de|ingrediente)/i.test(
+      detail,
+    ),
   );
 }
 
@@ -85,14 +84,22 @@ export function orderMessage(
       ? cashAmount
       : null;
   const safeDeliveryFee =
-    fulfillmentType === "delivery" && deliveryFee !== null && Number.isFinite(deliveryFee) && deliveryFee >= 0
+    fulfillmentType === "delivery" &&
+    deliveryFee !== null &&
+    Number.isFinite(deliveryFee) &&
+    deliveryFee >= 0
       ? deliveryFee
       : 0;
   const safeSiteUsageFee =
-    Number.isFinite(business.siteUsageFee) && business.siteUsageFee >= 0 ? business.siteUsageFee : 0;
+    Number.isFinite(business.siteUsageFee) && business.siteUsageFee >= 0
+      ? business.siteUsageFee
+      : 0;
+  const pendingDelivery = fulfillmentType === "delivery" && deliveryFee === null;
+  const deliveryLabel = pendingDelivery ? "A combinar pelo WhatsApp" : brl(safeDeliveryFee);
   const finalTotal = subtotal + safeDeliveryFee + safeSiteUsageFee;
   const isCash = safePaymentMethod === "Dinheiro";
-  const change = isCash && safeCashAmount !== null ? Math.max(0, safeCashAmount - finalTotal) : null;
+  const change =
+    isCash && safeCashAmount !== null ? Math.max(0, safeCashAmount - finalTotal) : null;
 
   const fulfillmentLines =
     fulfillmentType === "delivery"
@@ -101,14 +108,13 @@ export function orderMessage(
           `${emoji.pin} ${safeAddress}`,
           `${emoji.pin} Complemento/Referência: ${safeComplement}`,
           ...(deliveryDistanceKm !== null && Number.isFinite(deliveryDistanceKm)
-            ? [`${emoji.route} Distância estimada: ${deliveryDistanceKm.toFixed(1).replace(".", ",")} km`]
+            ? [
+                `${emoji.route} Distância estimada: ${deliveryDistanceKm.toFixed(1).replace(".", ",")} km`,
+              ]
             : []),
-          `${emoji.money} Taxa de entrega: ${brl(safeDeliveryFee)}`,
+          `${emoji.money} Taxa de entrega: ${deliveryLabel}`,
         ]
-      : [
-          `${emoji.store} Retirada no local`,
-          `${emoji.pin} Retirada em: ${business.address}`,
-        ];
+      : [`${emoji.store} Retirada no local`, `${emoji.pin} Retirada em: ${business.address}`];
 
   return [
     `${emoji.pizza} *NOVO PEDIDO — ${business.name.toUpperCase()}*`,
@@ -117,9 +123,11 @@ export function orderMessage(
     ...lines,
     "",
     `${emoji.money} Produtos: ${brl(subtotal)}`,
-    ...(fulfillmentType === "delivery" ? [`${emoji.money} Taxa de entrega: ${brl(safeDeliveryFee)}`] : []),
-    `${emoji.money} Taxa de uso do site: ${brl(safeSiteUsageFee)}`,
-    `${emoji.money} *Total:* ${brl(finalTotal)}`,
+    ...(fulfillmentType === "delivery" ? [`${emoji.money} Taxa de entrega: ${deliveryLabel}`] : []),
+    ...(safeSiteUsageFee > 0
+      ? [`${emoji.money} Taxa de uso do site: ${brl(safeSiteUsageFee)}`]
+      : []),
+    `${emoji.money} *${pendingDelivery ? "Total parcial (sem frete)" : "Total"}:* ${brl(finalTotal)}`,
     ...(safeNotes ? ["", `${emoji.note} *Obs.:* ${safeNotes}`] : []),
     "",
     `${emoji.person} *CLIENTE*`,
@@ -131,7 +139,9 @@ export function orderMessage(
     `${emoji.card} *PAGAMENTO*`,
     safePaymentMethod,
     ...(isCash && safeCashAmount !== null
-      ? [`${emoji.cash} Paga com ${brl(safeCashAmount)} — troco ${brl(change ?? 0)}`]
+      ? [
+          `${emoji.cash} Paga com ${brl(safeCashAmount)} — ${pendingDelivery ? "troco a confirmar após o frete" : "troco " + brl(change ?? 0)}`,
+        ]
       : []),
   ].join("\n");
 }

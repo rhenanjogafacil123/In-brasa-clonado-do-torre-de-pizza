@@ -19,10 +19,13 @@ export function Featured() {
               <Flame className="h-4 w-4" /> Destaques do cardápio
             </p>
             <h2 className="mt-3 font-display text-3xl font-semibold text-primary-foreground sm:text-4xl">
-              Algumas opções da Torre
+              Favoritos da Bora
             </h2>
           </div>
-          <a href="#cardapio" className="hidden shrink-0 rounded-full border border-primary-foreground/25 px-5 py-2.5 text-sm font-semibold text-primary-foreground sm:inline-flex">
+          <a
+            href="#cardapio"
+            className="hidden shrink-0 rounded-full border border-primary-foreground/25 px-5 py-2.5 text-sm font-semibold text-primary-foreground sm:inline-flex"
+          >
             Ver tudo
           </a>
         </div>
@@ -37,8 +40,16 @@ export function Featured() {
               productOptionGroups(product).length > 0;
 
             return (
-              <article key={product.id} className="group w-[74%] shrink-0 snap-start overflow-hidden rounded-3xl bg-card shadow-lift md:w-auto">
-                <div className={cn("relative aspect-square overflow-hidden", isCustomImage && "bg-black")}>
+              <article
+                key={product.id}
+                className="group w-[74%] shrink-0 snap-start overflow-hidden rounded-3xl bg-card shadow-lift md:w-auto"
+              >
+                <div
+                  className={cn(
+                    "relative aspect-square overflow-hidden",
+                    isCustomImage && "bg-black",
+                  )}
+                >
                   <img
                     src={displayImage}
                     alt={product.name}
@@ -57,15 +68,26 @@ export function Featured() {
                   )}
                 </div>
                 <div className="p-4">
-                  <h3 className="font-display text-base font-semibold text-foreground">{product.name}</h3>
+                  <h3 className="font-display text-base font-semibold text-foreground">
+                    {product.name}
+                  </h3>
                   <div className="mt-3 flex items-center justify-between gap-2">
-                    <span className="font-display text-xl font-semibold text-primary">{brl(product.price)}</span>
+                    <span className="font-display text-xl font-semibold text-primary">
+                      {brl(product.price)}
+                    </span>
                     {hasChoices ? (
-                      <a href="#cardapio" className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold">
+                      <a
+                        href="#cardapio"
+                        className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold"
+                      >
                         Escolher opções
                       </a>
                     ) : (
-                      <button type="button" onClick={() => add(productWithImage(product))} className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold">
+                      <button
+                        type="button"
+                        onClick={() => add(productWithImage(product))}
+                        className="rounded-full bg-accent px-4 py-2 text-xs font-bold text-primary hover:bg-gradient-gold"
+                      >
                         Adicionar
                       </button>
                     )}

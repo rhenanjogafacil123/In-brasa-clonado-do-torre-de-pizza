@@ -15,14 +15,52 @@ const LazyCartDrawer = lazy(async () => {
   return { default: module.CartDrawer };
 });
 
-const title="Torre de Pizza | Pizzaria artesanal em Campo Grande – RJ";
-const description="Cardápio digital da Torre de Pizza: pizzas artesanais no forno a lenha, combos e sobremesas. Delivery, retirada e atendimento no local em Campo Grande – RJ.";
-export const Route=createFileRoute("/")({head:()=>({meta:[{title},{name:"description",content:description},{property:"og:title",content:title},{property:"og:description",content:description},{property:"og:type",content:"restaurant"},{name:"twitter:card",content:"summary_large_image"}]}),component:Index});
+const title = "Bora de Batata | Batatas recheadas e pastéis";
+const description =
+  "Batatas recheadas de 300g e 500g, pastel montável e bebidas. Peça Bora de Batata pelo WhatsApp.";
+export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title },
+      { name: "description", content: description },
+      { property: "og:title", content: title },
+      { property: "og:description", content: description },
+      { property: "og:type", content: "restaurant" },
+      { name: "twitter:card", content: "summary_large_image" },
+    ],
+  }),
+  component: Index,
+});
 
-function PageContent(){
+function PageContent() {
   const { open, count } = useCart();
-  useEffect(()=>{if(count>0) void loadCartDrawer()},[count]);
-  return <><Header/><main><Hero/><MenuSection/><About/><Contact/></main><Footer/>{open&&<Suspense fallback={null}><LazyCartDrawer/></Suspense>}<MobileCartBar/></>;
+  useEffect(() => {
+    if (count > 0) void loadCartDrawer();
+  }, [count]);
+  return (
+    <>
+      <Header />
+      <main>
+        <Hero />
+        <MenuSection />
+        <About />
+        <Contact />
+      </main>
+      <Footer />
+      {open && (
+        <Suspense fallback={null}>
+          <LazyCartDrawer />
+        </Suspense>
+      )}
+      <MobileCartBar />
+    </>
+  );
 }
 
-function Index(){return <CartProvider><PageContent/></CartProvider>}
+function Index() {
+  return (
+    <CartProvider>
+      <PageContent />
+    </CartProvider>
+  );
+}

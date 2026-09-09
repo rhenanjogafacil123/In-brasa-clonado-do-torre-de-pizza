@@ -1,4 +1,53 @@
-import { HeartHandshake,Sparkles,Timer } from "lucide-react";
-const aboutImg="/about-pizzeria.webp";
-const pillars=[{icon:Sparkles,title:"Ingredientes de verdade",text:"Massa de fermentação lenta e queijos selecionados."},{icon:HeartHandshake,title:"Acolhimento",text:"Atendimento de bairro, com o carinho de sempre."},{icon:Timer,title:"Praticidade",text:"Delivery rápido, retirada no balcão ou mesa na casa."}];
-export function About(){return <section id="sobre" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24"><div className="grid items-center gap-10 md:grid-cols-2 md:gap-14"><div className="relative"><img src={aboutImg} alt="Preparo artesanal na Torre de Pizza" loading="lazy" decoding="async" fetchPriority="low" className="w-full rounded-[2rem] object-cover shadow-lift"/><div className="absolute -bottom-6 left-6 rounded-2xl bg-card px-5 py-4 shadow-lift"><p className="font-display text-2xl font-semibold text-primary">+265</p><p className="text-xs text-muted-foreground">avaliações públicas</p></div></div><div><p className="text-xs font-semibold uppercase tracking-[0.28em] text-secondary">Sobre a Torre de Pizza</p><h2 className="mt-3 font-display text-3xl font-semibold text-foreground sm:text-4xl">Tradição de bairro, sabor de verdade</h2><p className="mt-4 text-base leading-relaxed text-muted-foreground">A Torre de Pizza, localizada em Campo Grande, no Rio de Janeiro, oferece uma experiência saborosa e prática para quem deseja pedir em casa, retirar no local ou aproveitar o atendimento presencial.</p><div className="mt-8 space-y-4">{pillars.map(p=><div key={p.title} className="flex items-start gap-4"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-accent"><p.icon className="h-5 w-5 text-primary"/></span><div><p className="font-semibold text-foreground">{p.title}</p><p className="text-sm text-muted-foreground">{p.text}</p></div></div>)}</div></div></div></section>}
+import { Heart, Sparkles, Bike } from "lucide-react";
+const pillars = [
+  {
+    icon: Sparkles,
+    title: "Recheio que dá vontade",
+    text: "Sete sabores de batata, em porções de 300g e 500g.",
+  },
+  {
+    icon: Heart,
+    title: "Pastel do seu jeito",
+    text: "Monte com até 7 ingredientes ou escolha todas as opções.",
+  },
+  { icon: Bike, title: "Da nossa cozinha para você", text: "Somente delivery, a partir das 19h." },
+];
+export function About() {
+  return (
+    <section id="sobre" className="mx-auto max-w-6xl px-4 py-16 sm:px-6 md:py-24">
+      <div className="grid items-center gap-10 md:grid-cols-2">
+        <img
+          src="/bora-hero.png"
+          alt="Batata recheada e pastel — imagem ilustrativa"
+          loading="lazy"
+          className="aspect-square w-full rounded-[2rem] object-cover object-right"
+        />
+        <div>
+          <p className="text-xs font-bold uppercase tracking-[.28em] text-secondary">
+            Bora de Batata
+          </p>
+          <h2 className="mt-3 text-3xl font-bold sm:text-4xl">
+            Recheada de sabor.
+            <br />
+            <span className="brush text-primary">Feita pra você.</span>
+          </h2>
+          <p className="mt-4 leading-relaxed text-muted-foreground">
+            Uma batata quentinha, um pastel bem crocante e aquele recheio que faz a diferença.
+            Escolha seu favorito e deixe o resto com a gente.
+          </p>
+          <div className="mt-8 space-y-5">
+            {pillars.map((p) => (
+              <div key={p.title} className="flex gap-4">
+                <p.icon className="shrink-0 text-primary" />
+                <div>
+                  <p className="font-semibold">{p.title}</p>
+                  <p className="text-sm text-muted-foreground">{p.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}

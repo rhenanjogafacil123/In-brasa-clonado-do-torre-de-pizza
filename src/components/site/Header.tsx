@@ -37,9 +37,9 @@ export function Header() {
 
   useEffect(() => {
     try {
-      const savedTheme = window.localStorage.getItem("torre-theme");
+      const savedTheme = window.localStorage.getItem("bora-theme");
       const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
-      const shouldUseDark = savedTheme ? savedTheme === "dark" : prefersDark;
+      const shouldUseDark = savedTheme ? savedTheme === "dark" : true;
 
       setDarkMode(shouldUseDark);
       document.documentElement.classList.toggle("dark", shouldUseDark);
@@ -53,7 +53,7 @@ export function Header() {
       const next = !current;
       document.documentElement.classList.toggle("dark", next);
       try {
-        window.localStorage.setItem("torre-theme", next ? "dark" : "light");
+        window.localStorage.setItem("bora-theme", next ? "dark" : "light");
       } catch {
         // O tema continua funcionando mesmo se o navegador bloquear o localStorage.
       }
@@ -74,7 +74,7 @@ export function Header() {
         <a href="#topo" className="flex min-w-0 items-center gap-3">
           <span className="flex h-12 w-24 shrink-0 items-center justify-center md:h-14 md:w-28">
             <img
-              src="/logo.webp"
+              src="/bora-logo.svg"
               alt={business.name}
               decoding="async"
               className="h-full w-full object-contain"
@@ -126,9 +126,7 @@ export function Header() {
             title={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
             className={cn(
               "relative h-7 w-[52px] shrink-0 rounded-full border p-[2px] shadow-sm transition-all duration-300",
-              darkMode
-                ? "border-slate-500/70 bg-slate-700"
-                : "border-sky-200 bg-sky-100",
+              darkMode ? "border-slate-500/70 bg-slate-700" : "border-sky-200 bg-sky-100",
             )}
           >
             <Sun
@@ -148,9 +146,7 @@ export function Header() {
             <span
               className={cn(
                 "absolute top-[2px] grid h-[22px] w-[22px] place-items-center rounded-full shadow-sm transition-transform duration-300 ease-out",
-                darkMode
-                  ? "translate-x-[24px] bg-slate-100"
-                  : "translate-x-0 bg-yellow-300",
+                darkMode ? "translate-x-[24px] bg-slate-100" : "translate-x-0 bg-yellow-300",
               )}
             >
               {darkMode ? (
