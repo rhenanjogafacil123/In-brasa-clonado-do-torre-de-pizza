@@ -1,10 +1,7 @@
 import { business } from "@/data/business";
 
-// Build the emoji at runtime so WhatsApp receives a clean UTF-8 encoded message.
 const developerWhatsappMessage =
-  "Olá, Rhenan! " +
-  String.fromCodePoint(0x1f44b) +
-  " Vi o site que você desenvolveu para a Bora de Batata e gostaria de entender melhor como funciona seu serviço e os valores para criar um site para minha empresa.";
+  "Olá, Rhenan! 👋 Vi o site da Bora de Batata e curti muito como ele transforma o cardápio em uma experiência mais profissional e fácil de comprar. Na hora pensei no meu negócio. Quero ver como ficaria uma versão com a identidade da minha empresa e o que daria para melhorar para gerar mais pedidos sem depender tanto de conversa no WhatsApp. Você consegue me mostrar uma ideia e me explicar como funciona e os valores? Se eu gostar da proposta, tenho interesse em colocar isso para rodar.";
 const developerWhatsapp = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
 function WhatsappIcon() {
