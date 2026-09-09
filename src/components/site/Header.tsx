@@ -121,40 +121,22 @@ export function Header() {
           <button
             type="button"
             onClick={toggleTheme}
-            aria-label={darkMode ? "Ativar modo claro" : "Ativar modo escuro"}
+            aria-label={darkMode ? "Modo escuro ativo. Ativar modo claro" : "Modo claro ativo. Ativar modo escuro"}
             aria-pressed={darkMode}
-            title={darkMode ? "Mudar para modo claro" : "Mudar para modo escuro"}
+            title={darkMode ? "Modo escuro — toque para usar o modo claro" : "Modo claro — toque para usar o modo escuro"}
             className={cn(
-              "relative h-7 w-[52px] shrink-0 rounded-full border p-[2px] shadow-sm transition-all duration-300",
-              darkMode ? "border-slate-500/70 bg-slate-700" : "border-sky-200 bg-sky-100",
+              "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-bold shadow-sm transition-all duration-300 sm:px-3 sm:text-xs",
+              darkMode
+                ? "border-slate-500/70 bg-slate-800 text-slate-100"
+                : "border-amber-200 bg-amber-50 text-amber-900",
             )}
           >
-            <Sun
-              aria-hidden="true"
-              className={cn(
-                "absolute left-[7px] top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-opacity duration-200",
-                darkMode ? "opacity-25" : "text-amber-700 opacity-100",
-              )}
-            />
-            <Moon
-              aria-hidden="true"
-              className={cn(
-                "absolute right-[7px] top-1/2 h-3.5 w-3.5 -translate-y-1/2 transition-opacity duration-200",
-                darkMode ? "text-sky-200 opacity-100" : "opacity-30",
-              )}
-            />
-            <span
-              className={cn(
-                "absolute top-[2px] grid h-[22px] w-[22px] place-items-center rounded-full shadow-sm transition-transform duration-300 ease-out",
-                darkMode ? "translate-x-[24px] bg-slate-100" : "translate-x-0 bg-yellow-300",
-              )}
-            >
-              {darkMode ? (
-                <Moon className="h-3.5 w-3.5 text-slate-700" aria-hidden="true" />
-              ) : (
-                <Sun className="h-3.5 w-3.5 text-amber-700" aria-hidden="true" />
-              )}
-            </span>
+            {darkMode ? (
+              <Moon className="h-4 w-4 text-sky-200" aria-hidden="true" />
+            ) : (
+              <Sun className="h-4 w-4 text-amber-600" aria-hidden="true" />
+            )}
+            <span>{darkMode ? "Escuro" : "Claro"}</span>
           </button>
 
           <button
