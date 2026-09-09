@@ -31,11 +31,13 @@ export const categories: { id: CategoryId; label: string }[] = [
   { id: "pasteis", label: "Pastéis" },
   { id: "bebidas", label: "Bebidas" },
 ];
+
 export const potatoNotices = [
   "Pequena: 300g • Grande: 500g.",
   "Finalização grátis: cebolinha fresca, mussarela derretida e bacon.",
   "Batata palha à parte, grátis somente no strogonoff.",
 ];
+
 export const pastelIngredients = [
   "Carne",
   "Frango",
@@ -52,6 +54,9 @@ export const pastelIngredients = [
   "Bacon",
   "Calabresa",
 ];
+
+const potatoFinishing = ["Mussarela derretida", "Cebolinha fresca", "Bacon"];
+
 const flavors: [string, string, number, number][] = [
   ["strogonoff", "Strogonoff de frango", 19, 22.5],
   ["carne-cheddar", "Carne moída com cheddar", 20, 24],
@@ -61,6 +66,7 @@ const flavors: [string, string, number, number][] = [
   ["calabresa-cheddar", "Calabresa com cheddar", 16, 20],
   ["calabresa-catupiry", "Calabresa com catupiry", 16, 20],
 ];
+
 export const products: Product[] = [
   ...flavors.map(([id, name, small, large]): Product => ({
     id: "batata-" + id,
@@ -76,6 +82,16 @@ export const products: Product[] = [
     variants: [
       { id: "pequena", label: "Pequena • 300g", price: small },
       { id: "grande", label: "Grande • 500g", price: large },
+    ],
+    customGroups: [
+      {
+        id: "retirar",
+        label: "Retirar ingredientes",
+        options: potatoFinishing,
+        min: 0,
+        max: potatoFinishing.length,
+        hint: "Retire o que preferir da finalização.",
+      },
     ],
   })),
   {
@@ -103,6 +119,16 @@ export const products: Product[] = [
     price: 24.99,
     image: "/bora-hero.png",
     category: "pasteis",
+    customGroups: [
+      {
+        id: "retirar",
+        label: "Retirar ingredientes",
+        options: pastelIngredients,
+        min: 0,
+        max: pastelIngredients.length,
+        hint: "Retire os ingredientes que você não quiser.",
+      },
+    ],
   },
   {
     id: "refrigerante-lata",
