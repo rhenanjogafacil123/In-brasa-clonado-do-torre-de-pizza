@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Menu, Moon, Phone, ShoppingBag, Sun, X } from "lucide-react";
+import { Menu, Monitor, Moon, Phone, ShoppingBag, Smartphone, Sun, X } from "lucide-react";
 import { business } from "@/data/business";
 import { useCart } from "@/hooks/useCart";
 import { cn } from "@/lib/utils";
@@ -15,6 +15,7 @@ export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [mobileView, setMobileView] = useState(false);
   const { count, setOpen } = useCart();
 
   useEffect(() => {
@@ -47,6 +48,71 @@ export function Header() {
       setDarkMode(false);
     }
   }, []);
+
+  useEffect(() => {
+    const viewport = document.querySelector('meta[name="viewport"]');
+    const physicalPhone = window.screen.width <= 640;
+
+    try {
+      const savedView = window.localStorage.getItem("bora-view-mode");
+      if (physicalPhone && savedView === "desktop") {
+        viewport?.setAttribute("content", "width=1180, initial-scale=1");
+        setMobileView(false);
+        return;
+      }
+    } catch {
+      // Usa a detecção automática se o localStorage estiver indisponível.
+    }
+
+    const syncViewMode = () => setMobileView(window.innerWidth <= 640);
+    syncViewMode();
+    window.addEventListener("resize", syncViewMode);
+    return () => window.removeEventListener("resize", syncViewMode);
+  }, []);
+
+  const toggleViewMode = () => {
+    const viewport = document.querySelector('meta[name="viewport"]');
+    const physicalPhone = window.screen.width <= 640;
+
+    if (mobileView) {
+      if (window.opener && !physicalPhone) {
+        window.opener.focus();
+        window.close();
+        return;
+      }
+
+      if (physicalPhone) {
+        try {
+          window.localStorage.setItem("bora-view-mode", "desktop");
+        } catch {
+          // O modo continua funcionando mesmo sem localStorage.
+        }
+        viewport?.setAttribute("content", "width=1180, initial-scale=1");
+        setMobileView(false);
+        return;
+      }
+    }
+
+    if (!mobileView && physicalPhone) {
+      try {
+        window.localStorage.setItem("bora-view-mode", "mobile");
+      } catch {
+        // O modo continua funcionando mesmo sem localStorage.
+      }
+      viewport?.setAttribute("content", "width=device-width, initial-scale=1");
+      setMobileView(true);
+      return;
+    }
+
+    const previewUrl = new URL(window.location.href);
+    previewUrl.searchParams.set("view", "mobile");
+    const height = Math.min(window.screen.availHeight - 80, 900);
+    window.open(
+      previewUrl.toString(),
+      "bora-mobile-preview",
+      `popup=yes,width=430,height=${height},resizable=yes,scrollbars=yes`,
+    );
+  };
 
   const toggleTheme = () => {
     setDarkMode((current) => {
@@ -137,6 +203,26 @@ export function Header() {
               <Sun className="h-4 w-4 text-amber-600" aria-hidden="true" />
             )}
             <span>{darkMode ? "Escuro" : "Claro"}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={toggleViewMode}
+            aria-label={mobileView ? "Voltar para versão desktop" : "Abrir versão mobile"}
+            title={mobileView ? "Versão mobile — toque para voltar ao desktop" : "Versão desktop — toque para abrir o mobile"}
+            className={cn(
+              "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-bold shadow-sm transition-all duration-300 sm:px-3 sm:text-xs",
+              scrolled
+                ? "border-border bg-card text-foreground hover:bg-accent"
+                : "border-white/25 bg-white/10 text-primary-foreground backdrop-blur hover:bg-white/15",
+            )}
+          >
+            {mobileView ? (
+              <Smartphone className="h-4 w-4" aria-hidden="true" />
+            ) : (
+              <Monitor className="h-4 w-4" aria-hidden="true" />
+            )}
+            <span>{mobileView ? "Mobile" : "Desktop"}</span>
           </button>
 
           <button
