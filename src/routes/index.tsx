@@ -8,6 +8,7 @@ import { About } from "@/components/site/About";
 import { Contact } from "@/components/site/Contact";
 import { Footer } from "@/components/site/Footer";
 import { MobileCartBar } from "@/components/site/MobileCartBar";
+import "@/mobile-fixes.css";
 
 const loadCartDrawer = () => import("@/components/site/CartDrawer");
 const LazyCartDrawer = lazy(async () => {
