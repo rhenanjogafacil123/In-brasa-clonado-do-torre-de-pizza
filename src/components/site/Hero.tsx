@@ -214,15 +214,34 @@ export function Hero() {
 
   return (
     <section id="topo" className="bora-hero relative isolate overflow-hidden bg-[#1a1a1a]">
+      <style>{`
+        @media (max-width: 640px) {
+          .bora-hero-image {
+            object-position: 72% center !important;
+            filter: brightness(1.1) contrast(1.08) saturate(1.12);
+          }
+        }
+      `}</style>
       <img
         src="/bora-hero.png"
         alt="Batata recheada e pastel sobre madeira — imagem ilustrativa"
         fetchPriority="high"
-        className="absolute inset-0 h-full w-full object-cover"
+        decoding="async"
+        className="bora-hero-image absolute inset-0 h-full w-full object-cover"
       />
-      <div className="absolute inset-0 bora-hero-shade" />
+      <div className="absolute inset-0 hidden sm:block bora-hero-shade" />
+      <div
+        className="absolute inset-0 sm:hidden"
+        style={{
+          background:
+            "linear-gradient(180deg, rgba(15,14,12,0.2) 0%, rgba(15,14,12,0.48) 38%, rgba(21,19,16,0.82) 100%)",
+        }}
+      />
       <div className="relative mx-auto flex min-h-[90svh] max-w-6xl items-center px-4 pb-20 pt-36 sm:px-6">
-        <div className="animate-rise max-w-xl text-[#fff5df]">
+        <div
+          className="animate-rise max-w-xl text-[#fff5df]"
+          style={{ textShadow: "0 2px 14px rgba(0,0,0,0.38)" }}
+        >
           <p className="mb-5 text-xs font-bold uppercase tracking-[.28em] text-[#f4b400]">
             Bora de Batata • Delivery
           </p>
