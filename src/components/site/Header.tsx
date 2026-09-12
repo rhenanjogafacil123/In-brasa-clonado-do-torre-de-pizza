@@ -11,12 +11,16 @@ const links = [
   { href: "#contato", label: "Contato" },
 ];
 
+type ViewMode = "mobile" | "desktop";
+
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
-  const [mobileView, setMobileView] = useState(false);
+  const [viewMode, setViewMode] = useState<ViewMode>("mobile");
+  const [desktopOptionAvailable, setDesktopOptionAvailable] = useState(false);
   const { count, setOpen } = useCart();
+  const mobileView = viewMode === "mobile";
 
   useEffect(() => {
     let ticking = false;
@@ -39,7 +43,6 @@ export function Header() {
   useEffect(() => {
     try {
       const savedTheme = window.localStorage.getItem("bora-theme");
-      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
       const shouldUseDark = savedTheme ? savedTheme === "dark" : true;
 
       setDarkMode(shouldUseDark);
@@ -50,61 +53,53 @@ export function Header() {
   }, []);
 
   useEffect(() => {
-    const viewport = document.querySelector('meta[name="viewport"]');
-    const physicalPhone = window.screen.width <= 640;
+    const setMode = (mode: ViewMode) => {
+      setViewMode(mode);
+      document.documentElement.dataset.viewMode = mode;
+      setMenuOpen(false);
+    };
 
-    // Em celular, sempre começa na versão mobile real.
-    // O modo desktop é apenas temporário durante a sessão e nunca fica salvo
-    // para a próxima visita, evitando cards cortados na abertura do site.
-    if (physicalPhone) {
-      viewport?.setAttribute("content", "width=device-width, initial-scale=1");
-      setMobileView(true);
-      try {
-        window.localStorage.removeItem("bora-view-mode");
-      } catch {
-        // A visualização continua funcionando mesmo sem localStorage.
+    const initializeViewMode = () => {
+      const canUseDesktop = window.innerWidth >= 768;
+      setDesktopOptionAvailable(canUseDesktop);
+
+      if (!canUseDesktop) {
+        setMode("mobile");
+        return;
       }
-      return;
-    }
 
-    const syncViewMode = () => setMobileView(window.innerWidth <= 640);
-    syncViewMode();
-    window.addEventListener("resize", syncViewMode);
-    return () => window.removeEventListener("resize", syncViewMode);
+      try {
+        const savedMode = window.sessionStorage.getItem("bora-view-mode");
+        setMode(savedMode === "desktop" ? "desktop" : "mobile");
+      } catch {
+        setMode("mobile");
+      }
+    };
+
+    const handleResize = () => {
+      const canUseDesktop = window.innerWidth >= 768;
+      setDesktopOptionAvailable(canUseDesktop);
+      if (!canUseDesktop) setMode("mobile");
+    };
+
+    initializeViewMode();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   const toggleViewMode = () => {
-    const viewport = document.querySelector('meta[name="viewport"]');
-    const physicalPhone = window.screen.width <= 640;
+    const nextMode: ViewMode = mobileView ? "desktop" : "mobile";
+    if (nextMode === "desktop" && window.innerWidth < 768) return;
 
-    if (mobileView) {
-      if (window.opener && !physicalPhone) {
-        window.opener.focus();
-        window.close();
-        return;
-      }
+    setViewMode(nextMode);
+    setMenuOpen(false);
+    document.documentElement.dataset.viewMode = nextMode;
 
-      if (physicalPhone) {
-        viewport?.setAttribute("content", "width=1180, initial-scale=1");
-        setMobileView(false);
-        return;
-      }
+    try {
+      window.sessionStorage.setItem("bora-view-mode", nextMode);
+    } catch {
+      // A troca de visualização continua funcionando mesmo sem sessionStorage.
     }
-
-    if (!mobileView && physicalPhone) {
-      viewport?.setAttribute("content", "width=device-width, initial-scale=1");
-      setMobileView(true);
-      return;
-    }
-
-    const previewUrl = new URL(window.location.href);
-    previewUrl.searchParams.set("view", "mobile");
-    const height = Math.min(window.screen.availHeight - 80, 900);
-    window.open(
-      previewUrl.toString(),
-      "bora-mobile-preview",
-      `popup=yes,width=430,height=${height},resizable=yes,scrollbars=yes`,
-    );
   };
 
   const toggleTheme = () => {
@@ -160,7 +155,7 @@ export function Header() {
         </a>
 
         <div className="flex items-center gap-1 sm:gap-2">
-          <nav className="mr-2 hidden items-center gap-1 md:flex">
+          <nav className={cn("mr-2 items-center gap-1", mobileView ? "hidden" : "hidden md:flex")}>
             {links.map((link) => (
               <a
                 key={link.href}
@@ -198,25 +193,27 @@ export function Header() {
             <span>{darkMode ? "Escuro" : "Claro"}</span>
           </button>
 
-          <button
-            type="button"
-            onClick={toggleViewMode}
-            aria-label={mobileView ? "Voltar para versão desktop" : "Abrir versão mobile"}
-            title={mobileView ? "Versão mobile — toque para voltar ao desktop" : "Versão desktop — toque para abrir o mobile"}
-            className={cn(
-              "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-bold shadow-sm transition-all duration-300 sm:px-3 sm:text-xs",
-              scrolled
-                ? "border-border bg-card text-foreground hover:bg-accent"
-                : "border-white/25 bg-white/10 text-primary-foreground backdrop-blur hover:bg-white/15",
-            )}
-          >
-            {mobileView ? (
-              <Smartphone className="h-4 w-4" aria-hidden="true" />
-            ) : (
-              <Monitor className="h-4 w-4" aria-hidden="true" />
-            )}
-            <span>{mobileView ? "Mobile" : "Desktop"}</span>
-          </button>
+          {desktopOptionAvailable && (
+            <button
+              type="button"
+              onClick={toggleViewMode}
+              aria-label={mobileView ? "Mudar para versão desktop" : "Mudar para versão mobile"}
+              title={mobileView ? "Ver versão desktop" : "Voltar para versão mobile"}
+              className={cn(
+                "inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full border px-2.5 text-[11px] font-bold shadow-sm transition-all duration-300 sm:px-3 sm:text-xs",
+                scrolled
+                  ? "border-border bg-card text-foreground hover:bg-accent"
+                  : "border-white/25 bg-white/10 text-primary-foreground backdrop-blur hover:bg-white/15",
+              )}
+            >
+              {mobileView ? (
+                <Monitor className="h-4 w-4" aria-hidden="true" />
+              ) : (
+                <Smartphone className="h-4 w-4" aria-hidden="true" />
+              )}
+              <span>{mobileView ? "Desktop" : "Mobile"}</span>
+            </button>
+          )}
 
           <button
             type="button"
@@ -242,7 +239,8 @@ export function Header() {
             onClick={() => setMenuOpen((value) => !value)}
             aria-label={menuOpen ? "Fechar menu" : "Abrir menu"}
             className={cn(
-              "grid h-10 w-10 place-items-center rounded-full md:hidden",
+              "grid h-10 w-10 place-items-center rounded-full",
+              !mobileView && "md:hidden",
               scrolled
                 ? "bg-accent text-primary"
                 : "bg-primary-foreground/15 text-primary-foreground",
@@ -254,7 +252,12 @@ export function Header() {
       </div>
 
       {menuOpen && (
-        <div className="animate-rise mx-4 mb-3 rounded-3xl border border-border bg-card p-3 shadow-lift md:hidden">
+        <div
+          className={cn(
+            "animate-rise mx-4 mb-3 rounded-3xl border border-border bg-card p-3 shadow-lift",
+            !mobileView && "md:hidden",
+          )}
+        >
           {links.map((link) => (
             <a
               key={link.href}
