@@ -1,280 +1,381 @@
-/* Mobile-first refinements for Bora de Batata.
-   Keeps the desktop layout untouched and makes the ordering flow denser on phones. */
+/* Mobile-first layout for Bora de Batata.
+   Mobile is the default experience on every device. Desktop can be enabled explicitly on wide screens. */
 
-@media (max-width: 640px) {
-  html,
-  body {
-    width: 100%;
-    max-width: 100%;
-    overflow-x: clip;
+:root {
+  --bora-mobile-shell: 30rem;
+}
+
+html[data-view-mode="mobile"],
+html[data-view-mode="mobile"] body {
+  width: 100%;
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+html[data-view-mode="mobile"] body {
+  min-width: 0;
+}
+
+html[data-view-mode="mobile"] main,
+html[data-view-mode="mobile"] #topo,
+html[data-view-mode="mobile"] #cardapio {
+  width: 100%;
+  max-width: none;
+}
+
+@media (min-width: 641px) {
+  html[data-view-mode="mobile"] main,
+  html[data-view-mode="mobile"] footer {
+    width: min(100%, var(--bora-mobile-shell));
+    margin-inline: auto;
   }
 
-  body {
-    min-width: 0;
+  html[data-view-mode="mobile"] header {
+    left: 0 !important;
+    right: 0 !important;
+    width: min(100%, var(--bora-mobile-shell));
+    margin-inline: auto;
   }
 
-  main,
-  #topo,
-  #cardapio {
-    width: 100%;
-    max-width: none;
-  }
-
-  /* Header: less wasted horizontal space and no crowded theme label. */
-  header > div:first-child {
-    gap: 0.4rem !important;
-    padding: 0.55rem 0.75rem !important;
-  }
-
-  header a[href="#topo"] {
-    gap: 0.55rem !important;
-  }
-
-  header a[href="#topo"] > span:first-child {
-    width: 2.75rem !important;
-    height: 2.75rem !important;
-  }
-
-  header a[href="#topo"] > span:nth-child(2) > span:first-child {
-    max-width: 8.5rem;
-    font-size: 0.85rem !important;
-  }
-
-  header button[title] {
-    width: 2.45rem !important;
-    height: 2.45rem !important;
-    justify-content: center;
-    padding-inline: 0 !important;
-  }
-
-  header button[title] > span {
-    display: none;
-  }
-
-  header button[aria-label="Abrir carrinho"],
-  header button[aria-label="Abrir menu"],
-  header button[aria-label="Fechar menu"] {
-    width: 2.45rem !important;
-    height: 2.45rem !important;
-  }
-
-  /* Hero: compact, readable and focused on the CTA. */
-  .bora-hero > img {
-    object-position: 66% center !important;
-  }
-
-  .bora-hero > .relative {
-    min-height: 72svh !important;
-    align-items: flex-end !important;
-    padding: 6.2rem 1rem 2.15rem !important;
-  }
-
-  .bora-hero .animate-rise {
-    width: 100%;
-    max-width: 22rem;
-  }
-
-  .bora-hero .animate-rise > p:first-child {
-    margin-bottom: 0.75rem !important;
-    font-size: 0.62rem !important;
-    letter-spacing: 0.22em !important;
-  }
-
-  .bora-hero h1 {
-    font-size: clamp(2.45rem, 12vw, 3rem) !important;
-    line-height: 0.98 !important;
-  }
-
-  .bora-hero h1 .brush {
-    margin-top: 0.1rem;
-  }
-
-  .bora-hero h1 + p {
-    margin-top: 1rem !important;
-    max-width: 20rem !important;
-    font-size: 0.82rem !important;
-    line-height: 1.55 !important;
-  }
-
-  .bora-hero h1 + p + div {
-    margin-top: 1rem !important;
-    gap: 0.7rem !important;
-    font-size: 0.68rem !important;
-  }
-
-  .bora-hero h1 + p + div + div {
-    margin-top: 1.15rem !important;
-    gap: 0.55rem !important;
-  }
-
-  .bora-hero h1 + p + div + div > a,
-  .bora-hero h1 + p + div + div > button {
-    min-height: 2.75rem;
-    padding: 0.72rem 1rem !important;
-    font-size: 0.8rem !important;
-  }
-
-  .bora-hero > p:last-of-type {
-    right: 0.8rem !important;
-    bottom: 0.7rem !important;
-    font-size: 0.52rem !important;
-  }
-
-  /* Menu intro and filters: tighter rhythm, more products above the fold. */
-  #cardapio {
-    padding: 2.75rem 0.85rem 3.5rem !important;
-  }
-
-  #cardapio > div:first-child {
-    margin-bottom: 1.35rem !important;
-  }
-
-  #cardapio > div:first-child > p:first-child {
-    font-size: 0.62rem !important;
-    letter-spacing: 0.22em !important;
-  }
-
-  #cardapio > div:first-child h2 {
-    margin-top: 0.55rem !important;
-    font-size: 1.75rem !important;
-    line-height: 1.1 !important;
-  }
-
-  #cardapio > div:first-child h2 + p {
-    margin-top: 0.55rem !important;
-    font-size: 0.76rem !important;
-    line-height: 1.5 !important;
-  }
-
-  #cardapio input[type="search"] {
-    padding-top: 0.76rem !important;
-    padding-bottom: 0.76rem !important;
-    padding-left: 2.75rem !important;
-    font-size: 0.78rem !important;
-  }
-
-  #cardapio input[type="search"] + * {
-    pointer-events: none;
-  }
-
-  #cardapio .no-scrollbar {
-    margin-bottom: 1rem !important;
-    gap: 0.45rem !important;
-  }
-
-  #cardapio .no-scrollbar button {
-    padding: 0.6rem 0.9rem !important;
-    font-size: 0.72rem !important;
-  }
-
-  #cardapio .no-scrollbar + div {
-    margin-bottom: 1rem !important;
-    border-radius: 1.15rem !important;
-    padding: 0.8rem !important;
-  }
-
-  #cardapio .no-scrollbar + div p {
-    font-size: 0.68rem !important;
-    line-height: 1.45 !important;
-  }
-
-  #cardapio .no-scrollbar + div p:first-child {
-    font-size: 0.78rem !important;
-  }
-
-  /* Product list: horizontal restaurant-style cards instead of giant square blocks. */
-  #cardapio > div.grid {
-    gap: 0.75rem !important;
-  }
-
-  #cardapio article {
-    display: grid !important;
-    grid-template-columns: 7.2rem minmax(0, 1fr) !important;
-    min-height: 8.9rem;
-    overflow: hidden;
-    border-radius: 1.15rem !important;
-    transform: none !important;
-  }
-
-  #cardapio article > div:first-child {
-    width: 100%;
-    height: 100%;
-    min-height: 8.9rem;
-    aspect-ratio: auto !important;
-    border-radius: 0 !important;
-  }
-
-  #cardapio article > div:first-child img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  #cardapio article > div:nth-child(2) {
-    min-width: 0;
-    padding: 0.78rem 0.75rem !important;
-  }
-
-  #cardapio article h3 {
-    font-size: 0.9rem !important;
-    line-height: 1.2 !important;
-  }
-
-  #cardapio article h3 + p {
-    display: -webkit-box;
-    margin-top: 0.3rem !important;
-    overflow: hidden;
-    -webkit-box-orient: vertical;
-    -webkit-line-clamp: 2;
-    font-size: 0.66rem !important;
-    line-height: 1.4 !important;
-  }
-
-  #cardapio article h3 + p + button {
-    margin-top: 0.2rem !important;
-    font-size: 0.63rem !important;
-  }
-
-  #cardapio article div.mt-auto {
-    gap: 0.45rem !important;
-    padding-top: 0.55rem !important;
-  }
-
-  #cardapio article div.mt-auto p,
-  #cardapio article div.mt-auto span {
-    font-size: 0.66rem !important;
-  }
-
-  #cardapio article div.mt-auto p.font-display,
-  #cardapio article div.mt-auto p[class*="font-semibold"] {
-    font-size: 0.86rem !important;
-  }
-
-  #cardapio article div.mt-auto > button {
-    min-height: 2.15rem !important;
-    gap: 0.25rem !important;
-    padding: 0.45rem 0.58rem !important;
-    font-size: 0.65rem !important;
-    white-space: nowrap;
-  }
-
-  #cardapio article div.mt-auto > button svg {
-    width: 0.8rem !important;
-    height: 0.8rem !important;
-  }
-
-  /* Avoid touch devices inheriting desktop hover movement. */
-  #cardapio article:hover {
-    transform: none !important;
+  html[data-view-mode="mobile"] [data-mobile-cart-bar] {
+    display: block !important;
+    left: 0 !important;
+    right: 0 !important;
+    width: min(100%, var(--bora-mobile-shell));
+    margin-inline: auto;
   }
 }
 
+/* Header: compact and readable in the mobile layout, even on desktop screens. */
+html[data-view-mode="mobile"] header > div:first-child {
+  gap: 0.4rem !important;
+  padding: 0.55rem 0.75rem !important;
+}
+
+html[data-view-mode="mobile"] header a[href="#topo"] {
+  gap: 0.55rem !important;
+}
+
+html[data-view-mode="mobile"] header a[href="#topo"] > span:first-child {
+  width: 2.75rem !important;
+  height: 2.75rem !important;
+}
+
+html[data-view-mode="mobile"] header a[href="#topo"] > span:nth-child(2) > span:first-child {
+  max-width: 8.5rem;
+  font-size: 0.85rem !important;
+}
+
+html[data-view-mode="mobile"] header a[href="#topo"] > span:nth-child(2) > span:nth-child(2) {
+  display: none !important;
+}
+
+html[data-view-mode="mobile"] header button[title]:not([aria-label^="Mudar para versão"]) {
+  width: 2.45rem !important;
+  height: 2.45rem !important;
+  justify-content: center;
+  padding-inline: 0 !important;
+}
+
+html[data-view-mode="mobile"] header button[title]:not([aria-label^="Mudar para versão"]) > span {
+  display: none;
+}
+
+html[data-view-mode="mobile"] header button[aria-label^="Mudar para versão"] {
+  min-height: 2.45rem;
+  padding-inline: 0.72rem !important;
+}
+
+html[data-view-mode="mobile"] header button[aria-label="Abrir carrinho"],
+html[data-view-mode="mobile"] header button[aria-label="Abrir menu"],
+html[data-view-mode="mobile"] header button[aria-label="Fechar menu"] {
+  width: 2.45rem !important;
+  height: 2.45rem !important;
+}
+
+/* Hero: compact, readable and focused on the CTA. */
+html[data-view-mode="mobile"] .bora-hero > img {
+  object-position: 66% center !important;
+}
+
+html[data-view-mode="mobile"] .bora-hero > .relative {
+  min-height: 72svh !important;
+  align-items: flex-end !important;
+  padding: 6.2rem 1rem 2.15rem !important;
+}
+
+html[data-view-mode="mobile"] .bora-hero .animate-rise {
+  width: 100%;
+  max-width: 22rem;
+}
+
+html[data-view-mode="mobile"] .bora-hero .animate-rise > p:first-child {
+  margin-bottom: 0.75rem !important;
+  font-size: 0.62rem !important;
+  letter-spacing: 0.22em !important;
+}
+
+html[data-view-mode="mobile"] .bora-hero h1 {
+  font-size: clamp(2.45rem, 12vw, 3rem) !important;
+  line-height: 0.98 !important;
+}
+
+html[data-view-mode="mobile"] .bora-hero h1 .brush {
+  margin-top: 0.1rem;
+}
+
+html[data-view-mode="mobile"] .bora-hero h1 + p {
+  margin-top: 1rem !important;
+  max-width: 20rem !important;
+  font-size: 0.82rem !important;
+  line-height: 1.55 !important;
+}
+
+html[data-view-mode="mobile"] .bora-hero h1 + p + div {
+  margin-top: 1rem !important;
+  gap: 0.7rem !important;
+  font-size: 0.68rem !important;
+}
+
+html[data-view-mode="mobile"] .bora-hero h1 + p + div + div {
+  margin-top: 1.15rem !important;
+  gap: 0.55rem !important;
+  flex-wrap: wrap;
+}
+
+html[data-view-mode="mobile"] .bora-hero h1 + p + div + div > a,
+html[data-view-mode="mobile"] .bora-hero h1 + p + div + div > button {
+  min-height: 2.75rem;
+  padding: 0.72rem 1rem !important;
+  font-size: 0.8rem !important;
+}
+
+html[data-view-mode="mobile"] .bora-hero > p:last-of-type {
+  right: 0.8rem !important;
+  bottom: 0.7rem !important;
+  font-size: 0.52rem !important;
+}
+
+/* Menu intro and filters. */
+html[data-view-mode="mobile"] #cardapio {
+  padding: 2.75rem 0.85rem 3.5rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio > div:first-child {
+  margin-bottom: 1.35rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio > div:first-child > p:first-child {
+  font-size: 0.62rem !important;
+  letter-spacing: 0.22em !important;
+}
+
+html[data-view-mode="mobile"] #cardapio > div:first-child h2 {
+  margin-top: 0.55rem !important;
+  font-size: 1.75rem !important;
+  line-height: 1.1 !important;
+}
+
+html[data-view-mode="mobile"] #cardapio > div:first-child h2 + p {
+  margin-top: 0.55rem !important;
+  font-size: 0.76rem !important;
+  line-height: 1.5 !important;
+}
+
+html[data-view-mode="mobile"] #cardapio input[type="search"] {
+  padding-top: 0.76rem !important;
+  padding-bottom: 0.76rem !important;
+  padding-left: 2.75rem !important;
+  font-size: 0.78rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio input[type="search"] + * {
+  pointer-events: none;
+}
+
+html[data-view-mode="mobile"] #cardapio .no-scrollbar {
+  margin-bottom: 1rem !important;
+  gap: 0.45rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio .no-scrollbar button {
+  padding: 0.6rem 0.9rem !important;
+  font-size: 0.72rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio .no-scrollbar + div {
+  margin-bottom: 1rem !important;
+  border-radius: 1.15rem !important;
+  padding: 0.8rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio .no-scrollbar + div p {
+  font-size: 0.68rem !important;
+  line-height: 1.45 !important;
+}
+
+html[data-view-mode="mobile"] #cardapio .no-scrollbar + div p:first-child {
+  font-size: 0.78rem !important;
+}
+
+/* Product list: always one mobile column, independent of the browser width. */
+html[data-view-mode="mobile"] #cardapio > div.grid {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 0.75rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article {
+  display: grid !important;
+  grid-template-columns: 7.2rem minmax(0, 1fr) !important;
+  min-height: 8.9rem;
+  overflow: hidden;
+  border-radius: 1.15rem !important;
+  transform: none !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article > div:first-child {
+  width: 100%;
+  height: 100%;
+  min-height: 8.9rem;
+  aspect-ratio: auto !important;
+  border-radius: 0 !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article > div:first-child img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+html[data-view-mode="mobile"] #cardapio article > div:nth-child(2) {
+  min-width: 0;
+  padding: 0.78rem 0.75rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article h3 {
+  font-size: 0.9rem !important;
+  line-height: 1.2 !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article h3 + p {
+  display: -webkit-box;
+  margin-top: 0.3rem !important;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  font-size: 0.66rem !important;
+  line-height: 1.4 !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article h3 + p + button {
+  margin-top: 0.2rem !important;
+  font-size: 0.63rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article div.mt-auto {
+  gap: 0.45rem !important;
+  padding-top: 0.55rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article div.mt-auto p,
+html[data-view-mode="mobile"] #cardapio article div.mt-auto span {
+  font-size: 0.66rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article div.mt-auto p.font-display,
+html[data-view-mode="mobile"] #cardapio article div.mt-auto p[class*="font-semibold"] {
+  font-size: 0.86rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article div.mt-auto > button {
+  min-height: 2.15rem !important;
+  gap: 0.25rem !important;
+  padding: 0.45rem 0.58rem !important;
+  font-size: 0.65rem !important;
+  white-space: nowrap;
+}
+
+html[data-view-mode="mobile"] #cardapio article div.mt-auto > button svg {
+  width: 0.8rem !important;
+  height: 0.8rem !important;
+}
+
+html[data-view-mode="mobile"] #cardapio article:hover {
+  transform: none !important;
+}
+
+/* About and contact: prevent desktop breakpoints from creating cramped columns. */
+html[data-view-mode="mobile"] #sobre {
+  padding: 3.5rem 0.85rem !important;
+}
+
+html[data-view-mode="mobile"] #sobre > div {
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 2rem !important;
+}
+
+html[data-view-mode="mobile"] #sobre img {
+  border-radius: 1.35rem !important;
+}
+
+html[data-view-mode="mobile"] #sobre h2 {
+  font-size: 1.85rem !important;
+  line-height: 1.12 !important;
+}
+
+html[data-view-mode="mobile"] #sobre p {
+  overflow-wrap: anywhere;
+}
+
+html[data-view-mode="mobile"] #contato {
+  padding: 3.5rem 0.85rem !important;
+}
+
+html[data-view-mode="mobile"] #contato > div {
+  border-radius: 1.35rem !important;
+  padding: 1.5rem !important;
+}
+
+html[data-view-mode="mobile"] #contato h2 {
+  font-size: 1.75rem !important;
+  line-height: 1.12 !important;
+}
+
+html[data-view-mode="mobile"] #contato a {
+  width: 100%;
+  justify-content: center;
+  text-align: center;
+}
+
+/* Footer and sticky cart stay inside the mobile shell. */
+html[data-view-mode="mobile"] footer > div {
+  padding-inline: 0.85rem !important;
+}
+
+html[data-view-mode="mobile"] footer > div > div:first-child {
+  grid-template-columns: minmax(0, 1fr) !important;
+}
+
+html[data-view-mode="mobile"] footer > div > div:first-child > p {
+  text-align: left !important;
+}
+
+html[data-view-mode="mobile"] [data-mobile-cart-bar] {
+  padding: 0.65rem 0.75rem max(0.65rem, env(safe-area-inset-bottom)) !important;
+}
+
+html[data-view-mode="mobile"] [data-mobile-cart-bar] button {
+  min-width: 0;
+  padding-inline: 1rem !important;
+  font-size: 0.78rem !important;
+}
+
 @media (max-width: 370px) {
-  header a[href="#topo"] > span:nth-child(2) {
+  html[data-view-mode="mobile"] header a[href="#topo"] > span:nth-child(2) {
     display: none;
   }
 
-  #cardapio article {
+  html[data-view-mode="mobile"] #cardapio article {
     grid-template-columns: 6.6rem minmax(0, 1fr) !important;
   }
 }
