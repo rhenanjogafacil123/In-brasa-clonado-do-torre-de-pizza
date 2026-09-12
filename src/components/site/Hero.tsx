@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   ArrowDown,
   Bike,
@@ -35,7 +36,40 @@ function WhatsappIcon({ className = "h-4 w-4" }: { className?: string }) {
 }
 
 function InformationModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  if (!open) return null;
+  useEffect(() => {
+    if (!open || typeof document === "undefined") return;
+
+    const scrollY = window.scrollY;
+    const body = document.body;
+    const previous = {
+      overflow: body.style.overflow,
+      position: body.style.position,
+      top: body.style.top,
+      width: body.style.width,
+    };
+
+    body.style.overflow = "hidden";
+    body.style.position = "fixed";
+    body.style.top = `-${scrollY}px`;
+    body.style.width = "100%";
+
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+    };
+
+    document.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.removeEventListener("keydown", handleKeyDown);
+      body.style.overflow = previous.overflow;
+      body.style.position = previous.position;
+      body.style.top = previous.top;
+      body.style.width = previous.width;
+      window.scrollTo(0, scrollY);
+    };
+  }, [open, onClose]);
+
+  if (!open || typeof document === "undefined") return null;
 
   const whatsappMessage = encodeURIComponent(
     "Olá! Gostaria de mais informações sobre a Bora de Batata.",
@@ -44,8 +78,8 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
   const instagramAvailable = Boolean(business.instagramUrl);
   const mapsAvailable = Boolean(business.mapsUrl);
 
-  return (
-    <div className="fixed inset-0 z-[80] flex items-end justify-center p-4 sm:items-center">
+  return createPortal(
+    <div className="fixed inset-0 z-[200] flex items-end justify-center p-4 sm:items-center">
       <button
         type="button"
         aria-label="Fechar informações"
@@ -57,7 +91,7 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
         role="dialog"
         aria-modal="true"
         aria-labelledby="information-title"
-        className="animate-rise relative z-10 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-[2rem] border border-border bg-card p-5 text-card-foreground shadow-lift sm:p-6"
+        className="relative z-10 max-h-[calc(100dvh-2rem)] w-full max-w-md overflow-y-auto overscroll-contain rounded-[2rem] border border-border bg-card p-5 text-card-foreground shadow-lift sm:p-6"
       >
         <div className="flex items-start justify-between gap-4">
           <div>
@@ -205,7 +239,8 @@ function InformationModal({ open, onClose }: { open: boolean; onClose: () => voi
           </div>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }
 
