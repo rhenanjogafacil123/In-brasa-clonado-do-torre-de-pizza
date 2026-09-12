@@ -13,7 +13,7 @@ import {
 import { business } from "@/data/business";
 
 const developerWhatsappMessage =
-  "Olá, Rhenan! 👋 Vi o site da Bora de Batata e curti muito como ele transforma o cardápio em uma experiência mais profissional e fácil de comprar. Na hora pensei no meu negócio. Quero ver como ficaria uma versão com a identidade da minha empresa e o que daria para melhorar para gerar mais pedidos sem depender tanto de conversa no WhatsApp. Você consegue me mostrar uma ideia e me explicar como funciona e os valores? Se eu gostar da proposta, tenho interesse em colocar isso para rodar.";
+  "Olá, Rhenan! Vi seu trabalho e quero atrair mais clientes. Tenho interesse em criação de site, Instagram, Google Meu Negócio e tráfego pago com Meta Ads e Google Ads. Pode me explicar como funciona e os valores?";
 const developerWhatsappUrl = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
 function WhatsappIcon({ className = "h-4 w-4" }: { className?: string }) {
