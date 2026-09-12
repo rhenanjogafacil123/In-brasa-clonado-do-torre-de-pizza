@@ -5,7 +5,10 @@ export function MobileCartBar() {
   const { count, subtotal, setOpen, open } = useCart();
   if (count === 0 || open) return null;
   return (
-    <div className="animate-rise fixed inset-x-0 bottom-0 z-50 p-3 md:hidden">
+    <div
+      data-mobile-cart-bar
+      className="animate-rise fixed inset-x-0 bottom-0 z-50 p-3 md:hidden"
+    >
       <button
         type="button"
         onClick={() => setOpen(true)}
