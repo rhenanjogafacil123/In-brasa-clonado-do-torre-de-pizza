@@ -1,0 +1,36 @@
+/* Information modal fixes.
+   Keep the modal above every section and stop the page behind it from scrolling. */
+
+html:has(#information-title),
+body:has(#information-title) {
+  overflow: hidden !important;
+  overscroll-behavior: none;
+}
+
+.bora-hero:has(#information-title) {
+  z-index: 100 !important;
+  overflow: visible !important;
+}
+
+.bora-hero:has(#information-title) > .fixed {
+  z-index: 120 !important;
+}
+
+html[data-view-mode="mobile"]
+  .bora-hero
+  [role="dialog"][aria-labelledby="information-title"] {
+  width: min(calc(100vw - 2rem), 28rem) !important;
+  max-width: 28rem !important;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+html[data-view-mode="mobile"]
+  .bora-hero
+  [role="dialog"][aria-labelledby="information-title"]
+  > p:first-child {
+  margin-bottom: initial !important;
+  font-size: initial !important;
+  letter-spacing: initial !important;
+}
