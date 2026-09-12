@@ -1,7 +1,7 @@
 import { business } from "@/data/business";
 
 const developerWhatsappMessage =
-  "Olá, Rhenan! 👋 Vi o site da Bora de Batata e curti muito como ele transforma o cardápio em uma experiência mais profissional e fácil de comprar. Na hora pensei no meu negócio. Quero ver como ficaria uma versão com a identidade da minha empresa e o que daria para melhorar para gerar mais pedidos sem depender tanto de conversa no WhatsApp. Você consegue me mostrar uma ideia e me explicar como funciona e os valores? Se eu gostar da proposta, tenho interesse em colocar isso para rodar.";
+  "Olá, Rhenan! Vi seu trabalho e quero atrair mais clientes. Tenho interesse em criação de site, Instagram, Google Meu Negócio e tráfego pago com Meta Ads e Google Ads. Pode me explicar como funciona e os valores?";
 const developerWhatsapp = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
 function WhatsappIcon() {
@@ -9,7 +9,7 @@ function WhatsappIcon() {
     <svg
       viewBox="0 0 24 24"
       aria-hidden="true"
-      className="h-8 w-8 shrink-0"
+      className="h-6 w-6 shrink-0"
       fill="none"
       stroke="currentColor"
       strokeWidth="1.8"
@@ -41,9 +41,9 @@ export function Footer() {
           </p>
         </div>
 
-        <div className="mt-6 pt-6 text-center">
-          <p className="flex items-center justify-center gap-2 text-[15px] text-muted-foreground">
-            <span className="font-mono text-lg font-black text-red-500" aria-hidden="true">
+        <div className="mt-4 pt-4 text-center">
+          <p className="flex items-center justify-center gap-1.5 text-[13px] text-muted-foreground">
+            <span className="font-mono text-base font-black text-red-500" aria-hidden="true">
               &lt;/&gt;
             </span>
             <span>
@@ -56,16 +56,16 @@ export function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Falar com Rhenan pelo WhatsApp no número (21) 97315-2056"
-            className="mx-auto mt-3 flex min-h-[62px] w-full max-w-[360px] items-center justify-center gap-3 rounded-2xl border border-[#25D366] px-5 py-2.5 text-left transition hover:bg-[#25D366]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
+            className="mx-auto mt-2.5 flex min-h-[50px] w-full max-w-[320px] items-center justify-center gap-2.5 rounded-2xl border border-[#25D366] px-4 py-2 text-left transition hover:bg-[#25D366]/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#25D366] focus-visible:ring-offset-2"
           >
-            <span className="flex h-8 w-8 shrink-0 self-center items-center justify-center text-[#25D366]">
+            <span className="flex h-7 w-7 shrink-0 self-center items-center justify-center text-[#25D366]">
               <WhatsappIcon />
             </span>
-            <span className="flex min-h-10 flex-col justify-center leading-none">
-              <strong className="block text-lg font-extrabold leading-none text-foreground">
+            <span className="flex min-h-8 flex-col justify-center leading-none">
+              <strong className="block text-base font-extrabold leading-none text-foreground">
                 (21) 97315-2056
               </strong>
-              <small className="mt-1.5 block text-sm leading-none text-muted-foreground">
+              <small className="mt-1 block text-xs leading-none text-muted-foreground">
                 Fale comigo no WhatsApp
               </small>
             </span>
