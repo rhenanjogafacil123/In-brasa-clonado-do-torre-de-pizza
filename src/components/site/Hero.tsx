@@ -13,7 +13,7 @@ import {
 import { business } from "@/data/business";
 
 const developerWhatsappMessage =
-  "Olá, Rhenan! Vi seu trabalho e quero atrair mais clientes. Tenho interesse em criação de site, Instagram, Google Meu Negócio e tráfego pago com Meta Ads e Google Ads. Pode me explicar como funciona e os valores?";
+  "Olá, Rhenan! Vi seu trabalho e quero atrair mais clientes. Tenho interesse em criação de site, Instagram, Google Meu Negócio e tráfego pago com Meta Ads e Google Ads. Pode me explicar como funciona?";
 const developerWhatsappUrl = `https://wa.me/5521973152056?text=${encodeURIComponent(developerWhatsappMessage)}`;
 
 function WhatsappIcon({ className = "h-4 w-4" }: { className?: string }) {
